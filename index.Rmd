@@ -35,7 +35,7 @@ TTh 11:00-12:40, SRB 1410
 * Resources: 
     1. [install GIT](https://happygitwithr.com/install-git.html)
     2. [install *base* R](https://cran.r-project.org/)
-    3. [rstudio](https://www.rstudio.com/products/rstudio/download/#download)
+    3. [install RStudio](https://www.rstudio.com/products/rstudio/download/#download)
     * Lab 0 [instructions](hw_lab_instruction/lab00-hello-class.html) and repo (accept GH classroom invite in Blackboard). Due 5pm Sept 8.
 <!-- 2. [ggplot(i)](lecture/l02-ggplot2-i.html) -->
 <!--     * CandyWeight for real. -->
