@@ -179,8 +179,9 @@ with HTTPS</strong> as in the image below). Click on the clipboard icon
 to copy the repo URL.</p></li>
 <li><p>Go to RStudio clone the assignment repository.</p></li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># you need to change this to the right repository and location for you and your local machine</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#usethis::create_from_github(&quot;https://github.com/bst-urmc/test-assignment-1-tanzylove&quot;,destdir=&quot;~/Documents/work/teaching/BST430/&quot;, fork=FALSE)</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#you need to change this to the right repository and location for you and your local machine</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#usethis::create_from_github(&quot;https://github.com/bst-urmc/test-assignment-1-tanzylove&quot;,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   destdir=&quot;~/Documents/work/teaching/BST430/&quot;, fork=FALSE)</span></span></code></pre></div>
 <ul>
 <li>Copy and paste (AM: OK to copy-paste here) the URL of your
 assignment repo into the function</li>
@@ -224,14 +225,9 @@ command into the Console:</p>
 password manager</strong>, you will have to re-enter it, depending on
 your set-up.</p></li>
 </ul>
-</div>
-<div id="warm-up" class="section level1">
-<h1>Warm up</h1>
-<p><label for="tufte-mn-2" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-2" class="margin-toggle"><span
-class="marginnote"><span style="display: block;">NB: you should enter
-your PAT rather than your password, and actually it doesn’t matter what
-you enter for your userid. Your PAT will be cached, so you won’t have to
-keep entering it 😎</span></span></p>
+<!-- ```{marginfigure} -->
+<!-- NB: you should enter your PAT rather than your password, and actually it doesn't matter what you enter for your userid.  Your PAT will be cached, so you won't have to keep entering it 😎 -->
+<!-- ``` -->
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
@@ -251,33 +247,36 @@ keep entering it 😎</span></span></p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(Calories, Sodium)</span></code></pre></div>
 <pre><code>## [1] 0.4671387</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Calories, Sodium, <span class="at">xlab=</span><span class="st">&quot;Calories&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Sodium&quot;</span>, </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">col=</span><span class="fu">as.numeric</span>(Type), <span class="at">pch=</span><span class="dv">16</span>)</span></code></pre></div>
-<pre><code>## Warning in plot.xy(xy, type, ...): NAs introduced by coercion</code></pre>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">col=</span><span class="fu">factor</span>(Type), <span class="at">pch=</span><span class="dv">16</span>)</span></code></pre></div>
 <p><img src="lab00-hello-class_files/figure-html/hotdogs-2.png" width="672"  /></p>
 <p>Let’s try a different data set. This one about 50 states.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>hsgrads<span class="ot">=</span><span class="fu">read.table</span>(<span class="st">&quot;lab00-demonstration/files/raingrad.TXT&quot;</span>, <span class="at">header=</span>T, <span class="at">sep=</span><span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(hsgrads)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Rain, Education, </span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="st">&quot;Rainfall&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Average Grade Level&quot;</span>, <span class="at">pch=</span><span class="dv">16</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hsgrads<span class="ot">=</span><span class="fu">read.table</span>(<span class="st">&quot;lab00-demonstration/files/raingrad.TXT&quot;</span>, <span class="at">header=</span>T, <span class="at">sep=</span><span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(hsgrads)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Rain, Education, </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="st">&quot;Rainfall&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Average Grade Level&quot;</span>, <span class="at">pch=</span><span class="dv">16</span>)</span></code></pre></div>
 <p><img src="lab00-hello-class_files/figure-html/raingrad-1.png" width="672"  /></p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(Rain, Education)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(Rain, Education)</span></code></pre></div>
 <pre><code>## [1] -0.4758416</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(cor)</span></code></pre></div>
+<pre><code>## function (x, y = NULL, use = &quot;everything&quot;, method = c(&quot;pearson&quot;, 
+##     &quot;kendall&quot;, &quot;spearman&quot;)) 
+## NULL</code></pre>
 <p>And one final set of flying times.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>delta<span class="ot">=</span><span class="fu">read.table</span>(<span class="st">&quot;lab00-demonstration/files/Deltafly.TXT&quot;</span>, <span class="at">header=</span>T)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(delta)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(Miles, <span class="at">xlab=</span><span class="st">&quot;Distance (Miles)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>delta<span class="ot">=</span><span class="fu">read.table</span>(<span class="st">&quot;lab00-demonstration/files/Deltafly.TXT&quot;</span>, <span class="at">header=</span>T)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(delta)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(Miles, <span class="at">xlab=</span><span class="st">&quot;Distance (Miles)&quot;</span>)</span></code></pre></div>
 <p><img src="lab00-hello-class_files/figure-html/delta-1.png" width="672"  /></p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(DepHr, <span class="at">main=</span><span class="cn">NULL</span>, <span class="at">xlab=</span><span class="st">&quot;Departure Hour (24hour)&quot;</span>, <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">24</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(DepHr, <span class="at">main=</span><span class="cn">NULL</span>, <span class="at">xlab=</span><span class="st">&quot;Departure Hour (24hour)&quot;</span>, <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">24</span>))</span></code></pre></div>
 <p><img src="lab00-hello-class_files/figure-html/delta-2.png" width="672"  /></p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(TravTime, <span class="at">main=</span><span class="cn">NULL</span>, <span class="at">xlab=</span><span class="st">&quot;Travel Time (Hours)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(TravTime, <span class="at">main=</span><span class="cn">NULL</span>, <span class="at">xlab=</span><span class="st">&quot;Travel Time (Hours)&quot;</span>)</span></code></pre></div>
 <p><img src="lab00-hello-class_files/figure-html/delta-3.png" width="672"  /></p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Miles, TravTime, <span class="at">xlab=</span><span class="st">&quot;Distance (Miles)&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Travel Time (Hours)&quot;</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(Miles, TravTime)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Miles, TravTime, <span class="at">xlab=</span><span class="st">&quot;Distance (Miles)&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Travel Time (Hours)&quot;</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(Miles, TravTime)</span></code></pre></div>
 <pre><code>## [1] 0.9850281</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>reg.line<span class="ot">=</span><span class="fu">lm</span>(TravTime<span class="sc">~</span>Miles) <span class="co">#calcuate the regression line for the Delta data</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(reg.line)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>reg.line<span class="ot">=</span><span class="fu">lm</span>(TravTime<span class="sc">~</span>Miles) <span class="co">#calcuate the regression line for the Delta data</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(reg.line)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = TravTime ~ Miles)
@@ -294,17 +293,23 @@ keep entering it 😎</span></span></p>
 ## Residual standard error: 0.2662 on 98 degrees of freedom
 ## Multiple R-squared:  0.9703, Adjusted R-squared:   0.97 
 ## F-statistic:  3199 on 1 and 98 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(reg.line, <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(reg.line, <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
 <p><img src="lab00-hello-class_files/figure-html/delta-4.png" width="672"  /></p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)) <span class="co">#make both plots appear together</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(reg.line, <span class="at">which=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)  <span class="co"># plot residual assumption plots</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)) <span class="co">#make both plots appear together</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(reg.line, <span class="at">which=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)  <span class="co"># plot residual assumption plots</span></span></code></pre></div>
 <p><img src="lab00-hello-class_files/figure-html/delta-5.png" width="672"  /></p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)) <span class="co">#make only one plot appear at a time</span></span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)) <span class="co">#make only one plot appear at a time</span></span></code></pre></div>
+<div id="make-a-change" class="section level2">
+<h2>Make a change:</h2>
+<p>Make a new file in RStudio or change the name in the header of this
+“lab00-hello-class.Rmd” file.</p>
+</div>
 <div id="commiting-changes" class="section level2">
 <h2>Commiting changes:</h2>
 <p>Then Go to the Git pane in your RStudio.</p>
-<p>If you have made changes to your Rmd file, you should see it listed
-here. Click on it to select it in this list and then click on
+<p>If you created a new file, you shoud see it’s name here. If you have
+made changes to your Rmd file, you should see it listed here. Click on
+the change to select it in this list and then click on
 <strong>Diff</strong>. This shows you the <em>diff</em>erence between
 the last committed state of the document and its current state that
 includes your changes. If you’re happy with these changes, write “Update

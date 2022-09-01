@@ -112,7 +112,7 @@ plot(Calories, Sodium, xlab="Calories", ylab="Sodium", pch=16)
 cor(Calories, Sodium)
 
 plot(Calories, Sodium, xlab="Calories", ylab="Sodium", 
-	col=as.numeric(Type), pch=16)
+	col=factor(Type), pch=16)
 ```
 
 Let's try a different data set. This one about 50 states.
