@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>BST430 Lab 7 Notes</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrew McDavid" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="css/lexis.css" type="text/css" />
+    <link rel="stylesheet" href="css/lexis-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: ur-title, center, middle, title-slide
+
+# BST430 Lab 7 Notes
+### Andrew McDavid
+### U of Rochester
+### 2021-10-27 (updated: 2021-11-01)
+
+---
+
+  
+
+
+
+
+### Generate an index
+
+  
+
+```r
+library(tidyverse)
+n = 100
+scale = 3
+points_df = tibble(t = ppoints(n)*scale)
+points_df
+```
+
+```
+## # A tibble: 100 x 1
+##        t
+##    &lt;dbl&gt;
+##  1 0.015
+##  2 0.045
+##  3 0.075
+##  4 0.105
+##  5 0.135
+...
+```
+
+ppoints gives `n` equally spaced points on [0, 1]
+
+---
+
+### Determine an outline
+
+
+```r
+points_df = mutate(points_df, x = rnorm(n), 
+                   y_mu = (1+t)^2,
+                   y = rnorm(n, mean = y_mu))
+points_df
+```
+
+```
+## # A tibble: 100 x 4
+##        t      x  y_mu     y
+##    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 0.015 -1.21   1.03 1.44 
+##  2 0.045  0.277  1.09 0.617
+##  3 0.075  1.08   1.16 1.22 
+##  4 0.105 -2.35   1.22 0.719
+...
+```
+
+---
+
+
+```r
+curve((1+x)^2, from = 0, to = 1)
+```
+
+&lt;img src="lab07-art-notes_files/figure-html/unnamed-chunk-4-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+Can use `curve` to help visualize components of your functions.  Other nice functions might include sin / cos to induce radial symmetry.
+
+---
+
+### Other attributes we can vary
+
+
+```r
+points_df = mutate(points_df,
+  length = .5 + t/scale,
+   angle = t/(scale) * pi - pi/3,
+                   xend = cos(angle)*length + x,
+                   yend = sin(angle)*length + y,
+  # check I still know basic trig...
+                   length_check = sqrt((xend-x)^2 + (yend - y)^2)
+)
+```
+
+---
+
+
+```r
+ggplot(points_df, aes(x = x, y = y, color = t^2, xend = xend, yend = yend)) + 
+  geom_segment() + 
+  theme_void() + 
+  scale_color_gradientn( colors = c('darkgreen', 'yellow', 'orange', 'red', 'black')) +
+  guides(color = 'none') + 
+  theme(plot.background = element_rect(fill = 'grey70'))
+```
+
+&lt;img src="lab07-art-notes_files/figure-html/segments-plot-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+Maybe it looks like leaves blowing in the wind?
+
+---
+
+# color gradients
+
+An important aestetic will be color gradients.  Use `scale_color_gradientn` to specify your own gradient, or check out palettes at https://www.colourlovers.com/. If you see one you like, use
+
+
+```r
+colourlovers::clpalette(&lt;INTEGER ID&gt;)
+```
+
+---
+
+For example, for [this palette](https://www.colourlovers.com/palette/4839578/november), I can get it with
+
+
+```r
+pal = colourlovers::clpalette(4839578)
+pal_swatch = colourlovers::swatch(pal)[[1]]
+```
+
+It looks like this:
+
+
+```r
+pie(rep(1, length(pal_swatch)), col = pal_swatch)
+```
+
+&lt;img src="lab07-art-notes_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### `geom_path()`
+
+To make a parametric figure, eg, of a leaf, you will want to write a function that takes
+*  a single vector argument `t`, e.g. on [0, 1]
+*  returns a set of `(x,y)` coordinates as a data frame.  
+(Consider centering at the origin, and scaling so that its bounding box is `\(\pm 1\)`).  
+*  Then I have provided for you`trans_affine`  which will allow you to scale / rotate / translate the initial figure.
+
+You will need to use some form of iteration to generate a family of parametric figures, then bind the rows, with an identifier showing which 
+Below I show a for-loop, but you could also join your unit figure
+
+---
+class: code50
+
+
+```r
+source('lab07/affine_trans.R')
+
+# need to include 0 endpoint twice to get a closed path
+circle = unit_circle(c(0, ppoints(20), 0))
+
+ellipse_foci = tibble(x = 1:10, y = x^2) %&gt;% rowwise() %&gt;%
+  mutate(scale = list(diag(c(sqrt(x), 1 + sqrt(x))))) %&gt;% ungroup()
+
+# collect outputs
+ellipse_out = list()
+for(ei in seq_len(nrow(ellipse_foci))){
+  # current xy center
+  xy =  unlist(ellipse_foci[ei, c('x', 'y'), drop = TRUE])
+  # current scaling matrix
+  scale = ellipse_foci[ei, 'scale', drop = TRUE][[1]]
+  # apply trans
+  ellipse_out[[ei]] = trans_affine(circle, center = xy, scale = scale)
+}
+
+# collect and combine 
+ellipses = bind_rows(ellipse_out,
+*                    .id = 'figure') # Needed to identify individual closed paths
+```
+
+---
+
+```r
+ggplot(ellipses, aes(x = x, y = y, group  = figure)) + geom_path()
+```
+
+&lt;img src="lab07-art-notes_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+ggplot(ellipses, aes(x = x, y = y, group  = figure, fill = as.numeric(figure))) + geom_polygon()
+```
+
+&lt;img src="lab07-art-notes_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: code50 
+
+## Branching trees
+
+
+```r
+library(data.tree)
+
+# Need to install development version,
+# remotes::install_github("andrewheiss/colourlovers")
+library(colourlovers)
+
+bpp = function(parent, level, wind = 0){
+    te = rexp(1, rate = 1) + 1
+    t = parent$t + te
+    branch_span = rt(1, df = 3)*5/level
+    branch_center =  parent$x + branch_span + wind
+    print(glue::glue("At {level}: t = {t}"))
+    if(t &gt; t_max){
+      print(glue::glue("At {level}: hit tmax!"))
+      return(parent) # hit t_max, stop recursing by returning parent
+    }
+    n_child = rpois(1, 1.7)
+    print(glue::glue("At {level}: t = {t}, n_child = {n_child}"))
+    offset = seq(0, to = parent$branch_span/parent$n_sibling, length.out = n_child)
+    offset = offset - mean(offset)
+    for(level in seq_len(n_child)){
+      child = parent$AddChild(level, 
+                              t0 = parent$t, t = parent$t + te, te = te, 
+                              n_sibling = n_child, 
+                              x = branch_center + offset[level], x0 = parent$x,
+                              branch_span = branch_span)
+      bpp(child, level = level + 1) # add more children
+    }
+    print(glue::glue("At {level}: added all children!"))
+    # added all children, return parent
+    return(parent)
+}
+```
+
+
+---
+class: code50
+
+
+```r
+t_max = 7
+t = 0
+set.seed(1234)
+root = Node$new("Root", t = 0, x = 0, branch_span = 3, n_sibling = 1, te = -1)
+```
+
+Let's look at the root:
+
+
+```r
+root
+```
+
+```
+##   levelName
+## 1      Root
+```
+
+---
+
+Now grow the tree.
+
+
+```r
+result = bpp(root, level = 1, wind = .4)
+```
+
+```
+## At 1: t = 3.50175860496223
+## At 1: t = 3.50175860496223, n_child = 1
+## At 2: t = 4.83392612142473
+## At 2: t = 4.83392612142473, n_child = 4
+## At 2: t = 6.69633666300655
+## At 2: t = 6.69633666300655, n_child = 1
+## At 2: t = 8.60025732648524
+## At 2: hit tmax!
+## At 1: added all children!
+## At 3: t = 5.86565165038416
+## At 3: t = 5.86565165038416, n_child = 3
+## At 2: t = 8.86193031253469
+## At 2: hit tmax!
+## At 3: t = 7.15846383854011
+## At 3: hit tmax!
+## At 4: t = 7.60993914679612
+## At 4: hit tmax!
+## At 3: added all children!
+## At 4: t = 5.84179309774175
+## At 4: t = 5.84179309774175, n_child = 0
+## 
+## At 5: t = 6.79580192328871
+## At 5: t = 6.79580192328871, n_child = 2
+## At 2: t = 11.2210824643022
+## At 2: hit tmax!
+## At 3: t = 8.36204413059608
+## At 3: hit tmax!
+## At 2: added all children!
+## At 4: added all children!
+## At 1: added all children!
+```
+
+---
+
+
+```r
+result
+```
+
+```
+##        levelName
+## 1  Root         
+## 2   °--1        
+## 3       ¦--1    
+## 4       ¦   °--1
+## 5       ¦--2    
+## 6       ¦   ¦--1
+## 7       ¦   ¦--2
+## 8       ¦   °--3
+## 9       ¦--3    
+## 10      °--4    
+## 11          ¦--1
+## 12          °--2
+```
+
+---
+
+Convert it into a data frame.  Each row is a node.  The extra arguments are node attributes we want to pull into the data frame
+
+
+```r
+result_frame = ToDataFrameNetwork(result, 'n_sibling', 't', 'te', 'x', 'x0', 't0', 'level')
+result_frame
+```
+
+```
+##        from         to n_sibling        t       te         x
+## 1      Root     Root/1         1 3.501759 3.501759 2.0319378
+## 2    Root/1   Root/1/1         4 4.833926 1.332168 1.3195197
+## 3    Root/1   Root/1/2         4 4.833926 1.332168 1.8634989
+## 4    Root/1   Root/1/3         4 4.833926 1.332168 2.4074782
+## 5    Root/1   Root/1/4         4 4.833926 1.332168 2.9514575
+## 6  Root/1/1 Root/1/1/1         1 6.696337 1.862411 5.6911383
+## 7  Root/1/2 Root/1/2/1         3 5.865652 1.031726 1.5481766
+## 8  Root/1/2 Root/1/2/2         3 5.865652 1.031726 1.5611205
+## 9  Root/1/2 Root/1/2/3         3 5.865652 1.031726 1.5740643
+## 10 Root/1/4 Root/1/4/1         2 6.795802 1.961876 0.8153674
+## 11 Root/1/4 Root/1/4/2         2 6.795802 1.961876 0.8412551
+##          x0       t0 level
+## 1  0.000000 0.000000     2
+## 2  2.031938 3.501759     3
+## 3  2.031938 3.501759     3
+## 4  2.031938 3.501759     3
+## 5  2.031938 3.501759     3
+## 6  1.319520 4.833926     4
+## 7  1.863499 4.833926     4
+## 8  1.863499 4.833926     4
+## 9  1.863499 4.833926     4
+## 10 2.951457 4.833926     4
+## 11 2.951457 4.833926     4
+```
+
+---
+class: code50
+
+Final product
+
+
+```r
+palette = sample(clpalettes('top'), 1)[[1]] 
+colors = palette %&gt;% swatch %&gt;% .[[1]]
+
+ggplot(result_frame, aes(x = x0, xend = x, y = t0, yend = t, color = t, size = 1/level)) + 
+  geom_curve(curvature = .1)  +
+  scale_color_gradientn(colors = colors) +
+  theme_void() + 
+  guides(color = 'none', size = 'none') +
+  theme(plot.background = element_rect(fill = 'black'))
+```
+
+&lt;img src="lab07-art-notes_files/figure-html/unnamed-chunk-17-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "3:2"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+---
+title: "BST430  Lecture 0: Class intro"
+author: "Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-July-25 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+
+
+# Administrivia
+
+## Class website
+
+https://urmc-bst.github.io/bst430-fall2021-site/
+
+**Lecture, homeworks and lab will be provided here**
+
+## Blackboard
+
+https://learn.rochester.edu
+
+**Only used as a gradebook, announcements, and some polls/short quizzes, inshallah**
+
+---
+
+## Course communication
+
+-  Andrew_McDavid@urmc.rochester.edu
+-  For assignments, you are encouraged to use github issues (to be discussed)
+-  For private matters (grading disputes, etc), use email.
+
+### TAs
+
+[Samantha Manning](Samantha_Manning@URMC.Rochester.edu) and [Jonathan Klus](Jonathan_Klus@URMC.Rochester.edu) will be your TAs.  They will assist with grading, and offer an office hour.
+
+---
+
+## Textbooks
+
+All materials are available freely online.   Some also have deadtree version available for purchase.
+
+-  [Wickham  & Grolemund “R for Data Science”](https://r4ds.had.co.nz/) .small[A great tutorial to practical use of R to solve problems with data]
+-  [Wickham “Advanced R”](https://adv-r.hadley.nz/) .small[Once you understand the basics, and want a deeper understanding of the internals of R]
+-  [Peng “R Programming for Data Science”](https://leanpub.com/rprogramming) .small[An alternative to Wickham's "Advanced R"]
+-  [McBain “Git for Scientists”](https://milesmcbain.github.io/git_4_sci/) .small[use of git/github beyond the rstudio gui.  Eventually you'll need to worry about this]
+-  [Wickham “R Packages”](https://r-pkgs.org/) .small[if you end up using a function in more than one project you should consider building a package.  Not quite in scope for this class.]
+
+---
+
+# Proposed office hours
+
+Andrew: Fridays at 10a-11a or by appointment.
+
+Samantha and Jonathan: Tentatively scheduled to be in-person on Thursdays 12:15-1:15PM.
+
+---
+
+# Overview
+
+R (and programming) fundamentals with a data science and statistics emphasis. Collaborative and reproducible programming.
+
+-  Homework and labs (60%)
+.small[~weekly.  Homework will be completed  independently, out-of-class.  Labs will occur in-class and may be completed in groups.]
+-  Participation / Quizzes (10%)
+.small[Actively attending class, completing periodic quizzes (delivered in-class) to check understanding.]
+-  Take-home final (30%)
+.small[An open book, no-collaboration-permitted final will be assigned on November 9, and will be due 24 hours later.]
+
+---
+
+# Other syllabus items
+
+## Homework and github usage
+
+* Homework will be posted, turned-in, and graded on github classrooms.
+* We will shortly discuss logistics of this and how your use of this will be a component of your grade
+* I will sometimes accept a late assignments if I see progress and a consistent commit history in that assignment. If I do not see any progress in an assignment, I will not accept a late submission.
+* I permit corrections and regrades to assignments to receive up to 75% of original credit.
+
+---
+
+## Academic honesty and programming
+
+1.  You may generally work together<sup>1</sup>.
+2.  You may generally google it, but cite your sources and see the next item.
+3.  Write your own solutions and *own code*.  **This generally means no copy-paste!**  Let's look at [the syllabus](../static/Syllabus_DRAFT.pdf) for complete details.
+4.  Exception: labs, which will be marked as such, are collaborative within each group.
+
+
+### Code of conduct
+Respect each other<sup>2</sup>.  The UR harassment and discrimination policy applies<sup>3</sup>.
+
+.footnote[[1] Exception: take-home final!  [2] [Student handbook](http://www.rochester.edu/college/cscm/assets/pdf/standards_studentconduct.pdf)  [3] [Policy 106](http://www.rochester.edu/working/hr/policies/pdfpolicies/106.pdf)
+]
+---
+
+# Getting to know you
+
+
+.leftcol[What brings you to this class? 
+Please fill out [this survey](https://forms.gle/yJ8NVHbsJmanSywz9)
+]
+
+.rightcol[
+<img src = "l00/img/are_you_enthused.jpg" width = "80%">
+]
+

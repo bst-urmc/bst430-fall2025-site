@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>BST430 Lecture 13</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrew McDavid" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="css/lexis.css" type="text/css" />
+    <link rel="stylesheet" href="css/lexis-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: ur-title, center, middle, title-slide
+
+# BST430 Lecture 13
+## Functions (ii) and Iteration
+### Andrew McDavid
+### U of Rochester
+### 2021-10-23 (updated: 2021-10-27)
+
+---
+
+  
+
+
+
+
+
+
+## Where were we? Where are we going?
+
+*  Wrote an R function to compute the difference between the max and min of a numeric vector. 
+*  Validated the function's only argument
+*  Informally, we verified that it worked OK.
+
+Now, we generalize this function, learn more technical details about R functions, and set default values for some arguments.
+
+---
+
+## Recall our function:
+
+
+```r
+max_minus_min = function(x) {
+  if(!is.numeric(x)) {
+    stop('I am so sorry, but this function only works for numeric input!\n',
+         'You have provided an object of class: ', class(x)[1])
+  }
+  max(x) - min(x)
+}
+```
+
+---
+
+## Generalize our function to other quantiles
+
+The max and the min are special cases of a __quantile__. Here are other special cases you may have heard of:
+
+* median = 0.5 quantile
+* 1st quartile = 0.25 quantile
+* 3rd quartile = 0.75 quantile
+
+In [box plots][wiki-boxplot], the rectangle typically runs from the 1st--3rd quartile, with a line at the median.
+
+If `\(q\)` is the `\(p\)`-th quantile of a set of `\(n\)` observations, approximately `\(pn\)` of the observations are less than `\(q\)` and `\((1 - p)n\)` are greater than `\(q\)`. Yeah, you need to worry about rounding to an integer and less/greater than or equal to...
+
+Let's generalize our function to take the difference between any two quantiles,  min and max being **quantile 0** and **quantile 1** respectively.
+
+---
+
+## Get something that works, again
+
+The eventual inputs to our new function will be the data `x` and two probabilities.
+
+First, play around with the `quantile()` function. Convince yourself you know how to use it, for example, by cross-checking your results with other built-in functions.
+
+---
+
+
+```r
+library(gapminder)
+quantile(gapminder$lifeExp)
+```
+
+```
+##      0%     25%     50%     75%    100% 
+## 23.5990 48.1980 60.7125 70.8455 82.6030
+```
+
+```r
+quantile(gapminder$lifeExp, probs = 0.5)
+```
+
+```
+##     50% 
+## 60.7125
+```
+
+```r
+median(gapminder$lifeExp)
+```
+
+```
+## [1] 60.7125
+```
+
+```r
+mean(gapminder$lifeExp &lt; median(gapminder$lifeExp))
+```
+
+```
+## [1] 0.5
+```
+
+---
+
+Now write a code snippet that takes the difference between two quantiles.
+
+
+---
+
+## Turn the working interactive code into a function, again
+
+I'll use `qdiff` as the base of our function's name. I copy the overall structure from our previous "max minus min" work but replace the guts of the function with the more general code we just developed.
+
+
+```r
+qdiff1 = function(x, probs) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x = x, probs = probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+```
+
+---
+
+
+```r
+qdiff1(gapminder$lifeExp, probs = c(0.25, 0.75))
+```
+
+```
+## [1] 22.6475
+```
+
+```r
+IQR(gapminder$lifeExp) # hey, we've reinvented IQR
+```
+
+```
+## [1] 22.6475
+```
+
+```r
+qdiff1(gapminder$lifeExp, probs = c(0, 1))
+```
+
+```
+## [1] 59.004
+```
+
+```r
+max_minus_min(gapminder$lifeExp)
+```
+
+```
+## [1] 59.004
+```
+
+Again we do some informal tests against familiar results and external implementations.
+
+---
+
+## Argument names: freedom and conventions
+
+I want you to understand the importance of argument names.
+
+I can name my arguments almost anything I like. Proof:
+
+
+```r
+qdiff2 = function(zeus, hera) {
+  stopifnot(is.numeric(zeus))
+  the_quantiles = quantile(x = zeus, probs = hera)
+  max(the_quantiles) - min(the_quantiles)
+}
+qdiff2(zeus = gapminder$lifeExp, hera = 0:1)
+```
+
+```
+## [1] 59.004
+```
+
+While I can name my arguments after Greek gods, it's usually a bad idea. Take all opportunities to make things more self-explanatory via meaningful names.
+
+---
+
+## Argument names: freedom and conventions
+
+*  If you are going to pass along the arguments of your function to another built-in function, consider copying the argument names. 
+*  Unless you have a good reason to do your own thing (some argument names are bad!)
+*  The similarity or equivalence of the formal names of the function arguments  __accomplishes nothing__ as far as R is concerned; it is solely for the benefit of humans reading, writing, and using the code. 
+*  Which is very important!
+
+---
+
+## What a function returns
+
+By default, a function returns the result of the last line of the body. I am just letting that happen with the line `max(the_quantiles) - min(the_quantiles)`. However, there is an explicit function for this: `return()`. I could just as easily make this the last line of my function's body:
+
+
+```r
+return(max(the_quantiles) - min(the_quantiles))
+```
+
+You absolutely must use `return()` if you want to return early based on some condition, i.e. before execution gets to the last line of the body. Otherwise, you can decide your own conventions about when you use `return()` and when you don't -- I find it less bug-prone to explicitly return, and this is the course style guide.
+
+---
+
+## Default values: freedom to NOT specify the arguments
+
+What happens if we call our function but neglect to specify the probabilities?
+
+
+```r
+qdiff1(gapminder$lifeExp)
+```
+
+```
+## Error in quantile(x = x, probs = probs): argument "probs" is missing, with no default
+```
+
+Oops! At the moment, this causes a fatal error. It can be nice to provide some reasonable default values for certain arguments. In our case, it would be crazy to specify a default value for the primary input `x`, but very kind to specify a default for `probs`.
+
+---
+
+## Default values: freedom to NOT specify the arguments
+
+We started by focusing on the max and the min, so I think those make reasonable defaults. Here's how to specify that in a function definition.
+
+
+```r
+qdiff3 = function(x, probs = c(0, 1)) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x, probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+```
+
+---
+
+Again we check how the function works, in old examples and new, specifying the `probs` argument and not.
+
+
+```r
+qdiff3(gapminder$lifeExp)
+```
+
+```
+## [1] 59.004
+```
+
+```r
+max_minus_min(gapminder$lifeExp)
+```
+
+```
+## [1] 59.004
+```
+
+```r
+qdiff3(gapminder$lifeExp, c(0.1, 0.9))
+```
+
+```
+## [1] 33.5862
+```
+
+---
+
+## Check the validity of arguments, again
+
+__Exercise:__ upgrade our argument validity checks in light of the new argument `probs`.
+
+Application exercise -- browse [rstudio cloud](https://rstudio.cloud/spaces/162296/project/3099211) and complete part II.
+
+---
+
+## Wrap-up and what's next?
+
+Here's the function we've written so far:
+
+
+```r
+qdiff3
+```
+
+```
+## function(x, probs = c(0, 1)) {
+##   stopifnot(is.numeric(x))
+##   the_quantiles = quantile(x, probs)
+##   max(the_quantiles) - min(the_quantiles)
+## }
+## &lt;bytecode: 0x7fb41446c618&gt;
+```
+
+---
+
+What we've accomplished:
+
+* We've generalized our first function to take a difference between arbitrary quantiles.
+* We've specified default values for the probabilities that set the quantiles.
+
+---
+
+&lt;!--Original content: https://stat545.com/block011_write-your-own-function-03.html--&gt;
+
+## Where were we? Where are we going?
+
+
+In this part, we tackle `NA`s, the special argument `...` and formal testing.
+Let's keep our previous function around as a baseline.
+
+
+```r
+qdiff3 = function(x, probs = c(0, 1)) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x, probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+```
+
+---
+class: code70
+
+## Be proactive about `NA`s
+
+The Gapminder data is a fairly kind data set. In real life, missing data will make your life a living hell. Let's see how `quantile()` handles `NA`s:
+
+
+```r
+z = gapminder$lifeExp
+z[3] = NA
+quantile(z)
+```
+
+```
+## Error in quantile.default(z): missing values and NaN's not allowed if 'na.rm' is FALSE
+```
+
+```r
+quantile(z, na.rm = TRUE)
+```
+
+```
+##     0%    25%    50%    75%   100% 
+## 23.599 48.228 60.765 70.846 82.603
+```
+
+So `quantile()` simply will not operate in the presence of `NA`s unless `na.rm = TRUE`. How shall we modify our function?
+
+---
+
+If we wanted to hardwire `na.rm = TRUE`, we could. Focus on our call to `quantile()` inside our function definition.
+
+
+```r
+qdiff4 = function(x, probs = c(0, 1)) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x, probs, na.rm = TRUE)
+  max(the_quantiles) - min(the_quantiles)
+}
+qdiff4(gapminder$lifeExp)
+```
+
+```
+## [1] 59.004
+```
+
+```r
+qdiff4(z)
+```
+
+```
+## [1] 59.004
+```
+
+This works but it is dangerous to invert the default behavior of a well-known built-in function and to provide the user with no way to override this.
+
+---
+
+We could add an `na.rm =` argument to our own function. We might even enforce our preferred default -- but at least we're giving the user a way to control the behavior around `NA`s.
+
+
+```r
+qdiff5 = function(x, probs = c(0, 1), na.rm = TRUE) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x, probs, na.rm = na.rm)
+  max(the_quantiles) - min(the_quantiles)
+}
+qdiff5(gapminder$lifeExp)
+```
+
+```
+## [1] 59.004
+```
+
+```r
+qdiff5(z)
+```
+
+```
+## [1] 59.004
+```
+
+```r
+qdiff5(z, na.rm = FALSE)
+```
+
+```
+## Error in quantile.default(x, probs, na.rm = na.rm): missing values and NaN's not allowed if 'na.rm' is FALSE
+```
+
+---
+
+###  You could have lived a long and happy life without knowing there are [at least 9 different algorithms][rdocs-quantile] for computing quantiles. 
+
+The practical significance of `quatile(x, type =)` in the Gapminder data is virtually nonexistent. But thanks to [@wrathematics][twitter-wrathematics], here's a small example where we can detect a difference due to `type`.
+
+
+```r
+set.seed(1234)
+z = rnorm(10)
+quantile(z, type = 1)
+```
+
+```
+##         0%        25%        50%        75%       100% 
+## -2.3456977 -0.8900378 -0.5644520  0.4291247  1.0844412
+```
+
+```r
+quantile(z, type = 4)
+```
+
+```
+##        0%       25%       50%       75%      100% 
+## -2.345698 -1.048552 -0.564452  0.353277  1.084441
+```
+
+???
+
+TLDR: If a quantile is not unambiguously equal to an observed data point, you must somehow average two data points. You can weight this average different ways, depending on the rest of the data, and `type =` controls this.
+
+---
+
+## The useful but mysterious `...` argument
+
+But let's say we want flexibility to specify how the quantiles are computed, but don't want to clutter the function's interface with this. This calls for the special `...`  ("ellipsis").
+
+
+```r
+qdiff6 = function(x, probs = c(0, 1), na.rm = TRUE, ...) {
+  the_quantiles = quantile(x = x, probs = probs, na.rm = na.rm, ...)
+  max(the_quantiles) - min(the_quantiles)
+}
+```
+
+---
+
+Now we can call our function, requesting that quantiles be computed in different ways.
+
+
+```r
+qdiff6(z, probs = c(0.25, 0.75), type = 1)
+```
+
+```
+## [1] 1.319163
+```
+
+```r
+qdiff6(z, probs = c(0.25, 0.75), type = 4)
+```
+
+```
+## [1] 1.401829
+```
+
+Marvel at the fact that we have passed `type = 1` through to `quantile()` *even though it was not a formal argument of our own function*.
+
+---
+
+### Notes on `...`
+
+In short, `...` is a catch-all, passing arbitrary arguments down to another function. You will  encounter `...` in many built-in functions: see [`c()`][rdocs-c] or [`list()`][rdocs-list].
+
+There are also downsides to `...`:
+-  In a package, it's harder to create informative documentation for your user. 
+-  The quiet, absorbent properties of `...` mean it can  silently swallow other named arguments, when the user has a typo in the name.
+-  The [ellipsis package](https://ellipsis.r-lib.org) provides tools that help package developers use `...` more safely. 
+
+
+---
+
+### Functional scope
+
+In R and in many languages, variables defined inside the function are local (private) to the function.
+
+
+```r
+a = 10
+my_function = function(a, x){
+  a = 5
+  a*x
+}
+```
+
+
+
+```r
+my_function(1, 2)
+```
+
+```
+## [1] 10
+```
+
+```r
+print(a)
+```
+
+```
+## [1] 10
+```
+
+---
+
+
+```r
+my_function(a, 2)
+```
+
+```
+## [1] 10
+```
+
+```r
+print(a)
+```
+
+```
+## [1] 10
+```
+
+
+---
+
+### Unbound variables are searched for in the enclosing environments
+
+However, R uses something known as **lexical scope** to resolve conflicting variable names, and functions define what is technically called an enclosure.&lt;sup&gt;1&lt;/sup&gt;
+
+
+```r
+a = -5
+my_function2 = function(x){
+  a*x
+}
+
+my_function2(2)
+```
+
+```
+## [1] -10
+```
+
+R looks at the enclosing environments of a function (what was being executed when it was defined) to resolve a binding. 
+
+.footnote[[1] Here, and its S3 object orientation system, R often seems rather bizarre.  It will make more sense if you consume your preferred toxicant, and read up about LISP in the 1980s. Perhaps.]
+
+---
+
+### This can lead to very frustating errors
+
+
+```r
+data = dplyr::starwars
+
+process_data = function(dta){
+  region_summary = filter(dta, !is.na(result)) %&gt;% 
+    group_by(region) %&gt;%
+    summarize(mean = mean(result))
+  # do some other stuff
+* left_join(data, region_summary) #Uhoh!  This should have been dta!
+}
+```
+
+I have lost an entire days to this.
+
+---
+
+### Current environment is preferred.
+
+
+```r
+a = -5
+my_function3 = function(x){
+  a = 1e9
+  a*x
+}
+my_function3(2)
+```
+
+```
+## [1] 2e+09
+```
+
+```r
+print(a)
+```
+
+```
+## [1] -5
+```
+
+
+---
+
+### Functions are first-class citizens in R
+
+A function is another type of object -- this means you can pass a function as an argument to a function!
+
+
+```r
+quartic_eq = function(x) 3*x^4 - 10*x^3 - 20*x^2 + 10*x - 5
+class(quartic_eq)
+```
+
+```
+## [1] "function"
+```
+
+```r
+body(quartic_eq)
+```
+
+```
+## 3 * x^4 - 10 * x^3 - 20 * x^2 + 10 * x - 5
+```
+
+```r
+formals(quartic_eq)
+```
+
+```
+## $x
+```
+
+Can also display a function's source by typing its name into the Console, or hovering over it and hitting F2.
+---
+
+
+```r
+curve(quartic_eq, from = -5, to = 5)
+```
+
+&lt;img src="l13-functions-ii_files/figure-html/unnamed-chunk-26-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+```r
+optimize(quartic_eq, interval = c(-5, 5))
+```
+
+```
+## $minimum
+## [1] 3.406671
+## 
+## $objective
+## [1] -194.343
+```
+
+
+---
+class: middle
+
+.hand[Iteration]
+
+---
+
+## Flow control: iteration
+
+It's a testament to the tidyverse that we have made it this far into the semester using purely `group_by` or vectorization&lt;sup&gt;1&lt;/sup&gt; to accomplish our iteration -- applying an function to varying subsets of "the data."  But sometimes you just gotta loop.
+
+.footnote[[1] If you don't know what that means, I have done my job 😸.]
+
+---
+
+.pull-left[
+### Ways to explicitly iterate
+
+*  `for`- iterate a **code block** over a vector
+*  `while` - iterate a **code block** until a boolean is TRUE
+]
+.pull-right[
+### Ways to implicitly iterate
+
+*  `lapply` - iterate a **function** over a vector
+*  `purrr` - iterate a **function** over a vector, but carefully
+*  `apply` - iterate a **function** over an array
+*  vectorized functions
+*  `group_by`
+*  recursion
+]
+
+
+---
+
+### `for()`
+
+A `for()` loop increments a **counter** variable along a vector. It repeatedly runs a code block, called the  **body** of the loop, with the counter set at its current value, until it runs through the vector
+
+```
+for( &lt;COUNTER&gt; in &lt;VECTOR&gt; ){
+  &lt;BODY&gt;
+}
+```
+where `&lt;BODY&gt;` contains a sequence of R expressions, as well as the keywords `break` or `continue`.
+
+---
+
+
+```r
+n = 5
+log.vec = 0
+for (i in seq_len(n)) {
+  log.vec[i] = log(i)
+}
+log.vec
+```
+
+```
+## [1] 0.0000000 0.6931472 1.0986123 1.3862944 1.6094379
+```
+
+Here `i` is the counter and the vector we are iterating over is `1:n`. The body is the code in between the braces.
+
+---
+
+### `1:n` considered harmful
+
+Note that rather than using `1:n`, which when `n = 0` equals `1 0`  we use `seq_len`, which protects us when the index isn't guaranteed to be positive:
+
+.pull-left[
+
+```r
+x = sort(runif(5))
+n_negative = sum(x&lt;0)
+for (i in 1:n_negative){
+  print(x[i])
+}
+```
+
+```
+## [1] 0.03999592
+## numeric(0)
+```
+
+```r
+cat("Exited loop.")
+```
+
+```
+## Exited loop.
+```
+]
+.pull-right[
+
+```r
+x = sort(runif(5))
+n_negative = sum(x&lt;0)
+for (i in seq_len(n_negative)){
+  print(x[i])
+}
+cat("Exited loop.")
+```
+
+```
+## Exited loop.
+```
+]
+
+Also see `seq_along`.
+
+---
+class: code70
+
+### Breaking from the loop
+
+We can **break** out of a `for()` loop early (before the counter has been iterated over the whole vector), using `break`
+
+
+```r
+n = 5
+log.vec = 0
+for (i in 1:n) {
+  if (log(i) &gt; 1) {
+    cat("I'm outta here. I don't like numbers bigger than 1\n")
+    break
+  }
+  log.vec[i] = log(i)
+}
+```
+
+```
+## I'm outta here. I don't like numbers bigger than 1
+```
+
+```r
+log.vec
+```
+
+```
+## [1] 0.0000000 0.6931472
+```
+
+`continue` skips the remainder of the body of a `for()` loop, returning to the top of the body and incrementing the counter. 
+---
+
+### Variations on standard `for()` loops
+
+Many different variations on standard `for()` are possible. Two common ones:
+
+- Nonnumeric counters: counter variable always gets iterated over a vector, but it doesn't have to be numeric
+- Nested loops: body of the `for()` loop can contain another `for()` loop (or several others)
+
+
+```r
+for (str in c("Tatoosh", "Infimum", "McGrindleCat")) {
+  cat(glue::glue("Free (OBO): {str}, one gently used cat."))
+}
+```
+
+```
+## Free (OBO): Tatoosh, one gently used cat.Free (OBO): Infimum, one gently used cat.Free (OBO): McGrindleCat, one gently used cat.
+```
+
+.footnote[[1] Just kidding, Tatoosh, we love you.]
+
+---
+
+### Nested `for()` loops -- I guess we're working with pairs
+
+
+```r
+for (i in seq_len(4)) {
+  for (j in i:4) {
+    cat(paste(j,""))
+  }
+  cat("\n")
+}
+```
+
+```
+## 1 2 3 4 
+## 2 3 4 
+## 3 4 
+## 4
+```
+
+---
+
+### `while()`
+
+A `while()` loop repeatedly runs a code block, again called the **body**, until some condition is no longer true.
+
+---
+
+### Roll your own linear regression
+
+
+```r
+X = model.matrix(~ scale(mass), data = dplyr::starwars)
+y = filter(starwars, !is.na(height) &amp; !is.na(mass)) %&gt;% pull(height)
+beta = matrix(0, nrow = ncol(X))
+beta_new = matrix(1, nrow = ncol(X))
+epsilon = 1e-4
+i = 0
+while (mean((beta - beta_new)^2) &gt; epsilon) {
+ print(glue::glue("At i = {i}, beta = ({beta[1]}, {beta[2]})"))
+ beta = beta_new
+ beta_new = beta + 0.02 * crossprod(X, y -  X%*%beta)
+ i = i + 1
+}
+```
+
+```
+## At i = 0, beta = (0, 0)
+## At i = 1, beta = (1, 1)
+## At i = 2, beta = (205.16, 5.35781787904754)
+## At i = 3, beta = (168.4112, 4.66056701839993)
+## At i = 4, beta = (175.025984, 4.77212715610355)
+## At i = 5, beta = (173.83532288, 4.75427753407097)
+## At i = 6, beta = (174.0496418816, 4.75713347359618)
+```
+
+---
+
+### Compare to `lm`
+
+
+```r
+lm(height ~ scale(mass), data = dplyr::starwars)
+```
+
+```
+## 
+## Call:
+## lm(formula = height ~ scale(mass), data = dplyr::starwars)
+## 
+## Coefficients:
+## (Intercept)  scale(mass)  
+##     174.017        4.757
+```
+
+---
+
+### `for()` versus `while()`
+
+- `for()` is better when the number of times to repeat (values to iterate over) is clear in advance
+
+- `while()` is better when you can recognize when to stop once you're there, even if you can't guess it to begin with
+
+- `while()` is more general, in that every `for()` could be replaced with a `while()` (but not vice versa)
+-  Can also use `while(TRUE)`. Repeat the body indefinitely, until something causes the flow to break (like `break`!).  Useful if you don't want to check the termination condition until you've run `&lt;BODY&gt;` at least once.
+
+All of these require bookkeeping about the output (its length, how its indices map to the input data, etc).  When possible use implicit iteration, which handles the bookkeeping for you.
+
+---
+
+## Implicit iteration
+
+`lapply`, `purrr::map_*`, and `apply` all iterate a function over slices of data.  `lapply` and `purrr::map_*` work over vectors (both atomic and list), while `apply` works over matrices / arrays.
+
+Sometimes, you might combine `lapply` and friends with `split`, which chops a vector or data frame into a list of vectors by some discrete factor.  However, you can often get the desired effect with a `group_by` + `summarize`.
+
+---
+
+### lapply
+
+.pull-left[
+
+```r
+weird_list = list(rnorm(5), stringr::fruit, TRUE, starwars)
+lapply(weird_list, length)
+```
+
+```
+## [[1]]
+## [1] 5
+## 
+## [[2]]
+## [1] 80
+## 
+## [[3]]
+## [1] 1
+## 
+## [[4]]
+## [1] 14
+```
+]
+.pull-right[
+
+```r
+lapply(weird_list, class)
+```
+
+```
+## [[1]]
+## [1] "numeric"
+## 
+## [[2]]
+## [1] "character"
+## 
+## [[3]]
+## [1] "logical"
+## 
+## [[4]]
+## [1] "tbl_df"     "tbl"        "data.frame"
+```
+]
+
+---
+
+### purrr::map_dfr
+
+This applies a function, which must return a data frame, to each element of a list, and binds the rows together.
+I reach for this often.
+
+
+```r
+purrr::map_dfr(weird_list, function(x){
+  tibble(length = length(x), class = class(x)[1])
+}, .id = 'item')
+```
+
+```
+## # A tibble: 4 x 3
+##   item  length class    
+##   &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    
+## 1 1          5 numeric  
+## 2 2         80 character
+## 3 3          1 logical  
+## 4 4         14 tbl_df
+```
+
+This uses an **anonymous** function -- defined but not named.  
+
+In purrr, you can also create anonymous functions using [`~ .x`](https://purrr.tidyverse.org/articles/other-langs.html) syntax to save a few keystrokes.  I mostly prefer to be explicit, because it makes it easier to debug.
+
+---
+
+### apply
+
+
+```r
+(A = matrix(1:18, nrow = 3))
+```
+
+```
+##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]    1    4    7   10   13   16
+## [2,]    2    5    8   11   14   17
+## [3,]    3    6    9   12   15   18
+```
+
+```r
+count_odd = function(x) sum(x %% 2 &gt; 0)
+apply(A, 1, count_odd)
+```
+
+```
+## [1] 3 3 3
+```
+
+```r
+apply(A, 2, count_odd)
+```
+
+```
+## [1] 2 1 2 1 2 1
+```
+
+
+---
+
+### Recursion
+
+Recursion and (tail) iteration, in theory and in some languages, are equivalent&lt;sup&gt;1&lt;/sup&gt;.  R is a bit fussy about recursion, however, and you can overflow the stack if you aren't careful.  It's also less performant.
+
+The Collatz function is the recursion
+$$
+f(n) = 
+`\begin{cases}
+\text{stop} &amp; n = 1 \\
+n/2 &amp; n \equiv 0 (\mod 2), \\
+3n + 1 &amp; n \equiv 1 (\mod 2).
+\end{cases}`
+$$
+and `\(a_i = f(a_{i-1})\)`.
+
+
+.footnote[[1] Though recursion makes my brain hurt more.]
+
+---
+
+### Collatz recursion
+
+
+```r
+collatz = function(n){
+  cat(n)
+  if(n == 1) return(invisible(1))
+  cat("-&gt;")
+  if(n %% 2 == 1){ # odd
+    return(collatz(3*n + 1))
+  } else{ # even
+    return(collatz(n /2))
+  }
+}
+```
+
+
+---
+
+
+```r
+collatz(10)
+```
+
+```
+## 10-&gt;5-&gt;16-&gt;8-&gt;4-&gt;2-&gt;1
+```
+
+
+```r
+collatz(101)
+```
+
+```
+## 101-&gt;304-&gt;152-&gt;76-&gt;38-&gt;19-&gt;58-&gt;29-&gt;88-&gt;44-&gt;22-&gt;11-&gt;34-&gt;17-&gt;52-&gt;26-&gt;13-&gt;40-&gt;20-&gt;10-&gt;5-&gt;16-&gt;8-&gt;4-&gt;2-&gt;1
+```
+
+
+```r
+collatz(837799)
+```
+
+```
+## 837799-&gt;2513398-&gt;1256699-&gt;3770098-&gt;1885049-&gt;5655148-&gt;2827574-&gt;1413787-&gt;4241362-&gt;2120681-&gt;6362044-&gt;3181022-&gt;1590511-&gt;4771534-&gt;2385767-&gt;7157302-&gt;3578651-&gt;10735954-&gt;5367977-&gt;16103932-&gt;8051966-&gt;4025983-&gt;12077950-&gt;6038975-&gt;18116926-&gt;9058463-&gt;27175390-&gt;13587695-&gt;40763086-&gt;20381543-&gt;61144630-&gt;30572315-&gt;91716946-&gt;45858473-&gt;137575420-&gt;68787710-&gt;34393855-&gt;103181566-&gt;51590783-&gt;154772350-&gt;77386175-&gt;232158526-&gt;116079263-&gt;348237790-&gt;174118895-&gt;522356686-&gt;261178343-&gt;783535030-&gt;391767515-&gt;1175302546-&gt;587651273-&gt;1762953820-&gt;881476910-&gt;440738455-&gt;1322215366-&gt;661107683-&gt;1983323050-&gt;991661525-&gt;2974984576-&gt;1487492288-&gt;743746144-&gt;371873072-&gt;185936536-&gt;92968268-&gt;46484134-&gt;23242067-&gt;69726202-&gt;34863101-&gt;104589304-&gt;52294652-&gt;26147326-&gt;13073663-&gt;39220990-&gt;19610495-&gt;58831486-&gt;29415743-&gt;88247230-&gt;44123615-&gt;132370846-&gt;66185423-&gt;198556270-&gt;99278135-&gt;297834406-&gt;148917203-&gt;446751610-&gt;223375805-&gt;670127416-&gt;335063708-&gt;167531854-&gt;83765927-&gt;251297782-&gt;125648891-&gt;376946674-&gt;188473337-&gt;565420012-&gt;282710006-&gt;141355003-&gt;424065010-&gt;212032505-&gt;636097516-&gt;318048758-&gt;159024379-&gt;477073138-&gt;238536569-&gt;715609708-&gt;357804854-&gt;178902427-&gt;536707282-&gt;268353641-&gt;805060924-&gt;402530462-&gt;201265231-&gt;603795694-&gt;301897847-&gt;905693542-&gt;452846771-&gt;1358540314-&gt;679270157-&gt;2037810472-&gt;1018905236-&gt;509452618-&gt;254726309-&gt;764178928-&gt;382089464-&gt;191044732-&gt;95522366-&gt;47761183-&gt;143283550-&gt;71641775-&gt;214925326-&gt;107462663-&gt;322387990-&gt;161193995-&gt;483581986-&gt;241790993-&gt;725372980-&gt;362686490-&gt;181343245-&gt;544029736-&gt;272014868-&gt;136007434-&gt;68003717-&gt;204011152-&gt;102005576-&gt;51002788-&gt;25501394-&gt;12750697-&gt;38252092-&gt;19126046-&gt;9563023-&gt;28689070-&gt;14344535-&gt;43033606-&gt;21516803-&gt;64550410-&gt;32275205-&gt;96825616-&gt;48412808-&gt;24206404-&gt;12103202-&gt;6051601-&gt;18154804-&gt;9077402-&gt;4538701-&gt;13616104-&gt;6808052-&gt;3404026-&gt;1702013-&gt;5106040-&gt;2553020-&gt;1276510-&gt;638255-&gt;1914766-&gt;957383-&gt;2872150-&gt;1436075-&gt;4308226-&gt;2154113-&gt;6462340-&gt;3231170-&gt;1615585-&gt;4846756-&gt;2423378-&gt;1211689-&gt;3635068-&gt;1817534-&gt;908767-&gt;2726302-&gt;1363151-&gt;4089454-&gt;2044727-&gt;6134182-&gt;3067091-&gt;9201274-&gt;4600637-&gt;13801912-&gt;6900956-&gt;3450478-&gt;1725239-&gt;5175718-&gt;2587859-&gt;7763578-&gt;3881789-&gt;11645368-&gt;5822684-&gt;2911342-&gt;1455671-&gt;4367014-&gt;2183507-&gt;6550522-&gt;3275261-&gt;9825784-&gt;4912892-&gt;2456446-&gt;1228223-&gt;3684670-&gt;1842335-&gt;5527006-&gt;2763503-&gt;8290510-&gt;4145255-&gt;12435766-&gt;6217883-&gt;18653650-&gt;9326825-&gt;27980476-&gt;13990238-&gt;6995119-&gt;20985358-&gt;10492679-&gt;31478038-&gt;15739019-&gt;47217058-&gt;23608529-&gt;70825588-&gt;35412794-&gt;17706397-&gt;53119192-&gt;26559596-&gt;13279798-&gt;6639899-&gt;19919698-&gt;9959849-&gt;29879548-&gt;14939774-&gt;7469887-&gt;22409662-&gt;11204831-&gt;33614494-&gt;16807247-&gt;50421742-&gt;25210871-&gt;75632614-&gt;37816307-&gt;113448922-&gt;56724461-&gt;170173384-&gt;85086692-&gt;42543346-&gt;21271673-&gt;63815020-&gt;31907510-&gt;15953755-&gt;47861266-&gt;23930633-&gt;71791900-&gt;35895950-&gt;17947975-&gt;53843926-&gt;26921963-&gt;80765890-&gt;40382945-&gt;121148836-&gt;60574418-&gt;30287209-&gt;90861628-&gt;45430814-&gt;22715407-&gt;68146222-&gt;34073111-&gt;102219334-&gt;51109667-&gt;153329002-&gt;76664501-&gt;229993504-&gt;114996752-&gt;57498376-&gt;28749188-&gt;14374594-&gt;7187297-&gt;21561892-&gt;10780946-&gt;5390473-&gt;16171420-&gt;8085710-&gt;4042855-&gt;12128566-&gt;6064283-&gt;18192850-&gt;9096425-&gt;27289276-&gt;13644638-&gt;6822319-&gt;20466958-&gt;10233479-&gt;30700438-&gt;15350219-&gt;46050658-&gt;23025329-&gt;69075988-&gt;34537994-&gt;17268997-&gt;51806992-&gt;25903496-&gt;12951748-&gt;6475874-&gt;3237937-&gt;9713812-&gt;4856906-&gt;2428453-&gt;7285360-&gt;3642680-&gt;1821340-&gt;910670-&gt;455335-&gt;1366006-&gt;683003-&gt;2049010-&gt;1024505-&gt;3073516-&gt;1536758-&gt;768379-&gt;2305138-&gt;1152569-&gt;3457708-&gt;1728854-&gt;864427-&gt;2593282-&gt;1296641-&gt;3889924-&gt;1944962-&gt;972481-&gt;2917444-&gt;1458722-&gt;729361-&gt;2188084-&gt;1094042-&gt;547021-&gt;1641064-&gt;820532-&gt;410266-&gt;205133-&gt;615400-&gt;307700-&gt;153850-&gt;76925-&gt;230776-&gt;115388-&gt;57694-&gt;28847-&gt;86542-&gt;43271-&gt;129814-&gt;64907-&gt;194722-&gt;97361-&gt;292084-&gt;146042-&gt;73021-&gt;219064-&gt;109532-&gt;54766-&gt;27383-&gt;82150-&gt;41075-&gt;123226-&gt;61613-&gt;184840-&gt;92420-&gt;46210-&gt;23105-&gt;69316-&gt;34658-&gt;17329-&gt;51988-&gt;25994-&gt;12997-&gt;38992-&gt;19496-&gt;9748-&gt;4874-&gt;2437-&gt;7312-&gt;3656-&gt;1828-&gt;914-&gt;457-&gt;1372-&gt;686-&gt;343-&gt;1030-&gt;515-&gt;1546-&gt;773-&gt;2320-&gt;1160-&gt;580-&gt;290-&gt;145-&gt;436-&gt;218-&gt;109-&gt;328-&gt;164-&gt;82-&gt;41-&gt;124-&gt;62-&gt;31-&gt;94-&gt;47-&gt;142-&gt;71-&gt;214-&gt;107-&gt;322-&gt;161-&gt;484-&gt;242-&gt;121-&gt;364-&gt;182-&gt;91-&gt;274-&gt;137-&gt;412-&gt;206-&gt;103-&gt;310-&gt;155-&gt;466-&gt;233-&gt;700-&gt;350-&gt;175-&gt;526-&gt;263-&gt;790-&gt;395-&gt;1186-&gt;593-&gt;1780-&gt;890-&gt;445-&gt;1336-&gt;668-&gt;334-&gt;167-&gt;502-&gt;251-&gt;754-&gt;377-&gt;1132-&gt;566-&gt;283-&gt;850-&gt;425-&gt;1276-&gt;638-&gt;319-&gt;958-&gt;479-&gt;1438-&gt;719-&gt;2158-&gt;1079-&gt;3238-&gt;1619-&gt;4858-&gt;2429-&gt;7288-&gt;3644-&gt;1822-&gt;911-&gt;2734-&gt;1367-&gt;4102-&gt;2051-&gt;6154-&gt;3077-&gt;9232-&gt;4616-&gt;2308-&gt;1154-&gt;577-&gt;1732-&gt;866-&gt;433-&gt;1300-&gt;650-&gt;325-&gt;976-&gt;488-&gt;244-&gt;122-&gt;61-&gt;184-&gt;92-&gt;46-&gt;23-&gt;70-&gt;35-&gt;106-&gt;53-&gt;160-&gt;80-&gt;40-&gt;20-&gt;10-&gt;5-&gt;16-&gt;8-&gt;4-&gt;2-&gt;1
+```
+
+
+---
+
+class: middle
+
+.hand[Formal unit tests]
+
+---
+
+## Use testthat for formal unit tests
+
+Until now, we've relied on informal tests of our evolving function. 
+If you are going to use a function a lot, or you keep finding bugs using informal tests, you'll save a lot of time an effort with formal unit tests.  My rules of thumb:
+*  Once I have found the second bug, it's time to write the unit tests.  It will be much quicker to fix the second bug, and it will provide me with assurance that I might actually find the third bug.
+*  No bug exists until you have the failing unit test isolating it.
+
+The [testthat][testthat-web] package provides excellent facilities for this, with a distinct emphasis on automated unit testing of entire packages. However, it works even with our one measly function.
+
+---
+
+We will construct a test with `test_that()` and, within it, we put one or more *expectations* that check actual against expected results. You can simply your informal, interactive tests into formal unit tests. Here are some examples of tests and indicative expectations.
+
+
+```r
+library(testthat)
+test_that('invalid args are detected', {
+  expect_error(qdiff6("eggplants are purple"))
+  expect_error(qdiff6(iris))
+})
+```
+
+```
+## Test passed 😸
+```
+
+```r
+test_that('NA handling works', {
+  expect_error(qdiff6(c(1:5, NA), na.rm = FALSE))
+  expect_equal(qdiff6(c(1:5, NA)), 4)
+})
+```
+
+```
+## Test passed 🌈
+```
+
+No news is good news!
+
+---
+
+ Let's see what test failure would look like. Let's revert to a version of our function that does no `NA` handling, then test for proper `NA` handling. We can watch it fail.
+
+
+```r
+qdiff_no_NA = function(x, probs = c(0, 1)) {
+  the_quantiles = quantile(x = x, probs = probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+test_that('NA handling works', {
+  expect_that(qdiff_no_NA(c(1:5, NA)), equals(4))
+})
+```
+
+```
+## ── Error (&lt;text&gt;:6:3): NA handling works ───────────────────────────────────────
+## Error: missing values and NaN's not allowed if 'na.rm' is FALSE
+## Backtrace:
+##  1. testthat::expect_that(qdiff_no_NA(c(1:5, NA)), equals(4))
+##  6. global::qdiff_no_NA(c(1:5, NA))
+##  8. stats:::quantile.default(x = x, probs = probs)
+```
+
+---
+
+## Resources
+
+Hadley Wickham's book [Advanced R][adv-r] [-@wickham2015a]:
+
+* Section on [function arguments][adv-r-fxn-args]
+* Section on [return values][adv-r-return-values]
+* Tidyverse principles guide provides further guidance on the design of functions that take `...` in [Data, dots, details](https://principles.tidyverse.org/dots-position.html).
+
+---
+
+# Acknowledgments
+
+Adapted from Jenny Bryan's STAT545:
+
+https://stat545.com/functions-part2.html 
+https://stat545.com/functions-part3.html
+
+And from Ryan Tibshirani's Statistics 36-350:
+https://www.stat.cmu.edu/~ryantibs/statcomp/lectures/iteration.html
+
+
+[cran]: https://cloud.r-project.org
+[cran-faq]: https://cran.r-project.org/faqs.html
+[cran-R-admin]: http://cran.r-project.org/doc/manuals/R-admin.html
+[cran-add-ons]: https://cran.r-project.org/doc/manuals/R-admin.html#Add_002don-packages
+[r-proj]: https://www.r-project.org
+[stat-545]: https://stat545.com
+[software-carpentry]: https://software-carpentry.org
+[cran-r-extensions]: https://cran.r-project.org/doc/manuals/r-release/R-exts.html
+
+
+&lt;!--RStudio Links--&gt;
+[rstudio-preview]: https://www.rstudio.com/products/rstudio/download/preview/
+[rstudio-official]: https://www.rstudio.com/products/rstudio/#Desktop
+[rstudio-workbench]: https://www.rstudio.com/wp-content/uploads/2014/04/rstudio-workbench.png
+[rstudio-support]: https://support.rstudio.com/hc/en-us
+[rstudio-R-help]: https://support.rstudio.com/hc/en-us/articles/200552336-Getting-Help-with-R
+[rstudio-customizing]: https://support.rstudio.com/hc/en-us/articles/200549016-Customizing-RStudio
+[rstudio-key-shortcuts]: https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts
+[rstudio-command-history]: https://support.rstudio.com/hc/en-us/articles/200526217-Command-History
+[rstudio-using-projects]: https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects
+[rstudio-code-snippets]: https://support.rstudio.com/hc/en-us/articles/204463668-Code-Snippets
+[rstudio-dplyr-cheatsheet-download]: https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf
+[rstudio-regex-cheatsheet]: https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf
+[rstudio-devtools]: https://www.rstudio.com/products/rpackages/devtools/
+
+&lt;!--HappyGitWithR Links--&gt;
+[happy-git]: https://happygitwithr.com
+[hg-install-git]: https://happygitwithr.com/install-git.html
+[hg-git-client]: https://happygitwithr.com/git-client.html
+[hg-github-account]: https://happygitwithr.com/github-acct.html
+[hg-install-r-rstudio]: https://happygitwithr.com/install-r-rstudio.html
+[hg-connect-intro]: https://happygitwithr.com/connect-intro.html
+[hg-browsability]: https://happygitwithr.com/workflows-browsability.html
+[hg-shell]: https://happygitwithr.com/shell.html
+
+&lt;!--Package Links--&gt;
+[rmarkdown]: https://rmarkdown.rstudio.com
+[knitr-faq]: https://yihui.name/knitr/faq/
+
+[tidyverse-main-page]: https://www.tidyverse.org
+[tidyverse-web]: https://tidyverse.tidyverse.org
+[tidyverse-github]: https://github.com/hadley/tidyverse
+
+[dplyr-web]: https://dplyr.tidyverse.org
+[dplyr-cran]: https://CRAN.R-project.org/package=dplyr
+[dplyr-github]: https://github.com/hadley/dplyr
+[dplyr-vignette-intro]: https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html
+[dplyr-vignette-window-fxns]: https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html
+[dplyr-vignette-two-table]: https://dplyr.tidyverse.org/articles/two-table.html
+
+[lubridate-web]: https://lubridate.tidyverse.org
+[lubridate-cran]: https://CRAN.R-project.org/package=lubridate
+[lubridate-github]: https://github.com/tidyverse/lubridate
+[lubridate-vignette]: https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html
+
+[tidyr-web]: https://tidyr.tidyverse.org
+[tidyr-cran]: https://CRAN.R-project.org/package=tidyr 
+
+[readr-web]: https://readr.tidyverse.org
+[readr-vignette-intro]: https://cran.r-project.org/web/packages/readr/vignettes/readr.html
+
+[stringr-web]: https://stringr.tidyverse.org
+[stringr-cran]: https://CRAN.R-project.org/package=stringr
+
+[ggplot2-web]: https://ggplot2.tidyverse.org
+[ggplot2-tutorial]: https://github.com/jennybc/ggplot2-tutorial
+[ggplot2-reference]: https://docs.ggplot2.org/current/
+[ggplot2-cran]: https://CRAN.R-project.org/package=ggplot2
+[ggplot2-github]: https://github.com/tidyverse/ggplot2
+[ggplot2-theme-args]: https://ggplot2.tidyverse.org/reference/ggtheme.html#arguments
+
+[gapminder-web]: https://www.gapminder.org
+[gapminder-cran]: https://CRAN.R-project.org/package=gapminder
+
+[assertthat-cran]: https://CRAN.R-project.org/package=assertthat
+[assertthat-github]: https://github.com/hadley/assertthat
+
+[ensurer-cran]: https://CRAN.R-project.org/package=ensurer
+[ensurer-github]: https://github.com/smbache/ensurer
+
+[assertr-cran]: https://CRAN.R-project.org/package=assertr
+[assertr-github]: https://github.com/ropensci/assertr
+
+[assertive-cran]: https://CRAN.R-project.org/package=assertive
+[assertive-bitbucket]: https://bitbucket.org/richierocks/assertive/src/master/
+
+[testthat-cran]: https://CRAN.R-project.org/package=testthat
+[testthat-github]: https://github.com/r-lib/testthat
+[testthat-web]: https://testthat.r-lib.org
+
+[viridis-cran]: https://CRAN.R-project.org/package=viridis
+[viridis-github]: https://github.com/sjmgarnier/viridis
+[viridis-vignette]: https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+
+[colorspace-cran]: https://CRAN.R-project.org/package=colorspace
+[colorspace-vignette]: https://cran.r-project.org/web/packages/colorspace/vignettes/hcl-colors.pdf
+
+[cowplot-cran]: https://CRAN.R-project.org/package=cowplot
+[cowplot-github]: https://github.com/wilkelab/cowplot
+[cowplot-vignette]: https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html
+
+[devtools-cran]: https://CRAN.R-project.org/package=devtools
+[devtools-github]: https://github.com/r-lib/devtools
+[devtools-web]: https://devtools.r-lib.org
+[devtools-cheatsheet]: https://www.rstudio.com/wp-content/uploads/2015/03/devtools-cheatsheet.pdf
+[devtools-cheatsheet-old]: https://rawgit.com/rstudio/cheatsheets/master/package-development.pdf
+[devtools-1-6]: https://blog.rstudio.com/2014/10/02/devtools-1-6/
+[devtools-1-8]: https://blog.rstudio.com/2015/05/11/devtools-1-9-0/
+[devtools-1-9-1]: https://blog.rstudio.com/2015/09/13/devtools-1-9-1/
+
+[googlesheets-cran]: https://CRAN.R-project.org/package=googlesheets
+[googlesheets-github]: https://github.com/jennybc/googlesheets
+
+[tidycensus-cran]: https://CRAN.R-project.org/package=tidycensus
+[tidycensus-github]: https://github.com/walkerke/tidycensus
+[tidycensus-web]: https://walkerke.github.io/tidycensus/index.html
+
+[fs-web]: https://fs.r-lib.org/index.html
+[fs-cran]: https://CRAN.R-project.org/package=fs
+[fs-github]: https://github.com/r-lib/fs
+
+[plumber-web]: https://www.rplumber.io
+[plumber-docs]: https://www.rplumber.io/docs/
+[plumber-github]: https://github.com/trestletech/plumber
+[plumber-cran]: https://CRAN.R-project.org/package=plumber
+
+[plyr-web]: http://plyr.had.co.nz
+
+[magrittr-web]: https://magrittr.tidyverse.org
+[forcats-web]: https://forcats.tidyverse.org
+[glue-web]: https://glue.tidyverse.org
+[stringi-cran]: https://CRAN.R-project.org/package=stringi
+[rex-github]: https://github.com/kevinushey/rex
+[rcolorbrewer-cran]: https://CRAN.R-project.org/package=RColorBrewer
+[dichromat-cran]: https://CRAN.R-project.org/package=dichromat
+
+[rdryad-web]: https://docs.ropensci.org/rdryad/
+[rdryad-cran]: https://CRAN.R-project.org/package=rdryad
+[rdryad-github]: https://github.com/ropensci/rdryad
+
+[roxygen2-cran]: https://CRAN.R-project.org/package=roxygen2
+[roxygen2-vignette]: https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html
+
+[shinythemes-web]: https://rstudio.github.io/shinythemes/
+[shinythemes-cran]: https://CRAN.R-project.org/package=shinythemes
+
+[shinyjs-web]: https://deanattali.com/shinyjs/
+[shinyjs-cran]: https://CRAN.R-project.org/package=shinyjs
+[shinyjs-github]: https://github.com/daattali/shinyjs
+
+[leaflet-web]: https://rstudio.github.io/leaflet/
+[leaflet-cran]: https://CRAN.R-project.org/package=leaflet
+[leaflet-github]: https://github.com/rstudio/leaflet
+
+[ggvis-web]: https://ggvis.rstudio.com
+[ggvis-cran]: https://CRAN.R-project.org/package=ggvis
+ 
+[usethis-web]: https://usethis.r-lib.org
+[usethis-cran]: https://CRAN.R-project.org/package=usethis
+[usethis-github]: https://github.com/r-lib/usethis
+
+[pkgdown-web]: https://pkgdown.r-lib.org
+[gh-github]: https://github.com/r-lib/gh
+
+[httr-web]: https://httr.r-lib.org
+[httr-cran]: https://CRAN.R-project.org/package=httr
+[httr-github]: https://github.com/r-lib/httr
+
+[gistr-web]: https://docs.ropensci.org/gistr
+[gistr-cran]: https://CRAN.R-project.org/package=gistr
+[gistr-github]: https://github.com/ropensci/gistr
+
+[rvest-web]: https://rvest.tidyverse.org
+[rvest-cran]: https://CRAN.R-project.org/package=rvest
+[rvest-github]: https://github.com/tidyverse/rvest
+
+[xml2-web]: https://xml2.r-lib.org
+[xml2-cran]: https://CRAN.R-project.org/package=xml2
+[xml2-github]: https://github.com/r-lib/xml2
+
+[jsonlite-paper]: https://arxiv.org/abs/1403.2805
+[jsonlite-cran]: https://CRAN.R-project.org/package=jsonlite
+[jsonlite-github]: https://github.com/jeroen/jsonlite
+
+[readxl-web]: https://readxl.tidyverse.org
+[readxl-github]: https://github.com/tidyverse/readxl
+[readxl-cran]: https://CRAN.R-project.org/package=readxl
+
+[janitor-web]: http://sfirke.github.io/janitor/
+[janitor-cran]: https://CRAN.R-project.org/package=janitor
+[janitor-github]: https://github.com/sfirke/janitor
+
+[purrr-web]: https://purrr.tidyverse.org
+[curl-cran]: https://CRAN.R-project.org/package=curl
+
+&lt;!--Shiny links--&gt;
+[shinydashboard-web]: https://rstudio.github.io/shinydashboard/
+[shinydashboard-cran]: https://CRAN.R-project.org/package=shinydashboard
+[shinydashboard-github]: https://github.com/rstudio/shinydashboard
+
+
+[shiny-official-web]: https://shiny.rstudio.com
+[shiny-official-tutorial]: https://shiny.rstudio.com/tutorial/
+[shiny-cheatsheet]: https://shiny.rstudio.com/images/shiny-cheatsheet.pdf
+[shiny-articles]: https://shiny.rstudio.com/articles/
+[shiny-bookdown]: https://bookdown.org/yihui/rmarkdown/shiny-documents.html
+[shiny-google-groups]: https://groups.google.com/forum/#!forum/shiny-discuss
+[shiny-stack-overflow]: https://stackoverflow.com/questions/tagged/shiny
+[shinyapps-web]: https://www.shinyapps.io
+[shiny-server-setup]: https://deanattali.com/2015/05/09/setup-rstudio-shiny-server-digital-ocean/
+[shiny-reactivity]: https://shiny.rstudio.com/articles/understanding-reactivity.html
+[shiny-debugging]: https://shiny.rstudio.com/articles/debugging.html
+[shiny-server]: https://www.rstudio.com/products/shiny/shiny-server/
+
+&lt;!--Publications--&gt; 
+[adv-r]: http://adv-r.had.co.nz
+[adv-r-fxns]: http://adv-r.had.co.nz/Functions.html
+[adv-r-dsl]: http://adv-r.had.co.nz/dsl.html
+[adv-r-defensive-programming]: http://adv-r.had.co.nz/Exceptions-Debugging.html#defensive-programming
+[adv-r-fxn-args]: http://adv-r.had.co.nz/Functions.html#function-arguments
+[adv-r-return-values]: http://adv-r.had.co.nz/Functions.html#return-values
+[adv-r-closures]: http://adv-r.had.co.nz/Functional-programming.html#closures
+
+[r4ds]: https://r4ds.had.co.nz
+[r4ds-transform]: https://r4ds.had.co.nz/transform.html
+[r4ds-strings]: https://r4ds.had.co.nz/strings.html
+[r4ds-readr-strings]: https://r4ds.had.co.nz/data-import.html#readr-strings
+[r4ds-dates-times]: https://r4ds.had.co.nz/dates-and-times.html
+[r4ds-data-import]: http://r4ds.had.co.nz/data-import.html
+[r4ds-relational-data]: https://r4ds.had.co.nz/relational-data.html
+[r4ds-pepper-shaker]: https://r4ds.had.co.nz/vectors.html#lists-of-condiments
+
+[r-pkgs2]: https://r-pkgs.org/index.html
+[r-pkgs2-whole-game]: https://r-pkgs.org/whole-game.html
+[r-pkgs2-description]: https://r-pkgs.org/description.html
+[r-pkgs2-man]: https://r-pkgs.org/man.htm
+[r-pkgs2-tests]: https://r-pkgs.org/tests.html
+[r-pkgs2-namespace]: https://r-pkgs.org/namespace.html
+[r-pkgs2-vignettes]: https://r-pkgs.org/vignettes.html
+[r-pkgs2-release]: https://r-pkgs.org/release.html
+[r-pkgs2-r-code]: https://r-pkgs.org/r.html#r
+
+[r-graphics-cookbook]: http://shop.oreilly.com/product/0636920023135.do
+
+[cookbook-for-r]: http://www.cookbook-r.com 
+[cookbook-for-r-graphs]: http://www.cookbook-r.com/Graphs/
+[cookbook-for-r-multigraphs]: http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+
+[elegant-graphics-springer]: https://www.springer.com/gp/book/9780387981413
+
+[testthat-article]: https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf
+[worry-about-color]: https://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;uact=8&amp;ved=2ahUKEwi0xYqJ8JbjAhWNvp4KHViYDxsQFjABegQIABAC&amp;url=https%3A%2F%2Fwww.researchgate.net%2Fprofile%2FAhmed_Elhattab2%2Fpost%2FPlease_suggest_some_good_3D_plot_tool_Software_for_surface_plot%2Fattachment%2F5c05ba35cfe4a7645506948e%2FAS%253A699894335557644%25401543879221725%2Fdownload%2FWhy%2BShould%2BEngineers%2Band%2BScientists%2BBe%2BWorried%2BAbout%2BColor_.pdf&amp;usg=AOvVaw1qwjjGMd7h_z6TLUjzu7Nb
+[escaping-rgbland-pdf]: https://eeecon.uibk.ac.at/~zeileis/papers/Zeileis+Hornik+Murrell-2009.pdf
+[escaping-rgbland-doi]: https://doi.org/10.1016/j.csda.2008.11.033
+
+
+&lt;!--R Documentation--&gt;
+[rdocs-extremes]: https://rdrr.io/r/base/Extremes.html
+[rdocs-range]: https://rdrr.io/r/base/range.html
+[rdocs-quantile]: https://rdrr.io/r/stats/quantile.html
+[rdocs-c]: https://rdrr.io/r/base/c.html
+[rdocs-list]: https://rdrr.io/r/base/list.html
+[rdocs-lm]: https://rdrr.io/r/stats/lm.html
+[rdocs-coef]: https://rdrr.io/r/stats/coef.html
+[rdocs-devices]: https://rdrr.io/r/grDevices/Devices.html
+[rdocs-ggsave]: https://rdrr.io/cran/ggplot2/man/ggsave.html
+[rdocs-dev]: https://rdrr.io/r/grDevices/dev.html
+
+
+&lt;!--Wikipedia Links--&gt;
+[wiki-snake-case]: https://en.wikipedia.org/wiki/Snake_case
+[wiki-hello-world]: https://en.wikipedia.org/wiki/%22Hello,_world!%22_program
+[wiki-janus]: https://en.wikipedia.org/wiki/Janus
+[wiki-nesting-dolls]: https://en.wikipedia.org/wiki/Matryoshka_doll
+[wiki-pure-fxns]: https://en.wikipedia.org/wiki/Pure_function
+[wiki-camel-case]: https://en.wikipedia.org/wiki/Camel_case
+[wiki-mojibake]: https://en.wikipedia.org/wiki/Mojibake
+[wiki-row-col-major-order]: https://en.wikipedia.org/wiki/Row-_and_column-major_order
+[wiki-boxplot]: https://en.wikipedia.org/wiki/Box_plot
+[wiki-brewer]: https://en.wikipedia.org/wiki/Cynthia_Brewer
+[wiki-vector-graphics]: https://en.wikipedia.org/wiki/Vector_graphics
+[wiki-raster-graphics]: https://en.wikipedia.org/wiki/Raster_graphics
+[wiki-dry]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+[wiki-web-scraping]: https://en.wikipedia.org/wiki/Web_scraping
+[wiki-xpath]: https://en.wikipedia.org/wiki/XPath
+[wiki-css-selector]: https://en.wikipedia.org/wiki/Cascading_Style_Sheets#Selector
+
+
+&lt;!--Misc. Links--&gt;
+[split-apply-combine]: https://www.jstatsoft.org/article/view/v040i01
+[useR-2014-dropbox]: https://www.dropbox.com/sh/i8qnluwmuieicxc/AAAgt9tIKoIm7WZKIyK25lh6a
+[gh-pages]: https://pages.github.com
+[html-preview]: http://htmlpreview.github.io
+[tj-mahr-slides]: https://github.com/tjmahr/MadR_Pipelines
+[dataschool-dplyr]: https://www.dataschool.io/dplyr-tutorial-for-faster-data-manipulation-in-r/
+[xckd-randall-munroe]: https://fivethirtyeight.com/features/xkcd-randall-munroe-qanda-what-if/
+[athena-zeus-forehead]: https://tinyurl.com/athenaforehead
+[tidydata-lotr]: https://github.com/jennybc/lotr-tidy#readme
+[minimal-make]: https://kbroman.org/minimal_make/
+[write-data-tweet]: https://twitter.com/vsbuffalo/statuses/358699162679787521
+[belt-and-suspenders]: https://www.wisegeek.com/what-does-it-mean-to-wear-belt-and-suspenders.htm
+[research-workflow]: https://www.carlboettiger.info/2012/05/06/research-workflow.html
+[yak-shaving]: https://seths.blog/2005/03/dont_shave_that/
+[yaml-with-csv]: https://blog.datacite.org/using-yaml-frontmatter-with-csv/
+[reproducible-examples]: https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example
+[blog-strings-as-factors]: https://notstatschat.tumblr.com/post/124987394001/stringsasfactors-sigh
+[bio-strings-as-factors]: https://simplystatistics.org/2015/07/24/stringsasfactors-an-unauthorized-biography
+[stackexchange-outage]: https://stackstatus.net/post/147710624694/outage-postmortem-july-20-2016
+[email-regex]: https://emailregex.com
+[fix-atom-bug]: https://davidvgalbraith.com/how-i-fixed-atom/
+[icu-regex]: http://userguide.icu-project.org/strings/regexp
+[regex101]: https://regex101.com
+[regexr]: https://regexr.com
+[utf8-debug]: http://www.i18nqa.com/debug/utf8-debug.html
+[unicode-no-excuses]: https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/
+[programmers-encoding]: http://kunststube.net/encoding/
+[encoding-probs-ruby]: https://www.justinweiss.com/articles/3-steps-to-fix-encoding-problems-in-ruby/
+[theyre-to-theyre]: https://www.justinweiss.com/articles/how-to-get-from-theyre-to-theyre/
+[lubridate-ex1]: https://www.r-exercises.com/2016/08/15/dates-and-times-simple-and-easy-with-lubridate-part-1/
+[lubridate-ex2]: https://www.r-exercises.com/2016/08/29/dates-and-times-simple-and-easy-with-lubridate-exercises-part-2/
+[lubridate-ex3]: https://www.r-exercises.com/2016/10/04/dates-and-times-simple-and-easy-with-lubridate-exercises-part-3/
+[google-sql-join]: https://www.google.com/search?q=sql+join&amp;tbm=isch
+[min-viable-product]: https://blog.fastmonkeys.com/?utm_content=bufferc2d6e&amp;utm_medium=social&amp;utm_source=twitter.com&amp;utm_campaign=buffer
+[telescope-rule]: http://c2.com/cgi/wiki?TelescopeRule
+[unix-philosophy]: http://www.faqs.org/docs/artu/ch01s06.html
+[twitter-wrathematics]: https://twitter.com/wrathematics
+[robbins-effective-graphs]: https://www.amazon.com/Creating-Effective-Graphs-Naomi-Robbins/dp/0985911123
+[r-graph-catalog-github]: https://github.com/jennybc/r-graph-catalog
+[google-pie-charts]: https://www.google.com/search?q=pie+charts+suck
+[why-pie-charts-suck]: https://www.richardhollins.com/blog/why-pie-charts-suck/
+[worst-figure]: https://robjhyndman.com/hyndsight/worst-figure/
+[naomi-robbins]: http://www.nbr-graphs.com
+[hadley-github-index]: https://hadley.github.io
+[scipy-2015-matplotlib-colors]: https://www.youtube.com/watch?v=xAoljeRJ3lU&amp;feature=youtu.be
+[winston-chang-github]: https://github.com/wch
+[favorite-rgb-color]: https://manyworldstheory.com/2013/01/15/my-favorite-rgb-color/
+[stowers-color-chart]: https://web.archive.org/web/20121022044903/http://research.stowers-institute.org/efg/R/Color/Chart/
+[stowers-using-color-in-R]: https://www.uv.es/conesa/CursoR/material/UsingColorInR.pdf
+[zombie-project]: https://imgur.com/ewmBeQG
+[tweet-project-resurfacing]: https://twitter.com/JohnDCook/status/522377493417033728
+[rgraphics-looks-tips]: https://blog.revolutionanalytics.com/2009/01/10-tips-for-making-your-r-graphics-look-their-best.html
+[rgraphics-svg-tips]: https://blog.revolutionanalytics.com/2011/07/r-svg-graphics.html
+[zev-ross-cheatsheet]: http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
+[parker-writing-r-packages]: https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/
+[broman-r-packages]: https://kbroman.org/pkg_primer/
+[broman-tools4rr]: https://kbroman.org/Tools4RR/
+[leeks-r-packages]: https://github.com/jtleek/rpackages
+[build-maintain-r-packages]: https://thepoliticalmethodologist.com/2014/08/14/building-and-maintaining-r-packages-with-devtools-and-roxygen2/
+[murdoch-package-vignette-slides]: https://web.archive.org/web/20160824010213/http://www.stats.uwo.ca/faculty/murdoch/ism2013/5Vignettes.pdf
+[how-r-searches]: http://blog.obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff/
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "3:2"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

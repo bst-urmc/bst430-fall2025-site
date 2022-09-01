@@ -1,0 +1,124 @@
+---
+title: "Lab 06 - Covid time series - one"
+output: 
+  tufte::tufte_html:
+    css: ../lab.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE)
+```
+
+
+# Learning goals
+
+-  Exploratory data analysis
+-  Manipulating matrices
+
+# Getting started
+
+Go to the course GitHub organization and locate your repo, clone it in RStudio and open the R Markdown document.
+Knit the document to make sure it compiles without errors.
+
+## Warm up
+
+Before we introduce the data, let's warm up with some simple exercises.
+Update the YAML of your R Markdown file with your information, knit, commit, and push your changes.
+Make sure to commit with a meaningful commit message.
+Then, go to your repo on GitHub and confirm that your changes are visible in your Rmd **and** md files.
+If anything is missing, commit and push again.
+
+## Packages
+
+We'll use the **tidyverse**, as well as (likely) **lubridate**, **pheatmap**, and possibly **reshape2**.
+These packages are already installed for you.
+You can load them by running the following in your Console:
+
+```{r eval = TRUE, message = FALSE}
+library(reshape2)
+library(tidyverse)
+library(lubridate)
+```
+
+## Data
+
+These data are from the New York Times covid tracking page.  Read more [here](https://github.com/nytimes/covid-19-data).  They are from manual curation of state, county and national announcements and records.  Here we examine the incident cases and seven-day trailing rolling averages.
+
+```{r, include = FALSE}
+# replace with link to data on web
+cases = read_csv('data/us-states.csv')
+```
+
+```{r, eval = FALSE}
+# replace with link to data on web
+cases = readr::read_csv("https://urmc-bst.github.io/bst430-fall2021-site/hw_lab_instruction/lab06-covid-times/data/us-states.csv")
+```
+
+
+# Exercises
+
+1.  Consider Alabama, Arizona, California, Florida, New York and Texas from **2020-03-01** onward.  Make a line plot akin to the one below of daily cases and deaths in each of these states.  Facet by state.  (Your plot does not need to be identical, merely needs to convey the same information.)
+
+```{r, echo = FALSE}
+sub_counties = filter(cases, state %in% c("Alabama", "Arizona", 'California', 'Florida', 'New York', 'Texas'), date >= as.Date('2020-03-01'))
+sub_county_long = pivot_longer(sub_counties, c(cases, deaths), names_to = 'stat')
+plt = ggplot(sub_county_long, aes(x = date, y = value, color = stat)) + 
+  geom_line(alpha = .5, position = 'stack') + facet_wrap(~state+stat, scales = 'free_y') + theme_minimal() +
+  scale_color_manual(values = c('purple', 'brown')) + theme(axis.text.x = element_text(angle = 45))
+plt
+```
+
+2.  Repeat your previous plot, zooming in on the previous 2 months.  What are some high-frequency periodic patterns you observe in the reporting of cases?
+
+
+3.   Make a plot that helps determine if the phase of the pattern conserved across states, and if it conserved across time (say, restricting attention to just the last 3 months).
+
+```{marginfigure}
+Quite a bit of editorial decision-making is required to derive robust rolling averages, relating to days on which cases are reassigned across geographical boundaries, changes in case definitions when assays improved.  See the NYT [anomalies](https://github.com/nytimes/covid-19-data/tree/master/rolling-averages#anomalies) page for some discussion.
+```
+
+4.  Ok, so now hopefully it's clear why using the smoothed data is important.  Using the `cases_avg_per_100k` and `deaths_avg_per_100k`, repeat your plot from 1.
+
+5.  Describe what dplyr operations you'd need to calculate the following.  No need to actually write the code (unless you think that would be more concise than explaining in words).
+*  Upon what day did the greatest total number of cases per capita occur (summing across the 6 states)
+*  Upon what day was the inter-state variance the greatest? (again, across the 6 states).
+*  Upon what days did California have more cases per capita than Texas, but less than Florida?
+
+## Wide, matrix format
+
+6.  Now, convert the cases data into a wide format and cast to a matrix.  You can either do this with `pivot_wider`, then `select` only the states, not the date, then `as.matrix` and lastly set the `rownames` to the date corresponding to this row, or in one operation using `reshape2::acast`.  Verify that your matrix is `numeric`.
+
+7.  Calculate the quantities discussed in 5, this time actually making the calculations.  You should use the functions `base::rowSums`, a function `row_var`, which I have defined below for you,
+```{r}
+row_var = function(matrix, na.rm = FALSE){
+  apply(matrix, 1, var, na.rm = na.rm)
+}
+```
+and the function `which.max`.  When was it easier to work with the long data in dplyr?  What was it easier to work with the wide matrix data?
+
+
+8.  Calculate the inter-state correlation and make a plot of it using `pheatmap::pheatmap`.  Discuss.  Also, try experimenting with making a heatmap of the cases per capita matrix -- could this could be used to define waves of the pandemic?
+```{marginfigure}
+I contend it's pronounced "feet"-map.
+```
+
+`r emo::ji("broom")` 🧶 ✅ ⬆️ Lint, Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
+
+# Wrapping up
+
+Go back through your write up to make sure you're following coding style guidelines we discussed in class.
+Make any edits as needed.
+
+Also, make sure all of your R chunks are properly labelled, and your figures are reasonably sized.
+
+Once a team leader for the week pushes their final changes, others should *pull* the changes and knit the R Markdown document to confirm that they can reproduce the report.
+
+# Rubric 
+
+31 points
+
+*  16 points correct and adequately explained answers (8 x 2 pts)
+*  10 points 0-2 lint, -.5 for every lint past 3
+*  5 points commit

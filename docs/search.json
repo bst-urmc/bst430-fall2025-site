@@ -1,0 +1,21 @@
+{
+  "articles": [
+    {
+      "path": "about.html",
+      "title": "Notes on github classrooms and rstudio cloud",
+      "description": "Some updates about interfacing between github classroom",
+      "author": [],
+      "contents": "\nRstudio cloud\nStudents will need to link their rstudio cloud account to github and enable private repos. RSC is good about prompting for when attempting to create a project from a private repo.\nLess obviously, you will need to enable 3rd-party API access from the GH classroom organization. Note that I don’t entirely understand the security implications, rstudio probably should find a way to invite access via the github API rather than requiring carte blanche access.\nRemind students to use the class workspace on RSC, not their default workspaces (or they’ll run out of compute..)\nIt’s amazing how much compute your class will burn. The calculated usage seemed to be about 2x what students self-reported that their homework took. I only had 9 students, and don’t know if it would be tenable to use RSC in a larger classroom.\nGithub classrooms\nEven if you use the github classroom web api, you’ll want to install Mine Cetinkaya-Rundel and colleagues’ excellent ghclass package. I used it to\nSet up team assignments\nPush edits to existing assignments\nClone all student repos for grading, branching, and other housekeeping\nUnwatch student repos, so you aren’t buried in github spam whenever your students make commits\nBranch against the initial commit (useful for grading via pull requests)\nAt some point, I will post excerpts from the script I used to manage assignments.\nGrading with github classrooms\nYou can use pull requests, but you’ll need to make sure you have a branch created against the initial commit. (See previous bullet). Although you can do this post-hoc, life will be easier if you do it ahead of time. I could not figure out a good way to collaborate with TAs in the grading without sending the students (pre-mature and possibly incorrect) feedback. Basically, a way to mute a pull request before it’s submitted would be useful.\n\n\n\n",
+      "last_modified": "2021-11-15T09:54:19-05:00"
+    },
+    {
+      "path": "index.html",
+      "title": "BST430 - Introduction to Statistical Computing",
+      "description": "University of Rochester, Fall 2021",
+      "author": [],
+      "contents": "\nAdministrivia\nMW 11:00-12:40, SRB 1402 Instructor: Andrew McDavid Website: https://urmc-bst.github.io/bst430-fall2021-site/ Syllabus\nContent\nIntroduction\nSurvey\n\nMeet the toolkit\nInvites to rstudio cloud and github class room are on blackboard\nReq readings: r4ds 3.1-3.5, 4. Optional: https://happygitwithr.com/ \n\nggplot(i)\nCandyWeight for real.\nLab 1 instructions and repo (accept GH classroom invite). Due 5pm Sept 3.\n\ndplyr(i)\nContinue working on lab 1\n\nData types in R. Finish dplyr(i) lecture.\nHW 1 assigned. instructions and repo (accept GH classroom invite). Due 5pm EDT, Sept 13.\n\nReshaping and combining data frames. Finish data types lecture.\nLab 2. You will need to accept an invitation to join the URMC-BST organization to get access to your repositories to complete these. Most labs will be completed in groups going forward – if you cannot attend class in person for whatever reason, let me know and I’ll set up zoom so you can participate synchronously and remotely.\n\nFinish L5a.\nLab 3. To be completed in same group as lab 2.\n\ndplyr(ii), styleguide\nLab 4. New groups!\n\nFactors and dates\nHW 2 assigned.\n\nEffective data visualization video and slides, rstudio.cloud project and quiz.\nContinue working on lab 4.\n\nData from files\nLab 5 assigned\nAndrew’s office hours will be at 4:30 Thursday this week.\n\nWork on lab 5.\nText processing\nDiscuss lab 5. HW 3 assigned.\nReading: r4ds chapter 14\n\nContinue L10.\nMatrices, indexing, linear algebra\nLab 6 assigned.\n\nContinue with matrices / linear algebra and Lab 6.\nFunctions i, continue to work on lab6.\nFunctions ii and iteration. HW04 (Due 5PM Nov 5)\nKnitr tricks and debugging. Lab 07 due 5PM Nov 12. Lab 07 notes.\nLinear models\nMultivariate linear models\nPrediction and logistic regression\nHW5 due 24 Nov. \n\n",
+      "last_modified": "2021-11-15T09:54:20-05:00"
+    }
+  ],
+  "collections": []
+}

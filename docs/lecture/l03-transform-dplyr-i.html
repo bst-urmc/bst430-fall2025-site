@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>BST430 Lecture 3</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrew McDavid" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/lexis.css" type="text/css" />
+    <link rel="stylesheet" href="css/lexis-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: ur-title, center, middle, title-slide
+
+# BST430 Lecture 3
+## Data transformation with dplyr
+### Andrew McDavid
+### U of Rochester
+### 2021-08-31 (updated: 2021-09-01)
+
+---
+
+
+
+
+
+
+
+## Announcements
+
+- Reminder: lab 1 due Friday 5pm.
+- Jonathan and Sam will have their office hour tomorrow 12:15-1:15.
+- Andrew will have an office hour Friday 10am-11am, via zoom.  (Link on blackboard).
+
+---
+
+# Agenda
+
+- The pipe
+- Manipulating data frames.
+- Calculating summary statistics.
+- Using the basic functions of dplyr
+
+---
+class: center, middle
+
+# Pipes
+
+---
+
+## Where does the name come from?
+
+We have already see the `%&gt;%` operator a bit.  The pipe operator is implemented in the package **magrittr**.&lt;sup&gt;1&lt;/sup&gt;
+
+.pull-left[
+![Magritte's representation of a pipe (that's not a pipe!)](l03/img/magritte.jpg)
+]
+.pull-right[
+![magrittr](l03/img/magrittr.jpg)
+]
+
+.footnote[[1] In R 4.1, there is also support for a variant of the pipe with `|&gt;`. It behaves similarly, but not identically to magrittr's `%&gt;%`.  For the moment, personally, I am holding off using it in this course or in my own projects to avoid a hard dependency on R 4.1.]
+
+???
+
+The Treachery of Images is a 1929 painting by Belgian surrealist painter René Magritte. It is also known as This Is Not a Pipe[2]. It is on display at the Los Angeles County Museum of Art.[1]
+
+The painting shows an image of a pipe. Below it, Magritte painted, "Ceci n'est pas une pipe", French for "This is not a pipe".
+The famous pipe. How people reproached me for it! And yet, could you stuff my pipe? No, it's just a representation, is it not? So if I had written on my picture "This is a pipe", I'd have been lying!
+---
+
+## Review: How does a pipe work?
+
+- You can think about the following sequence of actions - find your helmet, 
+ ride your bike to school, then lock it somewhere.
+- Expressed as a set of nested functions in R pseudocode this would look like:
+
+```r
+lock(ride(find(who=andrew, what = "helmet"), to = "campus"))
+```
+we have to read this from the "inside-out".
+
+---
+## Review: How does a pipe work?
+
+- The pipe gives it a more natural (and easier to read) 
+**postfix** syntax&lt;sup&gt;1&lt;/sup&gt;, where we can read from left to right:
+
+```r
+andrew %&gt;% find(what = "helmet") %&gt;%
+  ride(to = "campus") %&gt;%
+  lock()
+```
+.footnote[[1] Note similar syntax in java(script), C++ and python where the method accessor "`.`" can be chained in some cases: `andrew.find('helmet').ride('campus').lock()`]
+
+---
+
+## What about other arguments?
+
+The pipe, by default sends its left-hand value to first positional argument of the right-hand function.  To send results to a function argument other than first one or to use the previous result for multiple arguments, use `.`:
+
+
+```r
+starwars %&gt;%
+  filter(species == "Human") %&gt;%
+  lm(mass ~ height, data = .)
+```
+
+```
+## 
+## Call:
+## lm(formula = mass ~ height, data = .)
+## 
+## Coefficients:
+## (Intercept)       height  
+##     -116.58         1.11
+```
+
+---
+
+## The pipe vs ggplot2 layers
+
+- The `+` operator in **ggplot2**&lt;sup&gt;1&lt;/sup&gt; is used for "layering." This means you create the plot in layers, separated by `+`.
+
+- Some of the reason for this distinction is historical rather than mechanistic
+
+.footnote[[1] to make matters even more confusing, ggplot2 also has the `%+%` operator.  This modifies the `data` being used in the plot.]
+---
+
+class: center, middle
+
+# Data transformation
+
+---
+
+## NYC Flights
+
+
+```r
+library(nycflights13)
+```
+
+This data frame contains all 336,776 flights that departed from New York City in 2013. The data comes from the US [Bureau of Transportation Statistics](http://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&amp;Link=0), and is documented in `?flights`.
+
+---
+
+# Want to follow along?
+
+Go to RStudio Cloud and make a copy of "Lecture 3 - dplyr"
+
+---
+
+## Viewing your data
+
+- In the Environment, click on the name of the data frame to view
+it in the data viewer
+- Use the `glimpse` function to take a peek
+.scroll-box-14[
+
+```r
+glimpse(flights)
+```
+
+```
+## Rows: 336,776
+## Columns: 19
+## $ year           &lt;int&gt; 2013, 2013, 2013, 2013, 2013, 2013,…
+## $ month          &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ day            &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ dep_time       &lt;int&gt; 517, 533, 542, 544, 554, 554, 555, …
+## $ sched_dep_time &lt;int&gt; 515, 529, 540, 545, 600, 558, 600, …
+## $ dep_delay      &lt;dbl&gt; 2, 4, 2, -1, -6, -4, -5, -3, -3, -2…
+## $ arr_time       &lt;int&gt; 830, 850, 923, 1004, 812, 740, 913,…
+## $ sched_arr_time &lt;int&gt; 819, 830, 850, 1022, 837, 728, 854,…
+## $ arr_delay      &lt;dbl&gt; 11, 20, 33, -18, -25, 12, 19, -14, …
+## $ carrier        &lt;chr&gt; "UA", "UA", "AA", "B6", "DL", "UA",…
+## $ flight         &lt;int&gt; 1545, 1714, 1141, 725, 461, 1696, 5…
+## $ tailnum        &lt;chr&gt; "N14228", "N24211", "N619AA", "N804…
+## $ origin         &lt;chr&gt; "EWR", "LGA", "JFK", "JFK", "LGA", …
+## $ dest           &lt;chr&gt; "IAH", "IAH", "MIA", "BQN", "ATL", …
+## $ air_time       &lt;dbl&gt; 227, 227, 160, 183, 116, 150, 158, …
+## $ distance       &lt;dbl&gt; 1400, 1416, 1089, 1576, 762, 719, 1…
+## $ hour           &lt;dbl&gt; 5, 5, 5, 5, 6, 5, 6, 6, 6, 6, 6, 6,…
+## $ minute         &lt;dbl&gt; 15, 29, 40, 45, 0, 58, 0, 0, 0, 0, …
+## $ time_hour      &lt;dttm&gt; 2013-01-01 05:00:00, 2013-01-01 05…
+```
+]
+
+---
+class: font120
+## A Grammar of Data Manipulation
+
+**dplyr** is based on the concepts of functions as verbs that manipulate data frames.
+
+Single data frame functions / verbs:
+
+* `filter`: pick rows matching criteria
+* `slice`: pick rows using index(es)
+* `select`: pick columns by name
+* `pull`: grab a column as a vector
+* `rename`: rename specific columns
+* `arrange`: reorder rows
+* `mutate`: add new variables
+* `transmute`: create new data frame with variables
+* `distinct`: filter for unique rows
+* `sample_n` / `sample_frac`: randomly sample rows
+* `summarise`: reduce variables to values
+* `group_by`: run an operation by levels of a categorical variable
+* ... (many more)
+
+---
+
+## **dplyr** rules for functions
+
+1. First argument is *always* a `data.frame`&lt;sup&gt;1&lt;/sup&gt;
+2. Subsequent arguments say what to do with that `data.frame`
+3. Always return a `data.frame` 
+4. Doesn't modify in place
+
+.footnote[[1] Or `tibble`, the tidyverse version of a `data.frame`.  These are mostly interchangable, but with a few differences we'll consider in a couple weeks.]
+---
+
+## Filter rows with `filter`
+
+- Select a subset of rows in a data frame based on when a logical expression returns `TRUE`
+- Easily filter for many conditions at once by combining logical expressions
+
+---
+class: code70
+## `filter`
+
+- Let's extract all flights from new york that occurred in April.
+
+```r
+flights %&gt;% filter(month == 4)
+```
+
+```
+## # A tibble: 28,330 × 19
+##    year month   day dep_time sched_dep_time dep_delay
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+## 1  2013     4     1      454            500        -6
+## 2  2013     4     1      509            515        -6
+## 3  2013     4     1      526            530        -4
+## 4  2013     4     1      534            540        -6
+## # … with 28,326 more rows, and 13 more variables:
+## #   arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, …
+```
+
+---
+class: code70
+## `filter` with multple conditions
+
+- You can filter based on more than two variables using logical operators.
+- All flights that were both in April and from JFK:
+
+```r
+flights %&gt;% filter(month == 4 &amp; origin == "JFK")
+```
+
+```
+## # A tibble: 9,218 × 19
+##    year month   day dep_time sched_dep_time dep_delay
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+## 1  2013     4     1      534            540        -6
+## 2  2013     4     1      542            545        -3
+## 3  2013     4     1      543            545        -2
+## 4  2013     4     1      555            600        -5
+## # … with 9,214 more rows, and 13 more variables:
+## #   arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, …
+```
+
+---
+class: code70
+## `filter` with multple conditions
+
+- `filter()` will also perform the **and** operation if you separate logical conditions by a comma.
+
+```r
+flights %&gt;% filter(month == 4, origin == "JFK")
+```
+
+```
+## # A tibble: 9,218 × 19
+##    year month   day dep_time sched_dep_time dep_delay
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+## 1  2013     4     1      534            540        -6
+## 2  2013     4     1      542            545        -3
+## 3  2013     4     1      543            545        -2
+## 4  2013     4     1      555            600        -5
+## # … with 9,214 more rows, and 13 more variables:
+## #   arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, …
+```
+---
+
+## Aside: enumerating a categorical variable
+
+- If you didn't know what origins were possible in the `flights` data, then you can take one of two approaches:
+    1. `unique()`
+    2. `table(x, exclude = NULL)` to get the counts of each level.  The `exclude = NULL` indicates that `NA` missing values should also be listed -- you almost certainly want this!
+    
+
+```r
+unique(flights$origin)
+```
+
+```
+## [1] "EWR" "LGA" "JFK"
+```
+
+```r
+table(flights$origin, exclude = NULL)
+```
+
+```
+## 
+##    EWR    JFK    LGA 
+## 120835 111279 104662
+```
+
+---
+
+## Boolean expressions
+
+- This code finds all flights that departed in November or December:
+
+```r
+filter(flights, month == 11 | month == 12)
+```
+The order of operations doesn't work like English. You can't write `filter(flights, month == (11 | 12))`, to mean "find all flights that departed in November or December."
+- Instead, this would find all months that equal `11 | 12`, an expression that evaluates to `TRUE`.
+- In a numeric context (like here), `TRUE` is coerced to `1`, so this finds all flights in January, not November or December. This *is* quite confusing!
+
+---
+class: code70, font120
+## Missing Values
+
+- `filter()` .alert[excludes] observations with .alert[missing values.]
+
+```r
+dfdat = tibble(x = c(1, 2, NA),
+                    y = c('A', 'B', 'C'))
+dfdat %&gt;% filter(x == 1)
+```
+
+```
+## # A tibble: 1 × 2
+##       x y    
+##   &lt;dbl&gt; &lt;chr&gt;
+## 1     1 A
+```
+- If you want to extract those rows as well, you have to ask for them
+  explicitly using `is.na()`:
+
+```r
+dfdat %&gt;% filter(x == 1 | is.na(x))
+```
+
+```
+## # A tibble: 2 × 2
+##       x y    
+##   &lt;dbl&gt; &lt;chr&gt;
+## 1     1 A    
+## 2    NA C
+```
+
+---
+class: code70
+## Missing Values are contagious
+
+
+```r
+NA &gt; 5
+```
+
+```
+## [1] NA
+```
+
+```r
+10 == NA
+```
+
+```
+## [1] NA
+```
+
+```r
+NA + 10
+```
+
+```
+## [1] NA
+```
+
+- Therefore, **you cannot test for missingness with `== NA`**:
+
+```r
+x = NA
+x == NA
+```
+
+```
+## [1] NA
+```
+---
+
+## Graphical Depiction of Logical Operations:
+
+![](l03-transform-dplyr-i_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+---
+
+## Commonly used logical operators in R
+
+operator    | definition                   || operator     | definition
+------------|------------------------------||--------------|----------------
+`&lt;`         | less than                    ||`x`&amp;nbsp;&amp;#124;&amp;nbsp;`y`     | `x` OR `y` 
+`&lt;=`        |	less than or equal to        ||`is.na(x)`    | test if `x` is `NA`
+`&gt;`         | greater than                 ||`!is.na(x)`   | test if `x` is not `NA`
+`&gt;=`        |	greater than or equal to     ||`x %in% y`    | test if `x` is in `y`
+`==`        |	exactly equal to             ||`!(x %in% y)` | test if `x` is not in `y`
+`!=`        |	not equal to                 ||`!x`          | not `x`
+`x &amp; y`     | `x` AND `y`                  ||              |
+
+---
+
+## Check your understanding 
+
+.large[[Quiz 1](https://docs.google.com/forms/d/e/1FAIpQLSd54fszIDa-f2mAH2kcy2rhIXLxOWNGXhshSF8-tkn7XHWFeA/viewform?usp=sf_link)]
+
+1. .question[Extract the January LGA flights and the December JFK flights.]
+4. .question[Extract flights whose `dep_time` was `NA`.]
+2. .question[Extract flights that left in November or December.]
+3. .question[Extract flights that left in November or December using the `%in%` operator.]
+
+--
+
+
+```r
+    flights %&gt;%
+      filter((month == 1 &amp; origin == "LGA") | (month == 12 &amp; origin == "JFK"))
+```
+
+```
+## # A tibble: 17,096 × 19
+##    year month   day dep_time sched_dep_time dep_delay
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+## 1  2013     1     1      533            529         4
+## 2  2013     1     1      554            600        -6
+## 3  2013     1     1      557            600        -3
+## 4  2013     1     1      558            600        -2
+## # … with 17,092 more rows, and 13 more variables:
+## #   arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, …
+```
+
+
+
+```r
+nov_dec &lt;- filter(flights, month %in% c(11, 12))
+```
+
+---
+## Create New Variables
+
+- The variables given are usually not enough for an analysis.
+- For instance:
+  + log-transform positive values to make associations more linear.
+  + recode categorical variables to add / remove levels
+  + clean up messy text data
+  + ... or any other mathematical or CS .alert[vector function] of the data.
+  
+---
+class: code70
+## `mutate` to add new variables
+
+- We can use `mutate()` to create new variables from old.
+
+
+```r
+flights %&gt;% mutate(gain = dep_delay - arr_delay,
+             speed = distance / air_time * 60,
+             .before = year) #add before `year` variable
+```
+
+```
+## # A tibble: 336,776 × 21
+##    gain speed  year month   day dep_time sched_dep_time
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;
+## 1    -9  370.  2013     1     1      517            515
+## 2   -16  374.  2013     1     1      533            529
+## 3   -31  408.  2013     1     1      542            540
+## 4    17  517.  2013     1     1      544            545
+## # … with 336,772 more rows, and 14 more variables:
+## #   dep_delay &lt;dbl&gt;, arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;,
+## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, …
+```
+
+---
+
+## Converting to minutes since midnight
+
+- **Exercise**: (RDS 5.2.1) `dep_time` is convenient to look at, but hard to compute with because it's not a continuous value:
+
+
+```r
+ggplot(flights, aes(x = dep_time)) + geom_histogram(binwidth = 10)
+```
+
+![](l03-transform-dplyr-i_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+---
+## Check your understanding
+
+.large[[Quiz 2](https://docs.google.com/forms/d/e/1FAIpQLSdOiUARDqpHbNd2M_n1lw0QidWl3Z0fsiD-kiIjaxC93gcC7A/viewform?usp=sf_link)]
+
+- Convert `dep_time` into `dep_minutes_midnight`, the number of minutes since midnight. Hint: `%/%` is truncating integer division and `%%` is  remainder.  For instance:
+  
+
+```r
+101 %/% 10
+```
+
+```
+## [1] 10
+```
+
+```r
+101 %% 10
+```
+
+```
+## [1] 1
+```
+
+---
+## Answer
+
+
+```r
+flights %&gt;% mutate(dep_h = dep_time %/% 100,
+            dep_m = dep_time %% 100,
+            dep_elapsed_min = dep_h * 60 + dep_m,
+            .after=dep_time)
+```
+
+```
+## # A tibble: 336,776 × 22
+##    year month   day dep_time dep_h dep_m dep_elapsed_min
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;           &lt;dbl&gt;
+## 1  2013     1     1      517     5    17             317
+## 2  2013     1     1      533     5    33             333
+## 3  2013     1     1      542     5    42             342
+## 4  2013     1     1      544     5    44             344
+## # … with 336,772 more rows, and 15 more variables:
+## #   sched_dep_time &lt;int&gt;, dep_delay &lt;dbl&gt;, arr_time &lt;int&gt;,
+## #   sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, …
+```
+
+---
+## Only preserving new variables
+
+If you only want to keep new variables, use `transmute()`
+
+
+```r
+flights %&gt;%
+      transmute(gain = dep_delay - arr_delay,
+                hours = air_time / 60,
+                gain_per_hour = gain / hours)
+```
+
+```
+## # A tibble: 336,776 × 3
+##    gain hours gain_per_hour
+##   &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;
+## 1    -9  3.78         -2.38
+## 2   -16  3.78         -4.23
+## 3   -31  2.67        -11.6 
+## 4    17  3.05          5.57
+## # … with 336,772 more rows
+```
+
+You'll use this much less often than `mutate` but when you need it, you need it.
+
+---
+## Useful mutation functions
+
+-  Arithmetic operators: `+`, `-`, `*`, `/`, `^`
+-  Arithmetic operators in conjunction with scalar functions: 
+  +  `x_center = x - mean(x)`
+  +  `x_proportion = x / sum(x)`
+  +  `x_01 = (x-min(x))/(max(x) - min(x))`
+- Modular arithmetic: `%/%` (integer division) and `%%` (remainder)
+- Logs: `log()`, `log2()`, `log10()`
+- offsets: `lead()` and `lag()`
+- Cumulative and rolling aggregates: `cumsum()`, `cumprod()`, `cummin()`, `cummax()`, `cummean()`.
+- Ranking: `min_rank()`.  Mind how `NA` and ties are handled!
+- Recoding: `case_when()`, `ifelse()`
+
+---
+
+## Recoding with `case_when` and `ifelse`
+
+-  `case_when` lets us generate a new variable with multiple values that depend on arbitrary boolean expressions.  
+-  Each boolean expression is evaluated in turn, and the first matching value is used.  
+-  The syntax is 
+```r
+case_when(&lt;BOOLEAN EXPRESSION 1&gt; ~ "value1",
+          &lt;BOOLEAN EXPRESSION 2&gt; ~ "value2",
+          &lt;more expressions and values&gt;,
+          TRUE ~ "Optional fallthrough value")
+```
+-  If the `TRUE ~ "Optional fallthrough"` isn't provided and no cases match, than the value will be `NA`.
+-  `ifelse` is a simplified version:
+```r
+ifelse(&lt;BOOLEAN EXPRESSION&gt;, 'True value', 'False value')
+```
+---
+class: code70
+
+Suppose we wanted to see how often "time is made up in the air."  We might say this is true when the `dep_delay &gt; 0 &amp; arr_delay &lt; dep_delay`, but there are 3 other possibilities: 
+2.  Ontime when we left, and ontime when we arrived
+3.  Ontime when we left, but arrived delayed
+4.  We were delayed when we left, and even more delayed when we arrived.
+
+
+```r
+flights = flights %&gt;% 
+  mutate(delay_type = 
+           case_when(dep_delay &gt; 0 &amp; arr_delay &lt; dep_delay ~ 'made up time',
+                    dep_delay &gt; 0 &amp; arr_delay &gt;= dep_delay ~ 'lost time',
+*                   dep_delay &lt;= 0 &amp; arr_delay &gt; 0 ~ 'headwind?',
+*                   dep_delay &lt;= 0 &amp; arr_delay &lt;= 0 ~ 'life is good'))
+table(flights$delay_type, exclude= NULL)
+```
+
+```
+## 
+##    headwind? life is good    lost time made up time         &lt;NA&gt; 
+##        40701       158900        44017        83728         9430
+```
+
+---
+class: code70
+
+Because of the sequential evaluation of the cases, the following is equivalent (note highlighted lines).
+
+
+```r
+flights = flights %&gt;% 
+  mutate(delay_type = 
+           case_when(dep_delay &gt; 0 &amp; arr_delay &lt; dep_delay ~ 'made up time',
+                    dep_delay &gt; 0 &amp; arr_delay &gt;= dep_delay ~ 'lost time',
+*                   arr_delay &gt; 0 ~ 'headwind?',
+*                   arr_delay &lt;= 0 ~ 'life is good'))
+table(flights$delay_type, exclude= NULL)
+```
+
+```
+## 
+##    headwind? life is good    lost time made up time         &lt;NA&gt; 
+##        40701       158900        44017        83728         9430
+```
+
+
+---
+
+## `select` to keep only the variables you mention
+.scroll-box-14[
+
+```r
+flights %&gt;%
+  select(carrier, origin) %&gt;%
+  table()
+```
+
+```
+##        origin
+## carrier   EWR   JFK   LGA
+##      9E  1268 14651  2541
+##      AA  3487 13783 15459
+##      AS   714     0     0
+##      B6  6557 42076  6002
+##      DL  4342 20701 23067
+##      EV 43939  1408  8826
+##      F9     0     0   685
+##      FL     0     0  3260
+##      HA     0   342     0
+##      MQ  2276  7193 16928
+##      OO     6     0    26
+##      UA 46087  4534  8044
+##      US  4405  2995 13136
+##      VX  1566  3596     0
+##      WN  6188     0  6087
+##      YV     0     0   601
+```
+]
+
+---
+
+## or `select` to exclude variables
+
+
+```r
+flights %&gt;%
+  select(-year)
+```
+
+```
+## # A tibble: 336,776 × 19
+##   month   day dep_time sched_dep_time dep_delay arr_time
+##   &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+## 1     1     1      517            515         2      830
+## 2     1     1      533            529         4      850
+## 3     1     1      542            540         2      923
+## 4     1     1      544            545        -1     1004
+## # … with 336,772 more rows, and 13 more variables:
+## #   sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;,
+## #   flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, …
+```
+
+---
+
+## or `select` a range of variables
+
+
+```r
+flights %&gt;%
+  select(carrier:dest)
+```
+
+```
+## # A tibble: 336,776 × 5
+##   carrier flight tailnum origin dest 
+##   &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;
+## 1 UA        1545 N14228  EWR    IAH  
+## 2 UA        1714 N24211  LGA    IAH  
+## 3 AA        1141 N619AA  JFK    MIA  
+## 4 B6         725 N804JB  JFK    BQN  
+## # … with 336,772 more rows
+```
+
+---
+class: code70
+
+## `rename` specific columns
+
+
+Useful for correcting typos, and renaming to make variable names shorter 
+and/or more informative
+
+- Rename `day` to `day_of_month`:
+
+```r
+flights_rn =  flights %&gt;%
+  rename(day_of_month = day)
+```
+
+- Can also rename while selecting with `select(var1, var2, new_name = var3)`.
+
+---
+
+## Check before you move on
+
+When in doubt, check your changes and confirm code did what you wanted it to do
+
+.small[
+
+```r
+names(flights_rn)
+```
+
+```
+##  [1] "year"           "month"          "day_of_month"   "dep_time"      
+##  [5] "sched_dep_time" "dep_delay"      "arr_time"       "sched_arr_time"
+##  [9] "arr_delay"      "carrier"        "flight"         "tailnum"       
+## [13] "origin"         "dest"           "air_time"       "distance"      
+## [17] "hour"           "minute"         "time_hour"      "delay_type"
+```
+]
+
+---
+
+class: middle, center
+
+## `summarize` reduces vectors to scalars
+
+---
+class: code70
+
+## `summarise`  reduces vectors to scalars
+
+So far, all the operations we have done have been `data.frame` in, and `data.frame` with the same number of rows out.
+
+Summarize calculates scalar summaries from a vector.
+
+
+```r
+flights %&gt;%
+  summarize(mean_delay = mean(dep_delay, na.rm = TRUE),
+            median_delay = median(dep_delay, na.rm = TRUE))
+```
+
+```
+## # A tibble: 1 × 2
+##   mean_delay median_delay
+##        &lt;dbl&gt;        &lt;dbl&gt;
+## 1       12.6           -2
+```
+---
+class: code70
+
+## What's with the `na.rm=TRUE`?
+
+- When we set to `na.rm = FALSE` (which is the default!):
+
+```r
+flights %&gt;%
+  summarize(mean_delay = mean(dep_delay, na.rm = FALSE),
+            median_delay = median(dep_delay, na.rm = FALSE))
+```
+
+```
+## # A tibble: 1 × 2
+##   mean_delay median_delay
+##        &lt;dbl&gt;        &lt;dbl&gt;
+## 1         NA           NA
+```
+
+---
+class: code70
+
+## What's with the `na.rm=TRUE`?
+
+- Although you will frequently want to set `na.rm = TRUE` in statistical functions, it defaults `FALSE` for a reason -- so you will know there are and examine why there are missing values.
+
+
+```r
+filter(flights, is.na(dep_delay))
+```
+
+```
+## # A tibble: 8,255 × 20
+##    year month   day dep_time sched_dep_time dep_delay
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+## 1  2013     1     1       NA           1630        NA
+## 2  2013     1     1       NA           1935        NA
+## 3  2013     1     1       NA           1500        NA
+## 4  2013     1     1       NA            600        NA
+## # … with 8,251 more rows, and 14 more variables:
+## #   arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, …
+```
+
+These are flights that were cancelled!  So in same ways the `dep_delay` is infinite.
+
+---
+
+## Useful summary functions
+
+*  central tendency: `mean()`, `median()`, `mode()`.
+*  dispersion: `sd()`, `IQR()`, `mad(x)`.
+*  support: `min()`, `max()`.
+*  index:  `first()`, `nth(x, 2)`, `last()`&lt;sup&gt;1&lt;/sup&gt;
+*  counts: `n()`, `sum()`, `sum(!is.na(x))` (count non-missing), `n_distinct()` (count distinct)
+.footnote[[1] These probably only make sense in `group_by` summaries.  They could make could sense in an ungrouped mutates, though!]
+--
+
+*  Most of these are going to taste better with `na.rm = TRUE`
+*  All can be used with `mutate`--their return value will be "recycled" to the same number of rows as the input data.frame.
+
+
+
+---
+class: middle, center
+
+## Row-altering operations with `slice`
+
+---
+
+
+## `slice` to extract by row index
+
+First five
+
+```r
+flights %&gt;% 
+  slice_head(n = 5)
+```
+
+```
+## # A tibble: 5 × 20
+##    year month   day dep_time sched_dep_time dep_delay
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+## 1  2013     1     1      517            515         2
+## 2  2013     1     1      533            529         4
+## 3  2013     1     1      542            540         2
+## 4  2013     1     1      544            545        -1
+## 5  2013     1     1      554            600        -6
+## # … with 14 more variables: arr_time &lt;int&gt;,
+## #   sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;,
+## #   flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, …
+```
+
+---
+
+## `slice` to extract by row index
+
+Last 3
+
+```r
+flights %&gt;%
+  slice_tail(n = 3)
+```
+
+```
+## # A tibble: 3 × 20
+##    year month   day dep_time sched_dep_time dep_delay
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+## 1  2013     9    30       NA           1210        NA
+## 2  2013     9    30       NA           1159        NA
+## 3  2013     9    30       NA            840        NA
+## # … with 14 more variables: arr_time &lt;int&gt;,
+## #   sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;,
+## #   flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, …
+```
+
+---
+
+## Subsample rows with `sample_n` or `sample_frac`
+
+- `sample_n`: randomly sample 5 observations
+
+
+```r
+flights_n5 = flights %&gt;%
+  sample_n(5, replace = FALSE)
+dim(flights_n5)
+```
+
+```
+## [1]  5 20
+```
+
+- `sample_frac`: randomly sample 20% of observations
+
+
+```r
+flights_perc20 = flights %&gt;%
+  sample_frac(0.2, replace = FALSE)
+dim(flights_perc20)
+```
+
+```
+## [1] 67355    20
+```
+
+---
+
+## `arrange` to sort a `data.frame` on its values
+
+What flights departed earliest before their scheduled time?
+
+```r
+flights %&gt;% arrange(dep_delay) %&gt;% relocate(dep_delay)
+```
+
+```
+## # A tibble: 336,776 × 20
+##   dep_delay  year month   day dep_time sched_dep_time
+##       &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;
+## 1       -43  2013    12     7     2040           2123
+## 2       -33  2013     2     3     2022           2055
+## 3       -32  2013    11    10     1408           1440
+## 4       -30  2013     1    11     1900           1930
+## # … with 336,772 more rows, and 14 more variables:
+## #   arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, …
+```
+
+---
+
+## Descending arrange
+
+What were the most delayed flights? 
+
+```r
+flights %&gt;% arrange(desc(arr_delay)) %&gt;%
+  relocate(arr_delay)
+```
+
+```
+## # A tibble: 336,776 × 20
+##   arr_delay  year month   day dep_time sched_dep_time
+##       &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;
+## 1      1272  2013     1     9      641            900
+## 2      1127  2013     6    15     1432           1935
+## 3      1109  2013     1    10     1121           1635
+## 4      1007  2013     9    20     1139           1845
+## # … with 336,772 more rows, and 14 more variables:
+## #   dep_delay &lt;dbl&gt;, arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, …
+```
+---
+
+## Arranging with ties
+
+
+```r
+flights %&gt;% select(sched_dep_time, origin, dest, day, carrier, flight) %&gt;%
+  arrange(origin, dest,sched_dep_time, day)
+```
+
+```
+## # A tibble: 336,776 × 6
+##   sched_dep_time origin dest    day carrier flight
+##            &lt;int&gt; &lt;chr&gt;  &lt;chr&gt; &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+## 1            720 EWR    ALB      13 EV        4565
+## 2            720 EWR    ALB      14 EV        4565
+## 3            720 EWR    ALB      15 EV        4565
+## 4            720 EWR    ALB      16 EV        4565
+## # … with 336,772 more rows
+```
+This might reveal when flight numbers are reused or changed for the same route and timing.
+
+---
+
+## `distinct` to filter for unique rows
+
+
+```r
+flights %&gt;% 
+  select(origin, dest) %&gt;% 
+  distinct() %&gt;% 
+  arrange(origin, dest)
+```
+
+```
+## # A tibble: 224 × 2
+##   origin dest 
+##   &lt;chr&gt;  &lt;chr&gt;
+## 1 EWR    ALB  
+## 2 EWR    ANC  
+## 3 EWR    ATL  
+## 4 EWR    AUS  
+## # … with 220 more rows
+```
+
+---
+class: code70
+
+## `pull` to extract a column as a vector
+
+
+```r
+flights %&gt;% slice_head(n = 5) %&gt;% pull(dest)
+```
+
+```
+## [1] "IAH" "IAH" "MIA" "BQN" "ATL"
+```
+
+Compare to 
+
+```r
+flights %&gt;% slice_head(n = 5) %&gt;% select(dest)
+```
+
+```
+## # A tibble: 5 × 1
+##   dest 
+##   &lt;chr&gt;
+## 1 IAH  
+## 2 IAH  
+## 3 MIA  
+## 4 BQN  
+## 5 ATL
+```
+
+.question[What is similar and what is different in the return value between these two?]
+---
+
+## The two `pull`s in your lives
+
+.pull-left[
+![pipe](l03/img/hex-dplyr.png)
+]
+.pull-right[
+![magrittr](l03/img/Octocat.png)
+]
+
+- Don't get `pull` happy when wrangling data! It's rarely needed while you are using tidyverse functions.
+- But always ⬇️ `Pull` before starting your work when collaborating on GitHub.
+
+---
+class: middle, center
+
+# grouped operations
+
+---
+
+## group_by()
+
+We'll discuss this in much greater detail next week.  But to whet your appetite, how might we calculate the carrier with the worst on-time percentage?
+
+
+```r
+ontime = flights %&gt;% mutate(ontime = arr_delay &lt;= 0)  
+ontime %&gt;% summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100)
+```
+
+```
+## # A tibble: 1 × 1
+##   ontime_pct
+##        &lt;dbl&gt;
+## 1       59.4
+```
+This calculates over all carriers. 
+
+---
+
+## grouped summaries
+
+To do it by carrier, we just add
+
+
+```r
+ontime %&gt;% 
+* group_by(carrier) %&gt;%
+  summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100) %&gt;%
+  arrange(ontime_pct)
+```
+
+```
+## # A tibble: 16 × 2
+##   carrier ontime_pct
+##   &lt;chr&gt;        &lt;dbl&gt;
+## 1 FL            40.3
+## 2 F9            42.4
+## 3 EV            52.1
+## 4 YV            52.6
+## # … with 12 more rows
+```
+
+--
+.pull-left[
+![FL is Airtran](https://upload.wikimedia.org/wikipedia/en/3/35/AirTran_Airways_logo.svg)
+]
+.pull-right[
+![F9 is Frontier](https://upload.wikimedia.org/wikipedia/en/c/cf/Frontier_Airlines_logo.svg)
+]
+
+???
+
+FL is Airtran, F9 is Frontier
+---
+
+# Resources
+
+- Chapter 5 of [RDS](https://r4ds.had.co.nz/)
+- [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf).
+- [Dplyr Overview](https://dplyr.tidyverse.org/).
+
+---
+
+# Acknowledgments
+
+This lecture contains materials adapted from  [Mine Çetinkaya-Rundel and colleagues](https://github.com/Sta199-S18/website/blob/master/static/slides/lec-slides/02b-tidy-data-wrangle.Rmd) and [David Gerard](https://github.com/URMC-BST/stat_412_612/blob/master/lectures/04_dplyr/04_dplyr.Rmd).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "3:2"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

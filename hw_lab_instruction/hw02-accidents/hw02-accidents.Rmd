@@ -1,0 +1,149 @@
+---
+title: "HW 02 - Road traffic accidents"
+output: 
+  tufte::tufte_html:
+    css: ../hw.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+link-citations: yes
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(
+  eval = TRUE,
+  out.width = "80%",
+  fig.asp = 0.618,
+  fig.width = 10,
+  dpi = 300
+)
+```
+
+```{r photo, fig.margin = TRUE, echo = FALSE, fig.width = 3, fig.cap = "Photo by Clark Van Der Beken on Unsplash", eval = TRUE}
+knitr::include_graphics("img/accident.jpg")
+```
+
+In this assignment we'll look at traffic accidents in New York State.
+It covers all recorded accidents in NY in 2018 and 2019.  Some of the variables were modified for the purposes of this assignment.
+
+# Getting started
+
+Go to the course GitHub organization and locate your homework repo, which should be named `hw02-accidents-YOUR_GITHUB_USERNAME`.
+Grab the URL of the repo, and clone it in RStudio.
+First, open the R Markdown document `hw02.Rmd` and Knit it.
+Make sure it compiles without errors.
+The output will be in the file markdown `.md` file with the same name.
+
+## Warm up
+
+Before we introduce the data, let's warm up with some simple exercises.
+
+-   Update the YAML, changing the author name to your name, and **knit** the document.
+-   `r emo::ji("broom")` Run `lint_assignment()` and verify that you are lint free.
+-   Commit your changes with a meaningful commit message.
+-   Push your changes to GitHub.
+-   Go to your repo on GitHub and confirm that your changes are visible in your Rmd **and** md files. If anything is missing, commit and push again.
+
+## Packages
+
+We'll use the **tidyverse** package for much of the data wrangling and visualization, and `vroom` to load the .csv.  This is purely a convenience to deal with a .csv file compressed with the `xz` algorithm as it avoids decompressing it before reading.  We'll also need the `lubridate` package to wrangle our dates.
+These packages is already installed for you.
+You can load them by running the following in your Console:
+
+```{r load-packages-data, message = FALSE, eval = TRUE}
+library(tidyverse)
+library(lubridate)
+library(vroom)
+```
+
+## Data
+
+We can load the data with the following:
+```{r, include = FALSE}
+crashes = vroom('data/ny_collisions_2018_2019.csv.gz')
+```
+
+```{r load-data, eval = FALSE}
+crashes = vroom("https://urmc-bst.github.io/bst430-fall2021-site/hw_lab_instruction/hw02-accidents/data/ny_collisions_2018_2019.csv.gz")
+```
+
+You can find out more about the dataset in the NY open data portal:  https://data.ny.gov/Transportation/Motor-Vehicle-Crashes-Case-Information-Three-Year-/e8ky-4vqe .  There's a detailed data dictionary [here](https://data.ny.gov/api/views/e8ky-4vqe/files/991fc5ad-3c1d-4eb1-908a-86343907be58?download=true&filename=NYSDMV_Crashes_CaseInformation_DataDictionary.pdf).
+
+# Exercises
+
+1.  How many observations (rows) does the dataset have? Instead of hard coding the number in your answer, use inline code.
+
+```{marginfigure}
+**Tired of typing your password?** Chances are your browser has already saved your password, but if not, you can ask Git to save (cache) your password for a period of time, where you indicate the period of time in seconds. For example, if you want it to cache your password for 1 hour, that would be 3,600 seconds. To do so, run the following *in the Console*: `usethis::use_git_config(credential.helper = "cache --timeout=3600")`. If you want to cache it for a longer time, you can adjust the number of seconds in the code.
+```
+
+
+🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
+
+1.  Make a simple table counting occurrences of the `Crash Descriptor`.  Use this and the existing levels in `Crash Descriptor` to make a add another variable called `severity`.  Make this variable a factor, with shorter, yet descriptive names.  Set the factor levels so that they are ordered by severity.  In your answer, don't forget to label your R chunk(s) as well (where it says `label-me-1`). Your label should be short, informative, shouldn't include spaces, and shouldn't shouldn't repeat a previous label.
+
+2.  Add a column `dt` to `crashes` which converts the `Date` column to an appropriate an date class using `lubridate`.
+
+3.  Add a new a column `decimal_hours` that converts `Time` into fractional hours since midnight, also using `lubridate`.
+
+4.  Recreate the following plot, and describe in context of the data. 
+
+```{r, echo = FALSE, fig.fullwidth = TRUE, message = FALSE, results = 'hide'}
+crashes = crashes %>% 
+  mutate(severity = fct_recode(`Crash Descriptor`,
+                                         Fatal = "Fatal Accident",
+                                         "Injury & Property" = "Property Damage & Injury Accident",
+                                         "Injury" = "Injury Accident",
+                                         "Property" = "Property Damage Accident")) %>%
+  mutate(dt = mdy(Date), Time = hm(Time), 
+         is_weekend = ifelse(`Day of Week` %in% c('Saturday', 'Sunday'), 'weekend', 'weekday'), 
+         decimal_hours = hour(Time) + minute(Time)/60)
+
+crashes %>%
+  ggplot(aes(x = decimal_hours, fill = severity)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~is_weekend, ncol = 1) +
+  theme_minimal() +
+  scale_fill_viridis_d() +
+  labs(
+    title = "Number of accidents throughout the day",
+    subtitle = "By day of week and severity",
+    x = "Time of day",
+    y = "Density",
+    fill = "Severity"
+  )
+```
+
+Describe the patterns you see for Property accidents vs Fatal accidents on the weekdays vs weekends.
+
+`r emo::ji("broom")` 🧶 ✅ ⬆️ Lint, Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
+
+5.  Recreate this plot:
+
+```{r, echo = FALSE, fig.fullwidth = TRUE, message = FALSE, results = 'hide'}
+by_date = crashes  %>% count(dt, severity, .drop = FALSE)
+
+date_severity = by_date %>% group_by(dt) %>% mutate(Total = sum(n)) %>%
+  pivot_wider(c(dt, Total), names_from = severity, values_from = n) %>%
+  mutate(m = month(dt), season = case_when(
+    m >= 11 | m <= 4 ~ 'cold',
+    TRUE ~ 'warm'))
+
+ggplot(date_severity, aes(x = Total, y = Fatal, color = season)) + geom_jitter(height = .2) + 
+  labs(y = 'N. Fatal', x = 'N. Total',   
+       title = "Daily Fatal Accidents vs Daily Total Accidents",
+    subtitle = "New York, 2018-2019") + 
+  theme_minimal() + scale_color_manual(labels = c("Nov-Apr", "May-Oct"), values = c('purple', 'orange'))
+```
+Hint: use `lubridate::month`to extract the numeric index of the month.
+
+6. Upon what date did the highest total number of accidents occur?  Examine the data and columns provided, and see if you can determine a cause for the date with the highest total number of accidents.  In general, what is a possible explanation for the pattern observed between warm-season (May-Oct) and cold-season (Nov-Apr) Total and Fatal accidents?
+
+7.  Create another data visualization based on these data and interpret it. You can choose any variables and any type of visualization you like, but it must have at least three variables, e.g. a scatterplot of x vs. y isn't enough, but if points are colored or faceted by z, that's fine. In your answer, don't forget to label your R chunk as well.
+
+`r emo::ji("broom")` 🧶 ✅ ⬆️ Lint, Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document, and the lintr report on GitHub to make sure you're happy with the final state of your work.*
+
+## Rubric: 39 points total
+
+*  8 ex @ 3 pts per
+*  5 points github commits
+*  10 points lint 0-2 lint, -.5 point for every lint past 2.

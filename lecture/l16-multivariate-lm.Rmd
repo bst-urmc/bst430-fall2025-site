@@ -1,0 +1,1088 @@
+---
+title: "BST430  Lecture 16"
+subtitle: "Multivariate linear models"
+author: "Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-11-07 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+  
+```{r child = "setup.Rmd"}
+```
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
+```
+
+  
+# Agenda
+
+0.  Multivariate plots
+1.  More modeling syntax
+3.  Diagnostics
+4.  Interpreting interaction models
+4.  Many models
+
+---
+
+class: code70
+
+### `mtcars`
+
+- For this lesson, we will use the (infamous) `mtcars` dataset that comes
+  with R by default.
+```{r, message=FALSE}
+library(tidyverse)
+library(broom)
+data("mtcars")
+glimpse(mtcars)
+```
+
+???
+
+1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles.
+
+[, 1]	mpg	Miles/(US) gallon
+[, 2]	cyl	Number of cylinders
+[, 3]	disp	Displacement (cu.in.)
+[, 4]	hp	Gross horsepower
+[, 5]	drat	Rear axle ratio
+[, 6]	wt	Weight (1000 lbs)
+[, 7]	qsec	1/4 mile time
+[, 8]	vs	Engine (0 = V-shaped, 1 = straight)
+[, 9]	am	Transmission (0 = automatic, 1 = manual)
+[,10]	gear	Number of forward gears
+[,11]	carb	Number of carburetors
+
+---
+
+class: middle
+
+.hand[Visualizing multivariate relationships]
+
+---
+
+### Exploratory data analyses of multivariate data
+
+-  Hard
+-  Necessary
+-  Often generates quite a few plots before you identify one that you can keep
+
+---
+
+### One simple trick
+
+Pairs plots!
+
+.panelset[
+.panel[.panel-name[Code]
+```{r pairs1, fig.show="hide"}
+library(GGally)
+GGally::ggpairs(mtcars)
+```
+
+]
+.panel[.panel-name[Plot]
+```{r ref.label = "pairs1", echo = FALSE, warning = FALSE, out.width = "70%"}
+```
+
+]
+]
+
+---
+
+* Evidently `vs`, `am`, `gear` and maybe `cyl` should be cast to factors
+
+.panelset[
+.panel[.panel-name[Code]
+```{r pairs2, fig.show="hide"}
+mtcars = mtcars %>% mutate(across(c(vs, am, gear, cyl), factor))
+GGally::ggpairs(mtcars)
+```
+
+]
+.panel[.panel-name[Plot]
+```{r ref.label = "pairs2", echo = FALSE, warning = FALSE, out.width = "70%"}
+```
+
+]
+]
+
+---
+
+- Let's suppose we wanted to determine which variables affect fuel 
+  consumption (the `mpg` variable in the dataset).
+- `cyl`, `disp`, `hp`, `drat`, `wt` all appear to be correlated with `mpg`
+- `vs`, `am` and possibly `gear` could have distributional differences, as well
+
+---
+class: code70
+
+- To begin, we'll look at the association between the variables log-weight 
+  and mpg
+
+```{r}
+ggplot(mtcars, aes(x = wt, mpg)) +
+  geom_point() +
+  scale_x_log10() +
+  xlab("Weight") +
+  ylab("Miles Per Gallon")
+```
+    
+- It seems that log-weight is negatively associated with mpg.
+- It seems that the data approximately fall on a line.
+
+---
+
+### OLS fits in R
+
+1. Make sure you have the explanatory variables in the format you want:
+   ```{r}
+   submt = mtcars %>% mutate(logwt = log(wt))
+   ```
+2. Use `lm()`
+   ```{r}
+   lmout = lm(mpg ~ logwt, data = submt)
+   lmtide = tidy(lmout)
+   select(lmtide, term, estimate)
+   ```
+
+---
+
+### `lm` syntax
+
+```r
+lm(response ~ pred1 + pred2*pred3, data = data) 
+```
+Finds the OLS estimates of the following model: 
+
+> response = $\beta_0+ \beta_1\text{pred1} + \beta_2\text{pred2} + \beta_{3}\text{pred3}+ \beta_{23}\text{pred2} * \text{pred3}$ + error
+  
+The `data` argument tells `lm()` where to find the response and 
+  explanatory variables.
+
+---
+
+###  Formula syntax
+
+*  `x:z` form the interaction between `x` and `z` -- this is element-by-element times if at least `x` or `z` is continuous, otherwise it is an outer-product.
+*  `x*z` form interactions and include main effects. Equivalent to `x + z + x:z`
+*  `+ 0` or `- 1` exclude an intercept term, or `- x` exclude `x` if included otherwise.
+*  `(x + z + u)^2` form all two-way interactions and main effects with `x`, `z`, `u`.
+*  `I(x - 10)` or `I(x^2)` -- perform arithmetic operations that use `+`, `-`, `*`, `^`, etc, on a variable "on-the-fly" in the formula.   Can also just transform before you model.
+*  `y ~ .` every variable in the data, except the response `y`.
+
+---
+class: code50
+
+### Example
+
+.alert[But don't do this without thinking!]
+
+```{r}
+tidy(lm(mpg ~ ., data = mtcars))
+```
+
+
+For a predictive goal, probably should use some method that does shrinkage and basis expansion.  For inference, need to consider putative casual models.
+
+---
+
+
+- Use `broom::glance()` function to get the estimated standard deviation, $R^2$, and information criteria. It's the value
+  in the `sigma` column.
+    ```{r}
+    glance(lmout)
+    ```
+
+---
+
+class: middle
+
+.hand[Your turn]
+
+[Complete L16 AE part i](https://rstudio.cloud/spaces/162296/project/3184932)
+
+---
+
+# Prediction (Interpolation)
+
+- **Interpolation**: Making estimates/predictions within the range of the data.
+- **Extrapolation**: Making estimates/predictions outside the range of the data.
+- Interpolation is fine. Extrapolation is dangerous.
+.question[why?]
+
+---
+
+- Interpolation
+    ```{r, echo = FALSE}
+    ggplot(data = submt, mapping = aes(x = logwt, y = mpg)) +
+      geom_point() +
+      geom_abline(slope = coef(lmout)[2], intercept = coef(lmout)[1], lwd = 1, col = "blue", alpha = 1/2) +
+      geom_segment(data = data.frame(x    = 1, 
+                                     xend = 1,
+                                     y    = 0,
+                                     yend = coef(lmout)[1] + 1 * coef(lmout)[2]),
+                   mapping = aes(x = x, xend = xend, y = y, yend = yend), 
+                   lty = 2, color = "red", lwd = 1) +
+      geom_hline(yintercept = 0, lty = 2, alpha = 1/2) +
+      ylab("MPG") +
+      xlab("Log-weight")
+    ```
+
+---
+
+- Extrapolation
+    ```{r, echo = FALSE}
+    ggplot(data = submt, mapping = aes(x = logwt, y = mpg)) +
+      geom_point() +
+      geom_abline(slope = coef(lmout)[2], intercept = coef(lmout)[1], lwd = 1, col = "blue", alpha = 1/2) +
+      geom_segment(data = data.frame(x    = 3, 
+                                     xend = 3,
+                                     y    = 0,
+                                     yend = coef(lmout)[1] + 3 * coef(lmout)[2]),
+                   mapping = aes(x = x, xend = xend, y = y, yend = yend), 
+                   lty = 2, color = "red", lwd = 1) +
+      geom_hline(yintercept = 0, lty = 2, alpha = 1/2) +
+      ylab("MPG") +
+      xlab("Log-weight")
+    ```
+
+---
+
+## Why is extrapolation dangerous?
+
+1. Not sure if the linear relationship is the same outside the range of
+   the data (because we don't have data there to see the relationship).
+2. Not sure if the variability is the same outside the range of the 
+   data (because we don't have data there to see the variability).
+
+---
+
+### Make a prediction:
+
+1. You need a data frame with the exact same
+   variable name as the explanatory variable. 
+   ```{r}
+   newdf = tribble(~logwt,
+                   1, 
+                   1.5)
+   ```
+2. Then you use the `predict()` function to obtain predictions.
+   ```{r}
+   newdf = newdf %>%
+     mutate(predictions = predict(object = lmout, newdata = newdf))
+   ```
+
+---
+
+class: middle
+
+.hand[Your turn]
+
+[L16 AE part ii](https://rstudio.cloud/spaces/162296/project/3184932)
+
+---
+
+## Assumptions and Violations
+
+- In the linear model, you can trade assumptions for inference:
+
+- Assumptions in *decreasing* order of importance
+  1. **Independence** - The knowledge of the value of one observation does not 
+     give you any information on the value of another.
+  2. **Linearity** - The relationship looks like a straight line.
+  3. **Equal Variance** - The spread is the same for every value of $x$
+  4. **Normality** - The distribution of the errors isn't too skewed and there aren't 
+     any *too* extreme points. (Only an issue if you have outliers and a 
+     small number of observations because thanks be to the 
+     [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem)).
+
+---
+
+### What do we lose when violated?
+
+  1. **Linearity** violated - Linear regression line does not pick up actual 
+     conditional expectation.  As a linear approximation, the results will be sensitive to the particular $x$ sampled.
+  2. **Independence** violated - Linear regression line is unbiased, but standard 
+     errors can be badly off.
+  3. **Equal Variance** violated - Linear regression line is unbiased, but standard 
+     errors are off. Your $p$-values may be too small, or too large.
+  4. **Normality** violated - Only an issue if your sample size is "small".  Unstable results if outliers are present.  Your $p$-values may be too small, or too large.
+     
+.question[What assumptions are made about the distribution of the 
+  explanatory variable (the $x_i$'s)?]
+
+---
+  
+## Evaluating Independence
+
+- Think about the problem.
+  - Were different responses measured on the same observational/experimental unit?
+  - Were data collected in groups?
+
+- Non-independence: The temperature today and the temperature 
+  tomorrow. If it is warm today, it is probably warm tomorrow.
+
+-  Non-independence: You are measuring properties of 500 single cells isolated from 3 mice.  Because the cells within a given mouse are probably similar, each cell is not independent.  
+
+---
+
+### xkcd 2533
+
+```{r, echo = FALSE}
+knitr::include_graphics("l16/img/slope_hypothesis_testing_2x.png")
+
+```
+
+Via [xkcd](https://xkcd.com/2533/)
+
+---
+class: code50
+
+### Evaluating other assumptions via residual diagnostics
+
+- Obtain the residuals by using `augment()` from broom. They will be the
+  `.resid` variable.
+    ```{r}
+    aout = augment(lmout)
+    glimpse(aout)
+    ```
+
+- For inference, consider:
+    - residuals $r_i$ vs $\hat{y}_i$.
+    - residuals $r_i$ vs response $y_i$
+    - residuals $r_i$ vs explanatory variable $x_i$
+ 
+---
+  
+### Potential remedies
+
+1. Linearity Violated: Try a transformation. If the relationship looks 
+   curved and monotone (i.e. either always increasing or always decreasing) then 
+   try a log transformation.
+2. Independence Violated: Try a two-step procedure (that collapses over repeated measures) or ke longitudinal data analysis.
+3. Equal Variance Violated: If the relationship is also curved and monotone, 
+   try a log transformation on the response variable. Use a bootstrap.  Or stay tuned for en you learn about sandwich estimation.
+4. Normality Violated: Don't trust prediction intervals 
+   (confidence intervals are fine).
+   
+---
+
+### Example 1: A perfect residual plot
+
+.panelset[
+.panel[.panel-name[Fit]
+```{r, echo = FALSE, message = FALSE}
+set.seed(1)
+x = rnorm(100, sd = 1)
+y = x + rnorm(100)
+lmout = lm(y ~ x)
+res_vec = resid(lmout)
+fit_vec = fitted(lmout)
+qplot(x, y, xlab = "X", ylab = "Y", main = "Raw Data") + 
+  geom_smooth(se = FALSE, method = "lm")
+```
+]
+.panel[.panel-name[Residual]
+```{r, echo = FALSE, message = FALSE}
+qplot(fit_vec, res_vec, xlab = "Fitted Values", ylab = "Residuals", main = "Residual Plot") +
+  geom_hline(yintercept = 0)
+```
+]
+]
+
+---
+
+### Verify
+
+- `r emo::ji('check')` Means are straight lines
+- `r emo::ji('check')` Residuals seem to be centered at 0 for all $x$
+- `r emo::ji('check')` Variance looks equal for all $x$
+- `r emo::ji('check')` Everything looks perfect (too perfect...`r emo::ji("thinking")`)
+
+---
+
+### Example 2: Curved Monotone Relationship, Equal Variances
+
+- Simulate data:
+    ```{r, output.lines = 7}
+    set.seed(1)
+    x = rexp(100)
+    x = x - min(x) + 0.5
+    y = log(x) * 20 + rnorm(100, sd = 4)
+    (df_fake = tibble(x, y))
+    ```
+
+---
+
+.panelset[
+.panel[.panel-name[Fit]
+```{r, echo = FALSE}
+lmout = lm(y ~ x)
+res_vec = resid(lmout)
+fit_vec = fitted(lmout)
+qplot(x, y, xlab = "X", ylab = "Y", main = "Raw Data")+ geom_smooth(se = FALSE, method = "lm")
+```
+]
+.panel[.panel-name[Residual]
+```{r, echo = FALSE}
+qplot(fit_vec, res_vec, xlab = "Fitted Values", ylab = "Residuals", main = "Residual Plot") + geom_hline(yintercept = 0)
+```
+]
+]
+
+---
+
+### Check
+
+- `r emo::ji("x")` Curved (but always increasing) relationship between $x$ and $y$.
+- `r emo::ji("check")` Variance looks equal for all $x$
+- `r emo::ji("x")` Residual plot has a parabolic shape.
+- **Solution**: These indicate a $\log$ transformation of $x$ could help.
+    ```{r}
+    df_fake %>%
+      mutate(logx = log(x)) ->
+      df_fake
+    lm_fake = lm(y ~ logx, data = df_fake)
+    ```
+
+---
+
+### Example 3: Curved Non-monotone Relationship, Equal Variances
+
+- Simulate data:
+    ```{r}
+    set.seed(1)
+    x = rnorm(100)
+    y = -x^2 + rnorm(100)
+    df_fake = tibble(x, y)
+    ```
+
+---
+
+.panelset[
+.panel[.panel-name[Fit]
+```{r, echo = FALSE}
+lmout = lm(y ~ x)
+res_vec = resid(lmout)
+fit_vec = fitted(lmout)
+qplot(x, y, xlab = "X", ylab = "Y", main = "Raw Data")+ geom_smooth(se = FALSE, method = "lm")
+```
+]
+.panel[.panel-name[Residual]
+```{r, echo = FALSE}
+qplot(fit_vec, res_vec, xlab = "Fitted Values", ylab = "Residuals", main = "Residual Plot") + geom_hline(yintercept = 0)
+```
+]
+]
+
+
+---
+
+### Verify
+
+- `r emo::ji("x")` Curved relationship between $x$ and $y$
+- `r emo::ji("x")` Sometimes the relationship is increasing, sometimes it is decreasing.
+- `r emo::ji("check")`  Variance looks equal for all $x$
+- `r emo::ji("x")` Residual plot has a parabolic form.
+- **Solution**: Include a squared term in the model (or use a gam or spline)
+    ```{r}
+    lmout = lm(y ~ I(x^2), data = df_fake)
+    ```
+
+---
+
+### Example 4: Curved Relationship, Variance Increases with $Y$
+
+- Simulate data:
+    ```{r}
+    set.seed(1)
+    x = rnorm(100)
+    y = exp(x + rnorm(100, sd = 1/2))
+    df_fake = tibble(x, y)
+    ```
+
+---
+
+.panelset[
+.panel[.panel-name[Fit]
+```{r, echo = FALSE}
+lmout = lm(y ~ x)
+res_vec = resid(lmout)
+fit_vec = fitted(lmout)
+qplot(x, y, xlab = "X", ylab = "Y", main = "Raw Data")+ geom_smooth(se = FALSE, method = "lm")
+```
+]
+.panel[.panel-name[Code]
+```{r, echo = FALSE}
+qplot(fit_vec, res_vec, xlab = "Fitted Values", ylab = "Residuals", main = "Residual Plot") + geom_hline(yintercept = 0)
+```
+]
+]
+
+---
+
+### Verify
+
+- `r emo::ji("x")` Curved relationship between $x$ and $y$
+- `r emo::ji("x")` Variance looks like it increases as $y$ increases
+- `r emo::ji("x")` Residual plot has a parabolic form.
+- `r emo::ji("x")` Residual plot variance looks larger to the right and smaller to the left.
+- **Solution**: Take a log-transformation of $y$.
+    ```{r}
+    df_fake %>%
+      mutate(logy = log(y)) ->
+      df_fake
+    lm_fake = lm(logy ~ x, data = df_fake)
+    ```
+
+---
+
+### Example 5: Linear Relationship, Equal Variances, Skewed Distribution
+
+Simulate data:
+```{r}
+set.seed(1)
+x = runif(200)
+y = 15 * x + rexp(200, 0.2)
+```
+
+---
+
+.panelset[
+.panel[.panel-name[Fit]
+```{r, echo = FALSE}
+lmout = lm(y ~ x)
+res_vec = resid(lmout)
+fit_vec = fitted(lmout)
+qplot(x, y, xlab = "X", ylab = "Y", main = "Raw Data")+ geom_smooth(se = FALSE, method = "lm")
+```
+]
+.panel[.panel-name[Residual]
+```{r, echo = FALSE}
+qplot(fit_vec, res_vec, xlab = "Fitted Values", ylab = "Residuals", main = "Residual Plot") + geom_hline(yintercept = 0)
+```
+]
+]
+
+---
+
+### Verify
+
+- `r emo::ji("check")` Straight line relationship between $x$ and $y$.
+- `r emo::ji("check")` Variances about equal for all $x$
+- `r emo::ji("x")` Skew for all $x$
+- `r emo::ji("x")` Residual plots show skew.
+- **Solution**: Do nothing, but report skew, or use a bootstrap or robust standard errors
+
+---
+
+### Example 6: Linear Relationship, Unequal Variances
+
+- Simulate data:
+    ```{r}
+    set.seed(1)
+    x = runif(100) * 10
+    y = 0.85 * x + rnorm(100, sd = (x - 5) ^ 2)
+    df_fake = tibble(x, y)
+    ```
+
+---
+
+.panelset[
+.panel[.panel-name[Fit]
+```{r, echo = FALSE}
+lmout = lm(y ~ x)
+res_vec = resid(lmout)
+fit_vec = fitted(lmout)
+qplot(x, y, xlab = "X", ylab = "Y", main = "Raw Data")+ geom_smooth(se = FALSE, method = "lm")
+```
+]
+.panel[.panel-name[Residuals]
+```{r, echo = FALSE}
+qplot(fit_vec, res_vec, xlab = "Fitted Values", ylab = "Residuals", main = "Residual Plot") + geom_hline(yintercept = 0)
+```
+]
+]
+
+---
+
+### Verify
+- `r emo::ji("check")` Linear relationship between $x$ and $y$.
+- `r emo::ji("x")` Variance is different for different values of $x$.
+- **Solution**: The modern solution is bootstrap or use sandwich estimates of the standard errors
+    ```{r}
+    rob_fit = estimatr::lm_robust(y ~ x, data = df_fake)
+    tidy(rob_fit)
+    ```
+  
+
+---
+class: middle
+
+# Interpreting coefficients when you log
+
+---
+
+### Log `x` 
+
+Generally, when you use logs, you interpret associations on a 
+  *multiplicative* scale instead of an *additive* scale.
+
+No log:
+- Model: $E[y_i] = \beta_0 + \beta_1 x_i$
+- Observations that differ by 1 unit in $x$ tend to differ by $\beta_1$ units in $y$.
+
+Log $x$:
+- Model: $E[y_i] = \beta_0 + \beta_1 \log_2(x_i)$
+- Observations that are twice as large in $x$ tend to differ by $\beta_1$ units in $y$.
+
+---
+
+### log `y` 
+
+Log $y$:
+- Model: $E[\log_2(y_i)] = \beta_0 + \beta_1 x_i$
+- Observations that differ by 1 unit in $x$ tend to be $2^{\beta_1}$ times larger in $y$. 
+
+Log both:
+- Model: $E[\log_2(y_i)] = \beta_0 + \beta_1 \log_2(x_i)$
+- Observations that are twice as large in $x$ tend to be $2^{\beta_1}$ times larger in $y$. 
+
+.footnote[Note: we commit statistical abuse here, since $\exp \left[ \text{E}(\log(Y) | X) \right] \neq \text{E}(Y | X)$, ie, `exp` doesn't commute through the expectation. Though the delta method says this is the 1st order approximation.
+]
+
+---
+class: middle
+
+.hand[Interpreting interaction models]
+
+---
+
+## When it doubt, predict it out!
+
+With interaction models, it's easy to trick yourself.  But you can also make predictions to check your understanding.
+
+```{r}
+only_wt =  lm(mpg ~ log(wt), mtcars)
+only_disp =  lm(mpg ~ log(disp), mtcars)
+only_cyl =  lm(mpg ~ cyl, mtcars)
+complicated_model = lm(mpg ~ (log(wt) + log(disp))*cyl, mtcars)
+```
+
+---
+
+```{r, out.width="80%"}
+GGally::ggcoef_compare(list(only_wt = only_wt, only_disp = only_disp, only_cyl = only_cyl, complicated=complicated_model))
+```
+
+.question[Why is `log(disp):cyl6` and `log(disp):cyl8` positive?]
+
+---
+
+### Predict it out!
+
+.panelset[
+.panel[.panel-name[Code]
+```{r pred-plot, fig.show='hide'}
+(newdf = expand.grid(wt = mean(mtcars$wt),
+                   disp = mean(mtcars$disp),
+                   cyl = factor(c(4, 6, 8))))
+
+newdf = newdf %>% mutate(mpg = predict(complicated_model, across()))
+ggplot(mtcars, aes(x = cyl, y = mpg)) + geom_boxplot() +
+  geom_line(data =newdf, aes(group = 1), color = 'red')
+```
+]
+.panel[.panel-name[Plot]
+```{r ref.label = 'pred-plot', echo = FALSE, out.width = '70%', results = 'hide'}
+```
+]
+]
+---
+
+### We are extrapolating!
+
+```{r}
+
+ggplot(mtcars, aes(x = log(disp), y = mpg)) + geom_point() + 
+  geom_smooth(method = 'lm') + facet_wrap(~cyl) + 
+  geom_point(data =newdf, aes(group = 1), color = 'red')
+
+```
+
+
+---
+
+# Summary of R commands
+
+- `augment()`:
+  - Residuals $r_i = y_i - \hat{y}_i$: `$.resid`
+  - Fitted Values $\hat{y}_i$: `$.fitted`
+- `tidy()`:
+  - Name of variables: `$term`
+  - Coefficient Estimates: `$estimate`
+  - Standard Error (standard deviation of sampling distribution of coefficient estimates): `$std.error`
+  - t-statistic: `$statistic`
+  - p-value: `$p.value`
+- `glance()`: 
+  - R-squared value (proportion of variance explained by regression line, higher is better): `$r.squared`
+  - AIC (lower is better): `$AIC`
+  - BIC (lower is better): `$BIC`
+
+
+---
+
+class: middle
+
+.hand[Many linear models with list columns]
+
+---
+
+# Motivation
+
+- The gapminder data
+    ```{r, message = FALSE}
+    library(tidyverse)
+    library(broom)
+    library(gapminder)
+    data("gapminder")
+    glimpse(gapminder)
+    ```
+
+---
+
+- Suppose we want to look at how life expectancy has changed over time in 
+  each country:
+    ```{r}
+    gapminder %>%
+      ggplot(aes(x = year, y = lifeExp, group = country)) +
+      geom_line(alpha = 1/3) +
+      xlab("Year") +
+      ylab("Life Expectancy")
+    ```
+
+
+---
+class: code70
+
+- General trend is up. But there are some countries where this doesn't
+  happen. We can quantify this with one country
+  using a linear model:
+```{r}
+usdf = gapminder %>% filter(country == "United States")
+```
+
+
+```{r, echo = FALSE, out.width = "50%"}
+ ggplot(usdf, aes(x = year, y = lifeExp)) +
+ geom_line() +
+ geom_smooth(method = "lm", se = FALSE) +
+ geom_line(alpha = 1/3) +
+ xlab("Year") +
+ ylab("Life Expectancy")
+```
+
+
+```{r, echo = FALSE}
+us_lmout = lm(lifeExp ~ year, data = usdf)
+tidy_uslm = tidy(us_lmout)
+tidy_uslm
+```
+
+---
+
+- So each year, the US has been increasing its life expectancy by 
+  `r tidy_uslm$estimate[2]` years.
+  
+- How can we get these coefficient estimates for each country?
+
+--
+
+- We could fit an interaction between year and country but:
+  -  Have to pick a reference country, or faff about with sum-to-zero contrasts, then recover the "missing level".
+  -  This would assumes identical error terms across all countries -- undesirable.
+
+---
+
+###  Many linear models to the rescue!
+
+Also known as `group_by` with list columns.  This is a common, and very useful pattern for me, but it might be because I am a degenerate bioinformatician and am always dealing with multiplicity.
+
+The concept is:
+
+1. `group_by` lets us `summarize` data by subsets.
+2. Model fits can go into a list.
+3. data frames can contain lists: a data frame is a list that quacks like a matrix, and lists can contain more lists...
+4. `tidyr::unnest()` function will let us extract the goods.
+
+---
+
+## General recipe
+
+```{r, eval = FALSE}
+many_fits = gapminder %>% 
+  group_by(country) %>%
+  summarize(fit = fit_model(across())) #<<
+
+tidied_output = many_fits %>% 
+  rowwise()  %>% #<<
+  mutate(df = list( #<<
+    post_process(fit) #<<
+    ))
+
+unnested_output = tidied_output %>% 
+  tidyr::unnest(cols = c(df)) #<<
+```
+
+*  `fit_model`: data.frame in, length-1 list out
+*  `post_process`: unboxed list element in, a data frame wrapped as a list out
+*  extract and combine with `unnest`.
+
+---
+
+### Specific example
+
+```{r, output.lines = 7}
+fit_model = function(data) {
+  fit = lm(lifeExp ~ I(year-1990), data)
+  list(fit)
+}
+
+many_fits = gapminder %>% 
+  group_by(country, continent) %>%
+  summarize(fit = fit_model(across())) %>% 
+  ungroup()
+many_fits
+```
+
+
+---
+
+### Output
+
+Now we can see the model fit in Japan:
+
+```{r}
+filter(many_fits, country == 'Japan')$fit[[1]] %>% tidy()
+```
+
+or Senegal
+```{r}
+filter(many_fits, country == 'Senegal')$fit[[1]] %>% tidy()
+
+```
+
+---
+
+### Notes
+
+1. Use `across()` to pass the data frame, subset to the current group to our fit function.
+2. We have to do an unlisting operation to extract the lm object itself.  Without we get a length-1 list:
+   ```{r}
+   filter(many_fits, country == 'Senegal')$fit 
+   ```
+   
+---
+   
+3.We have to wrap the `lm` output as a list:
+```{r, error=TRUE}
+fit_not_list = function(data) {
+ fit = lm(lifeExp ~ I(year-1990), data)
+ fit
+}
+
+many_fits = gapminder %>% 
+ group_by(country, continent) %>%
+ summarize(fit = fit_not_list(across()))
+```
+
+---
+  
+### Add model summaries
+
+To really cook with this pattern, we want to extract various components from the model into a long data frame, suitable for further dplying or ggploting.  
+
+The essential rule here is that we can mutate new list column with operations that are
+
+>  `n-list` in and `n-list` out
+
+
+---
+
+### `n-list` in and `n-list` out!
+
+By `n-list` I mean a length-n list.
+
+`purrr::map` (and `lapply`) support this sort of implicit iteration, so we definitely can fall back on them. 
+
+We can use also the `rowwise()` operator in dplyr, which lets us just write a function that takes an "unboxed" element of the list in and writes an `n-list` out.
+
+
+---
+
+### Manipulating list columns
+
+```{r}
+(df = tibble( x = 1:3, 
+             y = list('a', c('bb', 'cc'), 'ddd')))
+
+str(df$y)
+```
+
+Verify: `y` is a list.
+
+---
+
+### Manipulating list columns
+
+Suppose we want to count the number of characters in each element of `y`. `nchar` doesn't quite work:
+```{r}
+nchar(df$y)
+```
+
+Need `lapply` or `purrr::map`
+```{r}
+purrr::map(df$y, nchar)
+```
+
+---
+
+### Finally, using mutate
+
+```{r}
+(df = df %>% mutate(nchar = purrr::map(y, nchar)))
+```
+
+
+---
+
+### With purrr
+
+
+Ok, back to our set of `lm` fits:
+
+```{r}
+many_fits = many_fits %>% mutate(tidyout = map(fit, tidy))
+many_fits
+```
+
+---
+
+### With rowwise
+
+```{r}
+many_fits = many_fits %>% rowwise() %>% mutate(augmentout = list(augment(fit)))
+many_fits
+```
+
+---
+
+### Unnesting
+
+`tidy::unnest()` takes data frame list columns, extracts them, and rbinds them, and preserves the remaining columns, repeating these as necessary to get the dimension to match
+
+```{r}
+(df %>% unnest(cols = c(y, nchar)))
+```
+
+---
+
+### Unnest our fits
+
+```{r}
+many_fits_coef = many_fits %>% unnest(cols = c(tidyout))
+many_fits_coef
+```
+
+---
+
+### Finally
+
+
+What is the distribution of 1990-estimated life expectancy?
+
+.panelset[
+.panel[.panel-name[Code]
+```{r country-intercept, fig.show='hide'}
+intercept = many_fits_coef %>% 
+  filter(term == '(Intercept)') %>% 
+  arrange(desc(estimate)) %>%
+  mutate(country = fct_inorder(country))
+
+to_show = intercept %>% group_by(continent) %>% summarize(country = country[seq(from = 1, to = length(country), by = 5)]) %>% ungroup()
+
+intercept %>%
+ggplot(aes(y = country, x = estimate, xmin = estimate - std.error, xmax = estimate + std.error)) + 
+  geom_pointrange() + 
+  scale_y_discrete(breaks = to_show$country) + 
+  facet_grid(continent ~ ., scales = 'free_y', space = 'free')
+```
+]
+.panel[.panel-name[Plot]
+```{r, ref.label = 'country-intercept', echo = FALSE, out.width='70%'}
+
+```
+
+]]
+---
+
+- You can check all of the models' qualities by looking at the residuals
+
+.panelset[
+.panel[.panel-name[Code]
+```{r country-resid, fig.show='hide'}
+augment_df = many_fits %>% 
+  unnest(cols = c(augmentout)) %>%
+  mutate(year = `I(year - 1990)` + 1990)
+
+augment_df %>%
+  ggplot(aes(x = year, y = .std.resid, group = country)) +
+  geom_line(alpha = 1/3) +
+  facet_wrap(.~continent) +
+  geom_hline(yintercept = 0, lty = 2, col = "blue") +
+  xlab("Year") +
+  ylab("Residual")
+```
+]
+.panel[.panel-name[Plot]
+```{r, ref.label = 'country-resid', echo = FALSE, out.width='70%'}
+
+```
+Actually, there's a pretty severe indication that linearity is being violated!  
+]
+]
+
+
+---
+class: middle
+
+.hand[Your turn]
+
+
+[Complete part iii](https://rstudio.cloud/spaces/162296/project/3184932)
+ 
+---
+
+# Acknowledgments
+
+Adapted from David Gerard's [Stat 512](https://data-science-master.github.io/lectures/05_linear_regression/05_simple_linear_regression.html)
+
+## Resources
+
+- Chapter 25 from [RDS](https://r4ds.had.co.nz/).
+

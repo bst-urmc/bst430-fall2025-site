@@ -1,0 +1,103 @@
+---
+title: "Lab6 Key"
+author: "Andrew McDavid"
+date: "10/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-packages-data, message = FALSE, eval = TRUE}
+library(tidyverse)
+library(lubridate)
+library(ggrepel)
+library(vroom)
+```
+
+## Ex1
+
+```{r}
+cases = read_csv('data/us-states.csv')
+```
+
+```{r}
+sub_counties = filter(cases, state %in% c("Alabama", "Arizona", 'California', 'Florida', 'New York', 'Texas'), date >= as.Date('2020-03-01'))
+sub_county_long = pivot_longer(sub_counties, c(cases, deaths), names_to = 'stat')
+plt = ggplot(sub_county_long, aes(x = date, y = value, color = stat)) + 
+  geom_line(alpha = .5, position = 'stack') + facet_wrap(~state+stat, scales = 'free_y') + theme_minimal() +
+  scale_color_manual(values = c('purple', 'brown')) + theme(axis.text.x = element_text(angle = 45))
+plt
+```
+
+
+## Ex2
+
+```{r}
+library(lubridate)
+plt + xlim(as.Date(c('2021-08-01', '2021-10-01')))
+```
+
+There's strong ~7 day periodicity in the data, likely relating to reporting delays over the weekend.  Not all states feature this pattern, however.
+
+## Ex3
+
+```{r}
+sub_counties = sub_counties %>% mutate(day_of_week = weekdays(date))
+weekdays_plot = ggplot(filter(sub_counties, date > as.Date('2021-07-01')), aes(x = fct_reorder(weekdays(date), cases), y = cases))+ geom_boxplot() + facet_grid(state ~ month(date), scales = 'free') + theme(axis.text.x = element_text(angle = 90))
+weekdays_plot
+```
+
+Plotting the number of cases by state, by day-of-week, by month shows that not every state has this feature so strongly.  Florida is especially bad -- in July it reported no data on Saturday-Monday.  Oddly, this changed in August.  Texas reports no data on Sundays. Arizona, New york and Alabama show some day-of-week variability but don't have data dropping out entirely.
+
+## Ex4
+
+```{r}
+sub_county_long = pivot_longer(sub_counties, c(cases_avg_per_100k, deaths_avg_per_100k), names_to = 'stat')
+plt %+% sub_county_long #+ geom_vline(data = annot, aes(xintercept = date))# = quantity), size = 2, color = 'black')
+```
+
+## Ex5
+
+1.  `group_by(date)`, sum, then slice_max.
+2.  `group_by(date)`, var, then slice_max.
+3.  `pivot_wider`, then a filter operation.
+
+## Ex6 and 7
+
+```{r}
+rowVar = function(matrix, na.rm = FALSE){
+  apply(matrix, 1, var, na.rm = na.rm)
+}
+```
+
+```{r}
+case_mat = reshape2::acast(sub_counties, date ~ state, value.var = "cases_avg_per_100k", fill = 0)
+which.max(rowSums(case_mat))
+which.max(rowVar(case_mat))
+which(case_mat[,'California'] > case_mat[,'Texas'] & case_mat[,'California'] < case_mat[, 'Florida'])
+```
+
+
+## Ex 8
+
+```{r}
+cor_state = cor(case_mat)
+pheatmap::pheatmap(cor_state)
+```
+
+
+
+
+```{r, eval = FALSE}
+pc_stat = sub_counties %>% group_by(date) %>% summarize(total_pc = sum(cases_avg_per_100k), var_pc = var(cases_avg_per_100k))
+
+max_total = slice_max(pc_stat, total_pc) %>% mutate(quantity = 'Highest Cases p.c.')
+max_var =  slice_max(pc_stat, var_pc) %>% mutate(quantity = 'Highest Variance p.c.')
+
+sub_county_long = pivot_longer(sub_counties, c(cases_avg_per_100k, deaths_avg_per_100k), names_to = 'stat')
+annot = bind_rows(max_total, max_var) #%>% left_join(sub_county_long)
+plt %+% sub_county_long + geom_vline(data = annot, aes(xintercept = date))# = quantity), size = 2, color = 'black')
+```
+

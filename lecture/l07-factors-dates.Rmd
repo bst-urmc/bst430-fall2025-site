@@ -1,0 +1,467 @@
+---
+title: "BST430  Lecture 7"
+subtitle: "Factors, Dates and Times"
+author: "Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-09-19 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+class: middle
+
+```{r child = "setup.Rmd"}
+```
+
+  
+```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(DT)
+library(scales)
+```
+
+
+
+# Data classes
+
+---
+
+## Data classes
+
+Recall: we talked about *types* (elements) and  *classes* (compounds)
+
+- Vectors are like Lego building blocks
+
+--
+- We stick them together to build more complicated constructs, e.g. *representations of data*
+
+--
+- The **class** attribute relates to the S3 class of an object which determines its behaviour
+  - You don't need to worry about what S3 classes really mean, but you can read more about it [here](https://adv-r.hadley.nz/s3.html#s3-classes) if you're curious
+
+--
+- Examples: factors, dates, and data frames
+  
+---
+
+## Factors
+
+R uses factors to handle categorical variables, variables that have a fixed and known set of possible values
+
+```{r}
+x = factor(c("BS", "MS", "PhD", "MS"))
+x
+```
+
+--
+
+.pull-left[
+```{r}
+typeof(x)
+```
+]
+.pull-right[
+```{r}
+class(x)
+```
+]
+
+
+---
+
+## More on factors
+
+We can think of factors like character (level labels) and an integer (level numbers) glued together
+
+```{r}
+glimpse(x)
+as.integer(x)
+```
+
+---
+
+## Dates
+
+```{r}
+library(lubridate)
+y = ymd("2020-01-01")
+y
+typeof(y)
+class(y)
+```
+
+---
+
+## More on dates
+
+We can think of dates like an integer (the number of days since the origin, 1 Jan 1970) and an integer (the origin) glued together
+
+```{r}
+as.integer(y)
+as.integer(y) / 365 # roughly 50 yrs
+```
+
+---
+
+class: middle
+
+# Working with factors
+
+---
+
+```{r include=FALSE}
+library(nycflights13)
+flights_sml = flights %>% 
+  select(origin:dest, year:dep_time, hour:minute) 
+flights10 = flights_sml %>%
+  semi_join(flights %>% count(dest) %>%
+              mutate(rank = min_rank(-n)) %>% filter(rank<=15)) 
+```
+
+## Store and read data as character strings
+
+```{r}
+glimpse(flights10)
+```
+
+---
+
+## But coerce when plotting
+
+```{r out.width="60%"}
+ggplot(flights10, mapping = aes(x = dest)) +
+  geom_bar() + 
+  theme_minimal() + 
+  coord_flip()
+```
+
+---
+
+## Use forcats to manipulate factors
+
+```{r out.width="55%"}
+library(forcats)
+plt = flights10 %>% # assign plot to object #<<
+  mutate(dest_fct = fct_infreq(dest)) %>% #<<
+  ggplot(mapping = aes(x = dest_fct)) +
+  geom_bar()  + 
+  coord_flip() + theme_minimal()
+plt #print it #<<
+```
+
+---
+
+## useful forcats functions
+
+* Set factor levels by order of appearance `fct_inorder()`, numeric value `fct_inseq()`, number of observations `fct_infreq()`, 
+* Reverse order of factor levels `fct_rev()`, make an arbitrary change `fct_relevel()`
+* Combine factor levels by number of occurences `fct_lump_n()`, order statistic `fct_lump_min()`, or frequency `fct_lump_prop()`
+* Recode/combine level names `fct_recode()`,  combine and drop levels `fct_collapse()`
+* Set level order by covariate `fct_reorder()`
+* Convert `NA` `fct_explicit_na()`
+
+---
+
+## Collapse rare categories
+
+```{r}
+plt %+% # #<< Replace plot data 
+  (flights_sml %>%
+  mutate(dest_fct = fct_lump_n(dest, 15) %>% #<<
+           fct_infreq))
+```
+
+---
+
+## Recode categories
+
+```{r}
+plt %+%
+  (flights_sml %>%
+  mutate(dest_fct = fct_recode(dest, 'Western NY' = 'ROC', #<<
+                               'Western NY' = 'BUF',#<<
+                               'Western NY' = 'SYR') %>% #<<
+           fct_lump_n(15) %>% fct_infreq))
+```
+
+For more complicated recoding, consider encoding with a data frame and using a join.
+
+
+---
+
+
+class: middle
+
+# Working with dates
+
+---
+
+## Make a date
+
+.pull-left[
+```{r echo=FALSE, out.width="65%", fig.align="center"}
+knitr::include_graphics("l07/img/lubridate-not-part-of-tidyverse.png")
+```
+]
+.pull-right[
+- **lubridate** is the tidyverse-friendly package that makes dealing with dates a little easier
+- It's installed with `install.packages("tidyverse")` but needs to be explicitly loaded with `library(lubridate)`
+]
+
+---
+
+class: middle
+
+.hand[.light-blue[
+we're just going to scratch the surface of working with dates in R here...
+]]
+
+---
+
+.question[
+Calculate and visualize the number of departures on any given date.
+]
+
+
+---
+
+## Step 1. Construct dates
+
+.midi[
+```{r output.lines=7}
+library(glue)
+
+flights %>%
+  mutate(
+    date = glue("{year} {month} {day}") #<<
+    ) %>% 
+  relocate(date)
+```
+]
+
+---
+
+## Step 2. Count flights per date
+
+.midi[
+```{r}
+flights %>%
+  mutate(date = glue("{year} {month} {day}")) %>%
+  count(date)
+```
+]
+
+---
+
+## Step 3. visualize flights per date
+
+.midi[
+```{r out.width="80%", fig.asp = 0.4}
+flights %>%
+  mutate(date = glue("{year} {month} {day}")) %>%
+  count(date) %>%
+  ggplot(aes(x = date, y = n, group = 1)) +
+  geom_line()
+```
+]
+
+---
+
+.hand[zooming in a bit...]
+
+.question[
+Why does 10 Jan come after 1 Jan?
+]
+
+.midi[
+```{r out.width="80%", echo=FALSE, fig.asp = 0.4}
+flights %>%
+  mutate(date = glue("{year} {month} {day}")) %>%
+  count(date) %>%
+  slice(1:7) %>%
+  ggplot(aes(x = date, y = n, group = 1)) +
+  geom_line()
+```
+]
+
+---
+
+## Step 1. *REVISED* Construct dates "as dates"
+
+.midi[
+```{r output.lines=7}
+library(lubridate)
+
+flights %>%
+  mutate(
+    date = ymd(glue("{year} {month} {day}")) #<<
+    ) %>% 
+  relocate(date)
+```
+]
+
+---
+
+## Step 2. Count flights per date
+
+.midi[
+```{r}
+flights %>%
+  mutate(date = ymd(glue("{year} {month} {day}"))) %>% 
+  count(date)
+```
+]
+
+---
+
+## Step 3. visualize flights per date
+
+.midi[
+```{r out.width="80%", fig.asp = 0.4}
+flights %>%
+  mutate(date = ymd(glue("{year} {month} {day}"))) %>% 
+  count(date) %>%
+  ggplot(aes(x = date, y = n, group = 1)) +
+  geom_line()
+```
+]
+
+---
+
+## Flights by day of week
+
+[code](l07/flights_day_of_week.R)
+
+---
+
+## Other lubridate date functions
+
+*  Construct from month day year `mdy()`, or day month year `dmy()`
+*  Extract or set components `month()`, `day()`, `year()`
+*  Extract `quarter()` or day of week `weekdays()`
+*  Extract or set day-of-year `yday()`, day-of-quarter `qday()`, day-of week `wday()`
+*  Days elapsed between two dates: `date1 - date2`
+*  Lead or lag: `date + days_to_lead`
+
+---
+
+class: middle
+
+# Working with times
+
+---
+
+# Date + Time
+
+When you have a date + a time, then everything works as before, it just takes extra oomph to construct them:
+
+```{r}
+dmy_hms('22-Sep-2021 11:00:00')
+```
+
+--
+
+... and you need to worry about the timezone `r emo::ji('scream_cat')`
+
+
+```{r}
+dmy_hms('22-Sep-2021 11:00:00', tz = 'America/New_York')
+```
+
+---
+
+## When you only have / want the time?
+
+
+```{r}
+flights_sml = flights_sml %>% 
+  mutate(time = hm(glue("{hour} {minute}"))) %>% #<<
+  relocate(time)
+flights_sml
+```
+
+---
+
+## When do flights depart?
+
+```{r}
+ggplot(flights_sml, aes(x = time, fill = origin))
+```
+
+---
+
+## `Period` needs special treatment in ggplot2
+
+```{r}
+ggplot(flights_sml, aes(x = time, fill = origin))+ 
+  geom_density(alpha = .5) + 
+  scale_x_time() #<<
+```
+
+---
+
+### Probably under-smoothed, Weird Units
+
+.panelset[
+
+.panel[.panel-name[Code]
+```{r departure-time-plot, fig.show = 'hide'}
+plt = ggplot(flights_sml, aes(x = time, after_stat(count), fill = origin)) + 
+  geom_density(alpha = .5, bw = 1800) + # 30*60 seconds #<<
+  scale_x_time() + 
+  scale_y_continuous(sec.axis = 
+        sec_axis(trans = ~ .x/365*3600,  name = 'Departures/day/hour')) + #<<
+  theme_minimal() +
+  labs(y = "Departures/year/second")
+plt
+```
+]
+.panel[.panel-name[Plot]
+```{r, ref.label='departure-time-plot',  echo = FALSE, out.width="75%"}
+```
+]
+]
+---
+class: code70
+
+## Why bimodal?
+
+.panelset[
+.panel[.panel-name[Code]
+```{r departure-region-plot, fig.show = 'hide'}
+flights_jn = flights_sml %>% 
+  left_join(airports, c('dest' = 'faa')) %>% 
+  filter(!is.na(lon)) %>% #missing puerto rico
+  mutate(region = cut(lon, #<<
+                      breaks = c(-158, -124, -104, -83, -66), # 5 breakpoints #<<
+                      labels = c('HI/AK', 'West', 'Central', 'East'))) # 4 groups #<<
+
+plt %+% flights_jn + 
+  facet_wrap(~region, scales = 'free_y') + 
+  theme(axis.text.x = element_text(angle = 90))
+```
+]
+.panel[.panel-name[Plot]
+```{r, ref.label='departure-region-plot',  echo = FALSE, out.width="75%"}
+```
+]
+]
+
+---
+
+## Acknowledgments and Resources
+
+Adapted from [Data science in a box](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d11-data-classes/u2-d11-data-classes.html#1)
+
+[R4DS on Factors](https://r4ds.had.co.nz/factors.html)

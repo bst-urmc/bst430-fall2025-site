@@ -1,0 +1,35 @@
+---
+title: "Notes on github classrooms and rstudio cloud"
+description: |
+  Some updates about interfacing between github classroom
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Rstudio cloud
+
+1.  Students will need to link their rstudio cloud account to github and enable private repos.  RSC is good about prompting for when attempting to create a project from a private repo.
+2.  Less obviously, you will need to enable 3rd-party API access from the GH classroom organization.  Note that I don't entirely understand the security implications, rstudio probably should find a way to invite access via the github API rather than requiring carte blanche access.
+4.  Remind students to use the class workspace on RSC, not their default workspaces (or they'll run out of compute..)
+5.  It's amazing how much compute your class will burn.  The calculated usage seemed to be about 2x what students self-reported that their homework took.  I only had 9 students, and don't know if it would be tenable to use RSC in a larger classroom.
+
+## Github classrooms
+ 
+Even if you use the github classroom web api, you'll want to install Mine Cetinkaya-Rundel and colleagues' excellent [ghclass](https://rundel.github.io/ghclass/articles/articles/ghclass.html) package.  I used it to
+
+*  Set up team assignments
+*  Push edits to existing assignments
+*  Clone all student repos for grading, branching, and other housekeeping
+*  Unwatch student repos, so you aren't buried in github spam whenever your students make commits
+*  Branch against the initial commit (useful for grading via pull requests)
+
+At some point, I will post excerpts from the script I used to manage assignments.
+
+### Grading with github classrooms
+
+You can use pull requests, but you'll need to make sure you have a branch created against the initial commit.
+(See previous bullet).  Although you can do this post-hoc, life will be easier if you do it ahead of time.
+I could not figure out a good way to collaborate with TAs in the grading without sending the students (pre-mature and possibly incorrect) feedback.  Basically, a way to mute a pull request before it's submitted would be useful.
