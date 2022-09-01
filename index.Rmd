@@ -28,44 +28,43 @@ TTh 11:00-12:40, SRB 1410
 # Content
 
 0. [Introduction](lecture/l00-intro.html)
-    * [Survey](https://forms.gle/yJ8NVHbsJmanSywz9)
 1. [Meet the toolkit](lecture/l01-meet-toolkit.html)
     * Invites to rstudio cloud and github class room are on [blackboard](https://learn.rochester.edu)
     * Req readings: r4ds 3.1-3.5, 4. Optional: https://happygitwithr.com/
 <!-- * Resources: [rstudio](https://www.rstudio.com/products/rstudio/download/#download) https://cran.r-project.org/ -->
-2. [ggplot(i)](lecture/l02-ggplot2-i.html)
-    * CandyWeight for real.
-    * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom invite). Due 5pm Sept 3.
-3.  [dplyr(i)](lecture/l03-transform-dplyr-i.html)
-    * Continue working on lab 1
-4.  [Data types in R](lecture/l04-data-types.html). Finish dplyr(i) lecture.
-    * HW 1 assigned.  [instructions](hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html) and repo (accept GH classroom invite).  Due 5pm EDT, Sept 13.
-5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html). Finish data types lecture.
-    *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept an invitation to join the URMC-BST organization to get access to your repositories to complete these.  Most labs will be completed **in groups** going forward -- if you cannot attend class in person for whatever reason, let me know and I'll set up zoom so you can participate **synchronously and remotely.**
-6.  Finish L5a.
-    *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2.
-7.  [dplyr(ii)](lecture/l05b-advanced-dplyr.html), [styleguide](lecture/l06-style.html)
-    *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups!
-8.  [Factors and dates](lecture/l07-factors-dates.html)
-    *  [HW 2](hw_lab_instruction/hw02-accidents/hw02-accidents.html) assigned.
-9.  Effective data visualization [video](https://youtu.be/ZrifrBvFWgg) and [slides](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d14-effective-dataviz/u2-d14-effective-dataviz.html#1),  [rstudio.cloud project](https://rstudio.cloud/spaces/162296/project/2929636) and [quiz](https://docs.google.com/forms/d/e/1FAIpQLSdHAZGSFmErFF0FnZNRgbrxOPfcjFAQsjNA2Xlj-SdsOnWyqw/viewform?usp=sf_link).
-    * Continue working on lab 4.
-10. [Data from files](lecture/l09-data-from-files.html)
-    *  [Lab 5 assigned](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html)
-    *  Andrew's office hours will be at 4:30 Thursday this week.
-11. Work on lab 5.
-12. [Text processing](lecture/l10-text.html)
-    *  Discuss lab 5.  [HW 3 assigned](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html).
-    *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html)
-13. Continue L10.
-14. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html)
-    * [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned.
-15.  Continue with matrices / linear algebra and Lab 6.
-16.  [Functions i](lecture/l12-functions.html), continue to work on lab6.
-17.  [Functions ii and iteration](lecture/l13-functions-ii.html).  [HW04](hw_lab_instruction/hw04-wrangle-r/hw04-wrangle-r.html) (Due 5PM Nov 5)
-18.  [Knitr tricks and debugging](lecture/l14-debugging.html).  [Lab 07](hw_lab_instruction/lab07-generative-art/lab07-generative-art.html) due 5PM Nov 12.  [Lab 07 notes](lecture/lab07-art-notes.html).
-19.  [Linear models](lecture/l15-linear-models.html)
-20.  [Multivariate linear models](lecture/l16-multivariate-lm.html)
-21.  [Prediction and logistic regression](lecture/l17-prediction-logistic.html)
-     * [HW5](hw_lab_instruction/hw05-modeling-gss/hw-05-modeling-gss.html) due 24 Nov.
+<!-- 2. [ggplot(i)](lecture/l02-ggplot2-i.html) -->
+<!--     * CandyWeight for real. -->
+<!--     * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom invite). Due 5pm Sept 3. -->
+<!-- 3.  [dplyr(i)](lecture/l03-transform-dplyr-i.html) -->
+<!--     * Continue working on lab 1 -->
+<!-- 4.  [Data types in R](lecture/l04-data-types.html). Finish dplyr(i) lecture. -->
+<!--     * HW 1 assigned.  [instructions](hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html) and repo (accept GH classroom invite).  Due 5pm EDT, Sept 13. -->
+<!-- 5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html). Finish data types lecture. -->
+<!--     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept an invitation to join the URMC-BST organization to get access to your repositories to complete these.  Most labs will be completed **in groups** going forward -- if you cannot attend class in person for whatever reason, let me know and I'll set up zoom so you can participate **synchronously and remotely.** -->
+<!-- 6.  Finish L5a. -->
+<!--     *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2. -->
+<!-- 7.  [dplyr(ii)](lecture/l05b-advanced-dplyr.html), [styleguide](lecture/l06-style.html) -->
+<!--     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! -->
+<!-- 8.  [Factors and dates](lecture/l07-factors-dates.html) -->
+<!--     *  [HW 2](hw_lab_instruction/hw02-accidents/hw02-accidents.html) assigned. -->
+<!-- 9.  Effective data visualization [video](https://youtu.be/ZrifrBvFWgg) and [slides](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d14-effective-dataviz/u2-d14-effective-dataviz.html#1),  [rstudio.cloud project](https://rstudio.cloud/spaces/162296/project/2929636) and [quiz](https://docs.google.com/forms/d/e/1FAIpQLSdHAZGSFmErFF0FnZNRgbrxOPfcjFAQsjNA2Xlj-SdsOnWyqw/viewform?usp=sf_link). -->
+<!--     * Continue working on lab 4. -->
+<!-- 10. [Data from files](lecture/l09-data-from-files.html) -->
+<!--     *  [Lab 5 assigned](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html) -->
+<!--     *  Andrew's office hours will be at 4:30 Thursday this week. -->
+<!-- 11. Work on lab 5. -->
+<!-- 12. [Text processing](lecture/l10-text.html) -->
+<!--     *  Discuss lab 5.  [HW 3 assigned](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html). -->
+<!--     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html) -->
+<!-- 13. Continue L10. -->
+<!-- 14. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html) -->
+<!--     * [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned. -->
+<!-- 15.  Continue with matrices / linear algebra and Lab 6. -->
+<!-- 16.  [Functions i](lecture/l12-functions.html), continue to work on lab6. -->
+<!-- 17.  [Functions ii and iteration](lecture/l13-functions-ii.html).  [HW04](hw_lab_instruction/hw04-wrangle-r/hw04-wrangle-r.html) (Due 5PM Nov 5) -->
+<!-- 18.  [Knitr tricks and debugging](lecture/l14-debugging.html).  [Lab 07](hw_lab_instruction/lab07-generative-art/lab07-generative-art.html) due 5PM Nov 12.  [Lab 07 notes](lecture/lab07-art-notes.html). -->
+<!-- 19.  [Linear models](lecture/l15-linear-models.html) -->
+<!-- 20.  [Multivariate linear models](lecture/l16-multivariate-lm.html) -->
+<!-- 21.  [Prediction and logistic regression](lecture/l17-prediction-logistic.html) -->
+<!--      * [HW5](hw_lab_instruction/hw05-modeling-gss/hw-05-modeling-gss.html) due 24 Nov. -->
 <!--22.  Resampling and hypothesis testing-->
