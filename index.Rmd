@@ -17,13 +17,13 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # Administrivia
 
-MW 11:00-12:40, SRB 1402
+TTh 11:00-12:40, SRB 1410
 <br>
-**Instructor**: Andrew McDavid
+**Instructor**: Tanzy Love
 <br>
-**Website**: https://urmc-bst.github.io/bst430-fall2021-site/
+**Website**: https://bst-urmc.github.io/bst430-fall2022-site/
 <br>
-[**Syllabus**](static/Syllabus_DRAFT.pdf)
+[**Syllabus**](static/syllabus430-2022.pdf)
 
 # Content
 
