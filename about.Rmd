@@ -13,9 +13,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 1. Sign-up for a GitHub account. Install R, RStudio, and GIT on your computer.
 2.  Students will need to load their GIT config in RStudio. (see section 7,9,11,12 of https://happygitwithr.com/)
-3.  Less obviously, you will need to enable 3rd-party API access from the GH classroom organization.  Note that I don't entirely understand the security implications, rstudio probably should find a way to invite access via the github API rather than requiring carte blanche access.
-4.  Remind students to use the class workspace on RSC, not their default workspaces (or they'll run out of compute..)
-5.  It's amazing how much compute your class will burn.  The calculated usage seemed to be about 2x what students self-reported that their homework took.  I only had 9 students, and don't know if it would be tenable to use RSC in a larger classroom.
+3.  Students need to delete their cloned directories manually between RStudio sessions.
 
 ## Rstudio cloud
 
@@ -28,7 +26,9 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Github classrooms
  
-Even if you use the github classroom web api, you'll want to install Mine Cetinkaya-Rundel and colleagues' excellent [ghclass](https://rundel.github.io/ghclass/articles/articles/ghclass.html) package.  I used it to
+Even if you use the github classroom web api, you may want to install Mine Cetinkaya-Rundel and colleagues' excellent [ghclass](https://rundel.github.io/ghclass/articles/articles/ghclass.html) package.  
+
+Andrew used it to manage the class:
 
 *  Set up team assignments
 *  Push edits to existing assignments
