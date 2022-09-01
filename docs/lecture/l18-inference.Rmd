@@ -1,0 +1,66 @@
+---
+title: "BST430  Lecture 18"
+subtitle: "Resampling and inference"
+author: "Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-XX-XX (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+  
+```{r child = "setup.Rmd"}
+```
+
+  
+# Inference
+
+By inference, we mean trying to estimate properties of the population from which our data were sampled.
+
+Big assumption 1: our data represent some sort of sample from the population we are interested in!
+Big assumption 2: our data are a simple random sample (sampled uniform at random with replacement)
+
+Classically, a lot of effort has been devoted to this question/process in statistics, and it is often tied up with null-hypothesis testing.<sup>1</sup>
+*  t-tests for population properties of the mean in normally distributed (or at least continuous) data
+*  chi-square / fisher's exact tests for properties of conditional dependence in discrete data
+*  Kolmogorov-smirnov tests for properties of the distribution
+*  binomial tests
+*  etc
+
+.footnote[[1] As a pragmatic Bayesian, I find NHT reasonable for screening purposes, and uncomplicated statistics in conjunction with a confidence interval.  The latter is just the dual of the hypothesis test anyways.]
+---
+
+
+Needless to say, there are lots and lots of functions in R for inference:
+-  `binom.test` one-sample exact binomial test
+-  `prop.test`  two+ sample binomial tests
+-  `t.test` two-sample t-tests
+-  `anova` ANOVA via F- or likelihood ratio tests
+-  `ks.test` Kolmogorov-smirnov tests
+-  `cor.test` Fisher transform-based tests of correlation
+-  `wilcox.test` Non-parametric tests for location
+-  etc
+and what they all are, their assumptions, etc, are beyond the scope of this class.  Suffice it to say, almost all of these have reasonable `tidy` methods built for them in `broom`, and the "many linear models" construct shown in L16 can be very useful.
+
+---
+
+However, in many, many cases, bootstrapping offers a robust and general toolkit for inference.
+
+[bootstrap image]
+
+---
+
+--
+
+

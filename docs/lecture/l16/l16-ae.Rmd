@@ -1,0 +1,72 @@
+---
+title: "L16  Multivariate Regression - AE"
+author: "Andrew McDavid"
+date: "11/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(broom)
+library(GGally)
+data(mtcars)
+```
+
+## Part i (fit and infer)
+
+0. Using GGally, make a pairs plot of `disp`, `wt`, and `am`.
+
+1. Using the `mtcars` data, fit a linear model of displacement and `am` (as a factor) on weight. 
+
+2. What are the regression coefficient estimates? Interpret them.
+
+3. Now, fit a linear model of displacement, `am` (as a factor), **and the interaction** between the two variables on weight.  What are the regression coefficient estimates?  Interpret them.
+
+4. Using `glance`, evaluate evidence in favor of the interaction in (3) vs the additive model in (2) using a metric of your choice.
+
+5. (If you have time) make a plot showing the regression coefficient estimates from (3), and their 95\% confidence intervals.
+
+## Part ii (prediction)
+
+1.  From the BAC dataset, suppose someone had 5 beers. Use
+  `predict()` to predict their BAC.
+  
+```{r, eval = FALSE, echo = FALSE}
+library(openintro)
+data("bac")
+```
+
+## Part iii (many linear models)
+  
+1.  Using `gapminder`, fit a linear model on `log(pop)` vs years since 1990 over all countries.  Interpet the slope and intercept in terms of the unlogged variables.
+
+```{r}
+library(gapminder)
+```
+
+
+2.  Now, completing the code below, fit this model per country.  Report the countries with the fastest and slowest population growth rates.
+
+```{r, error = TRUE}
+fit_pop = function(){
+  ##Fill in this function
+}
+
+many_fits = gapminder %>% 
+  group_by(country) %>%
+  summarize(fit = fit_pop(across()))  %>%
+  ungroup()
+
+filter(many_fits, country == 'India')$fit[[1]]
+filter(many_fits, country == 'Italy')$fit[[1]]
+```
+
+
+```{r, error = TRUE}
+many_fits %>% 
+  rowwise() %>%
+  mutate(tidy_out = list(tidy(___))) %>%
+  unnest(___)
+```
+

@@ -1,0 +1,184 @@
+---
+title: "Lab 07 - Generative Art"
+output: 
+  tufte::tufte_html:
+    css: ../lab.css
+    tufte_variant: "envisioned"
+    highlight: pygments
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE)
+```
+
+
+# Learning goals
+
+-  Functions
+-  art!
+
+# Generative Art
+
+Generative art is a genre of computer-generated art where part of the aestetic is the code used to generate it.  Here's an example:
+
+```{r, message = FALSE}
+library(tidyverse)
+```
+
+
+## Wind segments
+
+```{r segments}
+n = 100
+scale = 3
+a = scale
+points_df = tibble(t = ppoints(n)*scale, 
+                   x = rnorm(n), 
+                   y_mu = (1+t)^2,
+                   y = rnorm(n, mean = y_mu),
+                   length = .5 + t/scale,
+                   angle = t/(scale) * pi - pi/3,
+                   xend = cos(angle)*length + x,
+                   yend = sin(angle)*length + y,
+                   length_check = sqrt((xend-x)^2 + (yend - y)^2)
+)
+```
+
+See slides for further explication.
+
+```{r segments-plot}
+ggplot(points_df, aes(x = x, y = y, color = t^2, xend = xend, yend = yend)) + 
+  geom_segment() + 
+  theme_void() + 
+  scale_color_gradientn( colors = c('darkgreen', 'yellow', 'orange', 'red', 'black')) +
+  guides(color = 'none') + 
+  theme(plot.background = element_rect(fill = 'grey70'))
+  
+```
+
+Maybe it looks like leaves blowing in the wind?
+
+
+## Branching trees
+
+Here's another example
+
+```{r}
+library(data.tree)
+
+# Need to install development version,
+# remotes::install_github("andrewheiss/colourlovers")
+library(colourlovers)
+
+bpp = function(parent, level, wind = 0){
+    te = rexp(1, rate = 1) + 1
+    t = parent$t + te
+    branch_span = rt(1, df = 3)*5/level
+    branch_center =  parent$x + branch_span + wind
+    print(glue::glue("At {level}: t = {t}"))
+    if(t > t_max){
+      print(glue::glue("At {level}: hit tmax!"))
+      return(parent) # hit t_max, stop recursing by returning parent
+    }
+    n_child = rpois(1, 1.7)
+    print(glue::glue("At {level}: t = {t}, n_child = {n_child}"))
+    offset = seq(0, to = parent$branch_span/parent$n_sibling, length.out = n_child)
+    offset = offset - mean(offset)
+    for(level in seq_len(n_child)){
+      child = parent$AddChild(level, 
+                              t0 = parent$t, t = parent$t + te, te = te, 
+                              n_sibling = n_child, 
+                              x = branch_center + offset[level], x0 = parent$x,
+                              branch_span = branch_span)
+      bpp(child, level = level + 1) # add more children
+    }
+    print(glue::glue("At {level}: added all children!"))
+    # added all children, return parent
+    return(parent)
+}
+
+t_max = 7
+t = 0
+set.seed(1234)
+root = Node$new("Root", t = 0, x = 0, branch_span = 3, n_sibling = 1, te = -1)
+result = bpp(root, level = 1, wind = .4)
+
+
+result_frame = ToDataFrameNetwork(result, 'n_sibling', 't', 'te', 'x', 'x0', 't0', 'level')
+palette = sample(clpalettes('top'), 1)[[1]] 
+colors = palette %>% swatch %>% .[[1]]
+
+ggplot(result_frame, aes(x = x0, xend = x, y = t0, yend = t, color = t, size = 1/level)) + 
+  geom_curve(curvature = .1)  +
+  scale_color_gradientn(colors = colors) +
+  theme_void() + 
+  guides(color = 'none', size = 'none') +
+  theme(plot.background = element_rect(fill = 'black'))
+
+
+
+```
+
+Could be a tree -- or a graph of Covid transmission `r emo::ji("grimacing")`.
+
+# Getting started
+
+Go to the course GitHub organization and locate your repo, clone it in RStudio and open the R Markdown document.
+Knit the document to make sure it compiles without errors.
+
+## Warm up
+
+Update the YAML of your R Markdown file with your information, knit, commit, and push your changes.
+Make sure to commit with a meaningful commit message.
+Then, go to your repo on GitHub and confirm that your changes are visible in your Rmd **and** md files.
+If anything is missing, commit and push again.
+
+## Packages
+
+We'll use the **tidyverse**, and possibly data.tree and colourlovers.
+These packages are already installed for you.
+You can load them by running the following in your Console:
+
+```{r eval = TRUE, message = FALSE}
+library(tidyverse)
+```
+
+
+
+
+## Choose one option
+
+1. Some of our trees (e.g. the catalpa) have carotid leaf, while others (birch and beech) are ovate, and still others (maple) are palmate.  Implement a [carotid function](https://mathworld.wolfram.com/HeartCurve.html), [a petiolate](https://pdfs.semanticscholar.org/f0d6/60b1ca7a5cdeafd055b59bcd0f225d66be1f.pdf)
+or a [palmate](https://math.stackexchange.com/questions/1587947/the-plot-of-a-leaf) mathematical function and artfully array and color your "leaves".  
+
+2. Consider a stochastic process such as the branching process depicted above.  Other options could be birth-death processes, etc. Please note that although you are welcome to consult my code for your process, please do not directly copy-paste it!  You are provided a version you may modify in the lab template.
+
+Vary the branching distribution (branch times) distribution on the number of children (heavier or lighter tails than Poisson), as well as the aestetics of the branching (branch_span, wind), color palette, and make a pretty picture.
+
+In either case, please pay attention to writing functions for the leaf shape or stochastic process that are:
+*  clear
+*  abstracted
+*  testable
+
+
+`r emo::ji("broom")` 🧶 ✅ ⬆️ Lint, Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
+
+# Wrapping up
+
+Go back through your write up to make sure you're following coding style guidelines we discussed in class.
+Make any edits as needed.
+
+Also, make sure all of your R chunks are properly labelled, and your figures are reasonably sized.
+
+Once a team leader for the week pushes their final changes, others should *pull* the changes and knit the R Markdown document to confirm that they can reproduce the report.
+
+# Rubric
+
+27 points total
+
+*  4 points appropriate use of functions to define the leaf shape
+*  4 points appropriate use of iteration
+*  4 points adequate use of ggplot aesthetics
+*  5 points git commit hx
+*  10 points [0-2] lint in .Rmd, -.5 every point thereafter
+*  No penalty for lint in the rartutils, but +2 extra credit these are fixed as well.

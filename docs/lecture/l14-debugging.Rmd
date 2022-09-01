@@ -1,0 +1,501 @@
+---
+title: "BST430  Lecture 14"
+subtitle: "Functions (iii), testing and debugging"
+author: "Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-10-13 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+  
+```{r child = "setup.Rmd"}
+```
+
+
+# Agenda
+
+1.  Functions and generics
+2.  Knitr tricks
+3.  Debugging
+
+---
+
+#  Functions and generics
+
+Have you ever wondered how does R know to display a data.frame specially compared to a list?  (The `typeof` both is `list`, but a `data.frame` has a different class...)
+Consider:
+1.  When you input an object to the Console and hit "enter", R calls `print(object)`
+```{r}
+library(tidyverse)
+my_list = list(A = 1:4, B = rnorm(4), C = stringr::fruit[1:4])
+my_list
+```
+
+---
+
+```{r}
+print(my_list)
+```
+
+---
+
+### Print
+
+Let's look at the source of `print`:
+
+```{r}
+print
+```
+
+Huh, that's not helpful.
+
+---
+
+
+### R classes and generics
+
+Unlike most other languages, a `class` in R can belong to a set of `generics`.  The generics are akin to a method<sup>1</sup>. Let's spend a moment thinking about more ordinary languages before we return to R:
+
+.footnote[[1] More accurately, akin a java interface, C++ `virtual` class.]
+
+---
+
+### C++ classes and methods
+
+```{c, eval = FALSE}
+#include <iostream>
+
+class Person {
+ public:
+  void Print() const;
+
+ private:
+  std::string name_;
+  int age_ = 5;
+};
+
+void Person::Print() const {
+  std::cout << name_ << ':' << age_ << '\n';
+}
+```
+
+This C++ class implements the `Person` class, which contains two members -- `name_` and `age_`.  It implements one method: `Print()`.  Note that the `print` method is defined in, and belongs to the class.
+
+---
+class: code70
+
+### The R `print` methods
+.pull-left[
+In contrast, in R there is a `print` generic, and each class can choose to implement its own method for the generic.  We can see all the different ways this generic has been implemented with `methods`.  
+.font50[[1] Using the S3 object orientation system, which is the original and most commonly used system.  Base R also contains two other systems: S4 and refClasses (R5).  S4 is like S3 but with stronger class typing guarantees. R5 behaves like "ordinary" object oriented languages.  There are also several commonly used external implementation of object orientation in R... `r emo::ji("exploding_head")`]
+]
+.pull-right[
+Behold the print methods:
+```{r, echo = FALSE}
+DT::datatable(tibble::tibble(method = methods(print)))
+```
+]
+
+---
+class: code50
+
+### Inspecting R methods
+
+Let's look at data frame's print method:
+
+```{r, output.lines = 15}
+base:::print.data.frame
+```
+
+To do this, I figured out in what package the `data.frame` class was defined, and used `:::` to access a private member from the namespace of that package.  Can also use `getS3method`.
+
+---
+
+### Implementing a print generic
+
+So we want to make our own class, and have it print specially we need to do two things:
+
+1.  Set the class attribute on the object
+2.  Implement the generic by defining a function called `generic.<class>`
+
+
+---
+
+```{r}
+class(my_list) = 'dr_awesome'
+print.dr_awesome = function(x, ...){
+  type = class(x)
+  len = length(x)
+  cat(glue::glue("An object of type {type} and length {len}.
+  Andrew drools, Dr. Awesome Rules!"))
+}
+```
+
+
+```{r}
+print(my_list)
+```
+
+
+---
+
+### S3 Generics and functions summary
+
+May you live a long and prosperous life without implmenting your own object-oriented code in R.  But, to debug issues in other people's code, you will want to take to heart:
+
+*  some functionality in R is hidden behind generics and methods.  
+*  Sometimes, to understand what code is being run, you will need to determine the class of your object, and examine its methods with `package:::generic.class` or `getS3method`.
+
+If you work with S4 objects, or what to implement your own objects and methods, you need want to do [some more reading](https://adv-r.hadley.nz/oo.html).
+
+---
+
+class: middle
+
+# a few rmarkdown tricks
+
+---
+
+### Using the cache
+
+As your markdown scripts become longer and longer, you will become impatient to have to run every line in the script what some small change does towards the bottom.  To combat this, turn on the cache by inserting this somewhere near the top of your rmarkdown:
+
+
+```{r init-cache, eval = FALSE}
+knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
+```
+
+Now, every chunk after this will be rerun only if its source code changes, or if it references objects modified in chunks whose source code changes
+
+---
+
+### cache caveats
+
+1.  To determine chunk dependencies, knitr does some sort of static code analysis, and sometimes misses induced changes in objects.
+2.  The cache can sometimes [fail to capture](https://yihui.org/knitr/demo/cache/) some types of side-effects (e.g. printing stuff to Console or displaying a plot.
+3.  When in doubt, throw it out--click "Knit" -> "Clear knitr cache" to delete the cache and start again.
+
+```{r, echo = FALSE}
+knitr::include_graphics('l14/img/knitr-clear-cache.png')
+```
+
+---
+
+### Evaluating rmarkdown in the global environment
+
+We have seen that clicking the "knit" button does not affect the state of the global environment in the Console -- instead you have to click "run chunk" or "run all chunks" button.  However, if you enter
+
+```{r, eval = FALSE}
+rmarkdown::render("<path to my document>") 
+```
+
+in the console, your document will be knit, and all the chunks will be evaluated in the global environment, so you can start working interactively with the objects defined therein.
+
+---
+
+### `knit_exit()` and `eval = FALSE`
+
+This can be combined usefully with `knit_exit()`, which terminates a rmarkdown document early.  Place this somewhere in your markdown and execution will stop at that point.  Then you can knit your document exit out at the point the function is called.
+
+*  You can also set `eval = FALSE` as a chunk option to effectively skip a chunk.
+````markdown
+`r ''````{r, eval = FALSE}
+object = object %>% mutate(not_evaluated = TRUE)
+```
+````
+
+
+*  Note that rmarkdown chunks can contain arbitrary R code and objects, so you could also set `eval = debugging` to run a chunk only if the R object is defined earlier and `TRUE`.
+
+---
+
+class: middle
+
+# debugging
+
+---
+
+## Debugging what
+
+Informally, we use a process of differential diagnosis:
+
+0. Reproduce the error: can you make the bug reappear?
+1. Characterize the error: what can you see that is going wrong?
+2. Localize the error: where in the code does the mistake originate?
+3. Modify the code: did you eliminate the error? Did you add new ones?
+
+---
+## Debugging how
+
+To debug code efficiently you need a develop both your
+
+*  **Mindset**: enumerate your assumptions, test these assumptions, look for contradictions.
+*  **Toolset**: understand error reporting in R, and how to pause and inject yourself interactively into code.
+
+---
+
+## Mindset
+
+My code isn't working -- why?  Step one (often skipped, at your peril!) is to list your assumptions about what the code is supposed to do.  Try to answer
+
+1.  What unit of code is involved?
+1.  What preconditions need to hold on the input to this code?
+2.  What do I think this code does?
+3.  What would cause this code to fail?
+4.  How would it report a failure?
+
+Hint:  .alert[unit tests] are a great way to both list and test your assumptions.
+
+---
+
+### What unit of code?
+
+This is often the hardest part. But the first step is to reproduce the bug.
+
+- Can we produce it repeatedly when re-running the same code, with the same input values? 
+- And if we run the same code in a .alert[clean copy] of R, does the same thing happen?
+
+---
+
+### Localizing can be easy or hard
+
+Sometimes error messages are easier to decode, sometimes they're harder; this can make locating the bug easier or harder
+
+```{r}
+base_plot = function(x, y, list_data = NULL) {
+  if (!is.null(list_data)) 
+    plot(list_data, main="A plot from list_data!")
+  else
+    plot(x, y, main="A plot from x, y!")
+}
+```
+
+---
+
+```{r, error=TRUE}
+base_plot(list_data=list(x=-10:10, y=(-10:10)^3))
+```
+
+---
+
+```{r, error=TRUE}
+base_plot() # Easy to understand error message
+base_plot(list_data=list(x=-10:10, Y=(-10:10)^3)) # Not as clear
+```
+
+Who called `xy.coords()`? (Not us, at least not explicitly!) And why is it saying 'x' is a list? (We never set it to be so!)
+
+---
+
+### `traceback()`
+
+Calling `traceback()`, after an error: traces back through all the function calls leading to the error
+
+- Start your attention at the "bottom", where you recognize the function you called
+- Read your way up to the "top", which is the lowest-level function that produces the error
+- Often the most useful bit is somewhere in the middle
+
+---
+
+If you run `base_plot(list_data=list(x=-10:10, Y=(-10:10)^3))` in the console, then call `traceback()`, you'll see:
+
+```
+> traceback()
+5: stop("'x' is a list, but does not have components 'x' and 'y'")
+4: xy.coords(x, y, xlabel, ylabel, log)
+3: plot.default(list_data, main = "A plot from list_data!")
+2: plot(list_data, main = "A plot from list_data!") at #4
+1: base_plot(list_data = list(x = -10:10, Y = (-10:10)^3))
+```
+
+We can see that `base_plot()` is calling `plot()` is calling `plot.default()` is calling `xy.coords()`, and this last function is throwing the error
+
+Why? Its first argument `x` is being set to `list_data`, which is OK, but then it's expecting this list to have components named `x` and `y` (ours are named `x` and `Y`)
+
+---
+
+## Test assumptions and look for contradictions
+
+*  Now try running your code in a way that satisfies the assumed preconditions and see if you can find a contradiction between the assumed and observed output
+*  It should be clear, that smaller and more modular the functions are, the easier it is to test for contradictions.
+
+--
+
+*  If you are losing your mind about a bug, set it aside for a few hours or day, and try again later.  Or do some [rubber duck](https://en.wikipedia.org/wiki/Rubber_duck_debugging) debugging.
+
+---
+
+## Toolset
+
+But sometimes code is monolithic, and there's nothing we can do about it.  To debug in this case, we need to turn to our toolset.
+
+*  break up pipelines and nested expressions
+*  inspect manually
+*  inspect with printf (discuss in lab)
+*  inspect with `browser()` (set a breakpoint)
+*  step through with `debug`
+*  inspect with `options(error = recover)`
+
+---
+
+### Break up pipelines (and inspect manually)
+
+.panelset[
+.panel[.panel-name[Code]
+```{r cancel-plot-1, fig.show = 'hide', error = TRUE}
+library(nycflights13)
+library(lubridate)
+flights %>% 
+  mutate(hourf = as.factor(hour), day_of_week = weekdays(ymd(glue::glue("{year}-month-{day}")))) %>%
+  group_by(hourf, day_of_week, .drop = FALSE) %>%
+  summarize(cancel_rate = mean(is.na(arr_time))) %>%
+  ggplot(aes(x = hour, y = day_of_week, fill = cancel_rate)) + 
+    geom_tile() + 
+    scale_fill_distiller(palette = 'PuBu', direction = 1)
+```
+]
+.panel[.panel-name[Plot]
+```{r ref.label = "cancel-plot-1", echo = FALSE, error = TRUE}
+```
+]
+]
+
+---
+
+### After (bug fixed)
+
+.panelset[
+.panel[.panel-name[Code]
+```{r cancel-plot-2, fig.show = 'hide'}
+cancellation = flights %>% 
+  mutate(hourf = as.factor(hour), day_of_week = weekdays(ymd(glue::glue("{year}-{month}-{day}")))) %>%
+  group_by(hourf, day_of_week, .drop = FALSE) %>%
+  summarize(cancel_rate = mean(is.na(arr_time)), n_flights =  n()) %>%
+  filter(n_flights > 500)
+
+cancellation %>%
+  ggplot(aes(x = hourf, y = day_of_week, fill = cancel_rate)) + 
+    geom_tile() + 
+    scale_fill_distiller(palette = 'PuBu', direction = 1)
+```
+]
+.panel[.panel-name[Plot]
+```{r ref.label = "cancel-plot-2", echo = FALSE}
+```
+]]
+
+
+---
+
+### `browser()`
+
+One of the simplest but most powerful built-in debugging tools: `browser()`. Place a call to `browser()` at any point in your function that you want to debug. As in:
+
+```
+fun = function(arg1, arg2, arg3) {
+  # Some initial code 
+  browser()
+  # Some final code
+}
+```
+
+Then redefine the function in the console, and run it. Once execution gets to the line with `browser()`, you'll enter an interactive debug mode
+
+---
+
+### Things to do while browsing
+
+While in the interactive debug mode granted to you by `browser()`, you can type any normal R code into the console, to be executed within in the function environment, so you can, e.g., investigate the values of variables defined in the function
+
+---
+
+You can also type:
+
+- "n" (or simply return) to execute the next command
+- "s" to step into the next function
+- "f" to finish the current loop or function
+- "c" to continue execution normally
+- "Q" to stop the function and return to the console
+
+(To print any variables named `n`, `s`, `f`, `c`, or `Q`, defined in the function environment, use `print(n)`, `print(s)`, etc.)
+
+---
+
+### Browsing in R Studio
+
+You have buttons to click that do the same thing as "n", "s", "f", "c", "Q" in the "Console" panel; you can see the locally defined variables in the "Environment" panel; the traceback in the "Traceback" panel
+
+```{r, echo = FALSE}
+knitr::include_graphics('l14/img/l14-debugging.png')
+```
+
+---
+
+### Knitting and debugging
+
+As with `cat()`, `print()`, `traceback()`, used for debugging, you should only run `browser()` in the Console, never in an Rmd code chunk that is supposed to be evaluated when knitting. See more [here](https://support.rstudio.com/hc/en-us/articles/205612627-Debugging-with-RStudio#debugging-in-r-markdown-documents)
+
+But, to keep track of your debugging code (that you'll run in the console), you can still use code chunks in Rmd, you just have to specify `eval=FALSE`
+
+```{r, eval=FALSE}
+# As an example, here's a code chunk that we can keep around in this Rmd doc,
+# but that will never be evaluated (because eval=FALSE) in the Rmd file, take 
+# a look at it!
+mat = matrix(rnorm(1000)^3, 1000, 1000)
+mat
+# Note that the output of big.mat is not printed to the console, and also
+# that big.mat was never actually created! (This code was not evaluated)
+```
+
+---
+
+### More ways to inspect code without modifying it
+
+*  Instrument a function with `debug()` -- this will let you step through execution line by line
+```
+debug(<FUNCTION>)
+<FUNCTION>(<BUGGY ARGUMENTS...>)
+```
+
+*  Set `options(error = recover)` to open a debugger after an error occurs. 
+
+As with `browser()` these cannot be run by knitting a chunk or a document.
+
+---
+
+# Some recent bug-hunting
+
+*  checkout buggy version of fibroblast (do this before class)
+*  run script with rmarkdown
+*  run error portion
+*  options(error = recover)
+*  guess at solution
+*  browse to github repo
+*  find issue
+*  decide to fix upstream...
+
+---
+
+# Acknowledgments
+
+Some materials from Ryan Tibshirani Stat 18 on [debugging and testing](https://www.stat.cmu.edu/~ryantibs/statcomp-S18/lectures/debugging.html)
+
+### Caveats for debugging rmarkdown
+
+https://rstats.wtf/debugging-r-code.html#debugging-in-r-markdown-documents
+
+https://adv-r.hadley.nz/debugging.html
+
+

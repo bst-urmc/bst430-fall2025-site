@@ -1,0 +1,840 @@
+---
+title: "BST430 Lecture 3"
+subtitle: "Data transformation with dplyr"
+author: "Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-08-31 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+
+```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+# library(magick)
+library(knitr)
+library(emo)
+# library(mosaicData)
+# library(openintro)
+library(DT)
+# knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
+```
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warn = 1,
+  pillar.print_max = 8,
+  pillar.print_min = 4,
+  pillar.max_footer_lines = 3,
+  pillar.width = 60
+  )
+# Set dpi and height for images
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300) 
+# ggplot2 color palette with gray
+color_palette <- list(gray = "#999999", 
+                      salmon = "#E69F00", 
+                      lightblue = "#56B4E9", 
+                      green = "#009E73", 
+                      yellow = "#F0E442", 
+                      darkblue = "#0072B2", 
+                      red = "#D55E00", 
+                      purple = "#CC79A7")
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+# For magick
+dev.off <- function(){
+  invisible(grDevices::dev.off())
+}
+```
+
+
+## Announcements
+
+- Reminder: lab 1 due Friday 5pm.
+- Jonathan and Sam will have their office hour tomorrow 12:15-1:15, in the TA office.
+- Andrew will have an office hour Friday 10am-11am, in his office or via zoom.  (Link on blackboard).
+
+---
+
+# Agenda
+
+- The pipe
+- Manipulating data frames.
+- Calculating summary statistics.
+- Using the basic functions of dplyr
+
+---
+class: center, middle
+
+# Pipes
+
+---
+
+## Where does the name come from?
+
+We have already see the `%>%` operator a bit.  The pipe operator is implemented in the package **magrittr**.<sup>1</sup>
+
+.pull-left[
+![Magritte's representation of a pipe (that's not a pipe!)](l03/img/magritte.jpg)
+]
+.pull-right[
+![magrittr](l03/img/magrittr.jpg)
+]
+
+.footnote[[1] In R 4.1, there is also support for a variant of the pipe with `|>`. It behaves similarly, but not identically to magrittr's `%>%`.  For the moment, personally, I am holding off using it in this course or in my own projects to avoid a hard dependency on R 4.1.]
+
+???
+
+The Treachery of Images is a 1929 painting by Belgian surrealist painter René Magritte. It is also known as This Is Not a Pipe[2]. It is on display at the Los Angeles County Museum of Art.[1]
+
+The painting shows an image of a pipe. Below it, Magritte painted, "Ceci n'est pas une pipe", French for "This is not a pipe".
+The famous pipe. How people reproached me for it! And yet, could you stuff my pipe? No, it's just a representation, is it not? So if I had written on my picture "This is a pipe", I'd have been lying!
+---
+
+## Review: How does a pipe work?
+
+- You can think about the following sequence of actions - find your helmet, 
+ ride your bike to school, then lock it somewhere.
+- Expressed as a set of nested functions in R pseudocode this would look like:
+```{r eval=FALSE}
+lock(ride(find(who=andrew, what = "helmet"), to = "campus"))
+```
+we have to read this from the "inside-out".
+
+---
+## Review: How does a pipe work?
+
+- The pipe gives it a more natural (and easier to read) 
+**postfix** syntax<sup>1</sup>, where we can read from left to right:
+```{r eval=FALSE}
+andrew %>% find(what = "helmet") %>%
+  ride(to = "campus") %>%
+  lock()
+```
+.footnote[[1] Note similar syntax in java(script), C++ and python where the method accessor "`.`" can be chained in some cases: `andrew.find('helmet').ride('campus').lock()`]
+
+---
+
+## What about other arguments?
+
+The pipe, by default sends its left-hand value to first positional argument of the right-hand function.  To send results to a function argument other than first one or to use the previous result for multiple arguments, use `.`:
+
+```{r fig.height=1.8, fig.width = 3.75}
+starwars %>%
+  filter(species == "Human") %>%
+  lm(mass ~ height, data = .)
+```
+
+---
+
+## The pipe vs ggplot2 layers
+
+- The `+` operator in **ggplot2**<sup>1</sup> is used for "layering." This means you create the plot in layers, separated by `+`.
+
+- Some of the reason for this distinction is historical rather than mechanistic
+
+.footnote[[1] to make matters even more confusing, ggplot2 also has the `%+%` operator.  This modifies the `data` being used in the plot.]
+---
+
+class: center, middle
+
+# Data transformation
+
+---
+
+## NYC Flights
+
+```{r}
+library(nycflights13)
+```
+
+This data frame contains all `r format(nrow(nycflights13::flights), big.mark = ",")` flights that departed from New York City in 2013. The data comes from the US [Bureau of Transportation Statistics](http://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0), and is documented in `?flights`.
+
+---
+
+# Want to follow along?
+
+Go to RStudio Cloud and make a copy of "Lecture 3 - dplyr"
+
+---
+
+## Viewing your data
+
+- In the Environment, click on the name of the data frame to view
+it in the data viewer
+- Use the `glimpse` function to take a peek
+.scroll-box-14[
+```{r}
+glimpse(flights)
+```
+]
+
+---
+class: font120
+## A Grammar of Data Manipulation
+
+**dplyr** is based on the concepts of functions as verbs that manipulate data frames.
+
+Single data frame functions / verbs:
+
+* `filter`: pick rows matching criteria
+* `slice`: pick rows using index(es)
+* `select`: pick columns by name
+* `pull`: grab a column as a vector
+* `rename`: rename specific columns
+* `arrange`: reorder rows
+* `mutate`: add new variables
+* `transmute`: create new data frame with variables
+* `distinct`: filter for unique rows
+* `sample_n` / `sample_frac`: randomly sample rows
+* `summarise`: reduce variables to values
+* `group_by`: run an operation by levels of a categorical variable
+* ... (many more)
+
+---
+
+## **dplyr** rules for functions
+
+1. First argument is *always* a `data.frame`<sup>1</sup>
+2. Subsequent arguments say what to do with that `data.frame`
+3. Always return a `data.frame` 
+4. Doesn't modify in place
+
+.footnote[[1] Or `tibble`, the tidyverse version of a `data.frame`.  These are mostly interchangable, but with a few differences we'll consider in a couple weeks.]
+---
+
+## Filter rows with `filter`
+
+- Select a subset of rows in a data frame based on when a logical expression returns `TRUE`
+- Easily filter for many conditions at once by combining logical expressions
+
+---
+class: code70
+## `filter`
+
+- Let's extract all flights from new york that occurred in April.
+```{r}
+flights %>% filter(month == 4)
+```
+
+---
+class: code70
+## `filter` with multple conditions
+
+- You can filter based on more than two variables using logical operators.
+- All flights that were both in April and from JFK:
+```{r}
+flights %>% filter(month == 4 & origin == "JFK")
+```
+
+---
+class: code70
+## `filter` with multple conditions
+
+- `filter()` will also perform the **and** operation if you separate logical conditions by a comma.
+```{r}
+flights %>% filter(month == 4, origin == "JFK")
+```
+---
+
+## Aside: enumerating a categorical variable
+
+- If you didn't know what origins were possible in the `flights` data, then you can take one of two approaches:
+    1. `unique()`
+    2. `table(x, exclude = NULL)` to get the counts of each level.  The `exclude = NULL` indicates that `NA` missing values should also be listed -- you almost certainly want this!
+    
+```{r}
+unique(flights$origin)
+table(flights$origin, exclude = NULL)
+```
+
+---
+
+## Boolean expressions
+
+- This code finds all flights that departed in November or December:
+```{r, eval = FALSE}
+filter(flights, month == 11 | month == 12)
+```
+The order of operations doesn't work like English. You can't write `filter(flights, month == (11 | 12))`, to mean "find all flights that departed in November or December."
+- Instead, this would find all months that equal `11 | 12`, an expression that evaluates to `TRUE`.
+- In a numeric context (like here), `TRUE` is coerced to `1`, so this finds all flights in January, not November or December. This *is* quite confusing!
+
+---
+class: code70, font120
+## Missing Values
+
+- `filter()` .alert[excludes] observations with .alert[missing values.]
+```{r}
+dfdat = tibble(x = c(1, 2, NA),
+                    y = c('A', 'B', 'C'))
+dfdat %>% filter(x == 1)
+```
+- If you want to extract those rows as well, you have to ask for them
+  explicitly using `is.na()`:
+```{r}
+dfdat %>% filter(x == 1 | is.na(x))
+```
+
+---
+class: code70
+## Missing Values are contagious
+
+```{r}
+NA > 5
+10 == NA
+NA + 10
+```
+
+- Therefore, **you cannot test for missingness with `== NA`**:
+```{r}
+x = NA
+x == NA
+```
+---
+
+## Graphical Depiction of Logical Operations:
+
+```{r, echo = FALSE, fig.height=4.5, fig.width=8}
+    suppressPackageStartupMessages(library(gridExtra))
+    plot_venn <- function(col1, col2, col3, col4, title, alpha = 0.5) {
+        x1 <- seq(-1, 1, length = 300)
+        y1 <- sqrt(1 - x1 ^ 2)
+        y2 <- -sqrt(1 - x1 ^ 2)
+        x2 <- x1 + 0.5
+        x1 <- x1 - 0.5
+        
+        circdf1 <- data.frame(y = c(y1, y2[length(y2):1]), x = c(x1, x1[length(x1):1]))
+        circdf2 <- data.frame(y = c(y1[length(y1):1], y2), x = c(x2[length(x2):1], x2))
+        
+        poly1 <- data.frame(x = c(x1[x1 < 0],
+                                  x2[x2 < 0][sum(x2 < 0):1], 
+                                  x2[x2 < 0], 
+                                  x1[x1 < 0][sum(x1 < 0):1]),
+                            y = c(y1[x1 < 0], 
+                                  y1[length(y1):1][x2 < 0][sum(x2 < 0):1],
+                                  y2[length(y2):1][x2 < 0],
+                                  y2[x1 < 0][sum(x1 < 0):1]))
+        poly2 <- poly1
+        poly2$x <- poly1$x * -1
+        
+        poly3 <- data.frame(x = c(x2[x2 < 0][sum(x2 < 0):1], 
+                                  x2[x2 < 0]),
+                            y = c(y1[length(y1):1][x2 < 0][sum(x2 < 0):1],
+                                  y2[length(y2):1][x2 < 0]))
+        tempdf <- poly3[nrow(poly3):1, ]
+        tempdf$x <- tempdf$x * -1
+        poly3 <- rbind(poly3, tempdf)
+        ggplot() +
+          geom_polygon(data = poly1, 
+                       mapping = aes(x = x, y = y),
+                       fill = col1,
+                       color = "black",
+                       alpha = alpha) +
+          geom_polygon(data = poly2, 
+                       mapping = aes(x = x, y = y),
+                       fill = col3,
+                       color = "black",
+                       alpha = alpha) +
+          geom_polygon(data = poly3, 
+                       mapping = aes(x = x, y = y),
+                       fill = col2,
+                       color = "black", 
+                       alpha = alpha) +
+          theme_void() +
+          ggtitle(title) +
+          theme(plot.title = element_text(hjust = 0.5), 
+                plot.background = element_rect(color = col4)) +
+          annotate(geom = "text", x = -0.8, y = 0, label = "x") +
+          annotate(geom = "text", x = 0.8, y = 0, label = "y") ->
+          pl
+      return(pl)
+    }
+    
+    aval <- 1
+    col <- "#b1d9ef"
+    grid.arrange(
+      plot_venn(col, "white", "white", "white", "x & !y", alpha = aval),
+      plot_venn("white", col, "white", "white", "x & y", alpha = aval),
+      plot_venn("white", "white", col, "white", "!x & y", alpha = aval),
+      plot_venn(col, col, "white", "white", "x", alpha = aval),
+      plot_venn(col, "white", col, "white", "xor(x, y)", alpha = aval),
+      plot_venn("white", col, col, "white", "y", alpha = aval),
+      plot_venn(col, col, col, "white", "x | y", alpha = aval)
+    )
+```
+
+---
+
+## Commonly used logical operators in R
+
+operator    | definition                   || operator     | definition
+------------|------------------------------||--------------|----------------
+`<`         | less than                    ||`x`&nbsp;&#124;&nbsp;`y`     | `x` OR `y` 
+`<=`        |	less than or equal to        ||`is.na(x)`    | test if `x` is `NA`
+`>`         | greater than                 ||`!is.na(x)`   | test if `x` is not `NA`
+`>=`        |	greater than or equal to     ||`x %in% y`    | test if `x` is in `y`
+`==`        |	exactly equal to             ||`!(x %in% y)` | test if `x` is not in `y`
+`!=`        |	not equal to                 ||`!x`          | not `x`
+`x & y`     | `x` AND `y`                  ||              |
+
+---
+
+## Check your understanding 
+
+.large[[Quiz 1](https://docs.google.com/forms/d/e/1FAIpQLSd54fszIDa-f2mAH2kcy2rhIXLxOWNGXhshSF8-tkn7XHWFeA/viewform?usp=sf_link)]
+
+1. .question[Extract the January LGA flights and the December JFK flights.]
+4. .question[Extract flights whose `dep_time` was `NA`.]
+2. .question[Extract flights that left in November or December.]
+3. .question[Extract flights that left in November or December using the `%in%` operator.]
+
+--
+
+```{r}
+    flights %>%
+      filter((month == 1 & origin == "LGA") | (month == 12 & origin == "JFK"))
+```
+
+
+```{r, eval = FALSE}
+nov_dec <- filter(flights, month %in% c(11, 12))
+```
+
+---
+## Create New Variables
+
+- The variables given are usually not enough for an analysis.
+- For instance:
+  + log-transform positive values to make associations more linear.
+  + recode categorical variables to add / remove levels
+  + clean up messy text data
+  + ... or any other mathematical or CS .alert[vector function] of the data.
+  
+---
+class: code70
+## `mutate` to add new variables
+
+- We can use `mutate()` to create new variables from old.
+
+```{r}
+flights %>% mutate(gain = dep_delay - arr_delay,
+             speed = distance / air_time * 60,
+             .before = year) #add before `year` variable
+```
+
+---
+
+## Converting to minutes since midnight
+
+- **Exercise**: (RDS 5.2.1) `dep_time` is convenient to look at, but hard to compute with because it's not a continuous value:
+
+```{r, warning = FALSE}
+ggplot(flights, aes(x = dep_time)) + geom_histogram(binwidth = 10)
+```
+
+---
+## Check your understanding
+
+.large[[Quiz 2](https://docs.google.com/forms/d/e/1FAIpQLSdOiUARDqpHbNd2M_n1lw0QidWl3Z0fsiD-kiIjaxC93gcC7A/viewform?usp=sf_link)]
+
+- Convert `dep_time` into `dep_minutes_midnight`, the number of minutes since midnight. Hint: `%/%` is truncating integer division and `%%` is  remainder.  For instance:
+  
+```{r}
+101 %/% 10
+101 %% 10
+```
+
+---
+## Answer
+
+```{r}
+flights %>% mutate(dep_h = dep_time %/% 100,
+            dep_m = dep_time %% 100,
+            dep_elapsed_min = dep_h * 60 + dep_m,
+            .after=dep_time)
+```
+
+---
+## Only preserving new variables
+
+If you only want to keep new variables, use `transmute()`
+
+```{r}
+flights %>%
+      transmute(gain = dep_delay - arr_delay,
+                hours = air_time / 60,
+                gain_per_hour = gain / hours)
+```
+
+You'll use this much less often than `mutate` but when you need it, you need it.
+
+---
+## Useful mutation functions
+
+-  Arithmetic operators: `+`, `-`, `*`, `/`, `^`
+-  Arithmetic operators in conjunction with scalar functions: 
+  +  `x_center = x - mean(x)`
+  +  `x_proportion = x / sum(x)`
+  +  `x_01 = (x-min(x))/(max(x) - min(x))`
+- Modular arithmetic: `%/%` (integer division) and `%%` (remainder)
+- Logs: `log()`, `log2()`, `log10()`
+- offsets: `lead()` and `lag()`
+- Cumulative and rolling aggregates: `cumsum()`, `cumprod()`, `cummin()`, `cummax()`, `cummean()`.
+- Ranking: `min_rank()`.  Mind how `NA` and ties are handled!
+- Recoding: `case_when()`, `ifelse()`
+
+---
+
+## Recoding with `case_when` and `ifelse`
+
+-  `case_when` lets us generate a new variable with multiple values that depend on arbitrary boolean expressions.  
+-  Each boolean expression is evaluated in turn, and the first matching value is used.  
+-  The syntax is 
+```r
+case_when(<BOOLEAN EXPRESSION 1> ~ "value1",
+          <BOOLEAN EXPRESSION 2> ~ "value2",
+          <more expressions and values>,
+          TRUE ~ "Optional fallthrough value")
+```
+-  If the `TRUE ~ "Optional fallthrough"` isn't provided and no cases match, than the value will be `NA`.
+-  `ifelse` is a simplified version:
+```r
+ifelse(<BOOLEAN EXPRESSION>, 'True value', 'False value')
+```
+---
+class: code70
+
+Suppose we wanted to see how often "time is made up in the air."  We might say this is true when the `dep_delay > 0 & arr_delay < dep_delay`, but there are 3 other possibilities: 
+2.  Ontime when we left, and ontime when we arrived
+3.  Ontime when we left, but arrived delayed
+4.  We were delayed when we left, and even more delayed when we arrived.
+
+```{r}
+flights = flights %>% 
+  mutate(delay_type = 
+           case_when(dep_delay > 0 & arr_delay < dep_delay ~ 'made up time',
+                    dep_delay > 0 & arr_delay >= dep_delay ~ 'lost time',
+                    dep_delay <= 0 & arr_delay > 0 ~ 'headwind?', #<<
+                    dep_delay <= 0 & arr_delay <= 0 ~ 'life is good'))#<<
+table(flights$delay_type, exclude= NULL)
+```
+
+---
+class: code70
+
+Because of the sequential evaluation of the cases, the following is equivalent (note highlighted lines).
+
+```{r}
+flights = flights %>% 
+  mutate(delay_type = 
+           case_when(dep_delay > 0 & arr_delay < dep_delay ~ 'made up time',
+                    dep_delay > 0 & arr_delay >= dep_delay ~ 'lost time',
+                    arr_delay > 0 ~ 'headwind?', #<<
+                    arr_delay <= 0 ~ 'life is good')) #<<
+table(flights$delay_type, exclude= NULL)
+```
+
+
+---
+
+## `select` to keep only the variables you mention
+.scroll-box-14[
+```{r}
+flights %>%
+  select(carrier, origin) %>%
+  table()
+```
+]
+
+---
+
+## or `select` to exclude variables
+
+```{r}
+flights %>%
+  select(-year)
+```
+
+---
+
+## or `select` a range of variables
+
+```{r}
+flights %>%
+  select(carrier:dest)
+```
+
+---
+class: code70
+
+## `rename` specific columns
+
+
+Useful for correcting typos, and renaming to make variable names shorter 
+and/or more informative
+
+- Rename `day` to `day_of_month`:
+```{r}
+flights_rn =  flights %>%
+  rename(day_of_month = day)
+```
+
+- Can also rename while selecting with `select(var1, var2, new_name = var3)`.
+
+---
+
+## Check before you move on
+
+When in doubt, check your changes and confirm code did what you wanted it to do
+
+.small[
+```{r}
+names(flights_rn)
+```
+]
+
+---
+
+class: middle, center
+
+## `summarize` reduces vectors to scalars
+
+---
+class: code70
+
+## `summarise`  reduces vectors to scalars
+
+So far, all the operations we have done have been `data.frame` in, and `data.frame` with the same number of rows out.
+
+Summarize calculates scalar summaries from a vector.
+
+```{r}
+flights %>%
+  summarize(mean_delay = mean(dep_delay, na.rm = TRUE),
+            median_delay = median(dep_delay, na.rm = TRUE))
+```
+---
+class: code70
+
+## What's with the `na.rm=TRUE`?
+
+- When we set to `na.rm = FALSE` (which is the default!):
+```{r}
+flights %>%
+  summarize(mean_delay = mean(dep_delay, na.rm = FALSE),
+            median_delay = median(dep_delay, na.rm = FALSE))
+```
+
+---
+class: code70
+
+## What's with the `na.rm=TRUE`?
+
+- Although you will frequently want to set `na.rm = TRUE` in statistical functions, it defaults `FALSE` for a reason -- so you will know there are and examine why there are missing values.
+
+```{r}
+filter(flights, is.na(dep_delay))
+```
+
+These are flights that were cancelled!  So in same ways the `dep_delay` is infinite.
+
+---
+
+## Useful summary functions
+
+*  central tendency: `mean()`, `median()`, `mode()`.
+*  dispersion: `sd()`, `IQR()`, `mad(x)`.
+*  support: `min()`, `max()`.
+*  index:  `first()`, `nth(x, 2)`, `last()`<sup>1</sup>
+*  counts: `n()`, `sum()`, `sum(!is.na(x))` (count non-missing), `n_distinct()` (count distinct)
+.footnote[[1] These probably only make sense in `group_by` summaries.  They could make could sense in an ungrouped mutates, though!]
+--
+
+*  Most of these are going to taste better with `na.rm = TRUE`
+*  All can be used with `mutate`--their return value will be "recycled" to the same number of rows as the input data.frame.
+
+
+
+---
+class: middle, center
+
+## Row-altering operations with `slice`
+
+---
+
+
+## `slice` to extract by row index
+
+First five
+```{r}
+flights %>% 
+  slice_head(n = 5)
+```
+
+---
+
+## `slice` to extract by row index
+
+Last 3
+```{r}
+flights %>%
+  slice_tail(n = 3)
+```
+
+---
+
+## Subsample rows with `sample_n` or `sample_frac`
+
+- `sample_n`: randomly sample 5 observations
+
+```{r}
+flights_n5 = flights %>%
+  sample_n(5, replace = FALSE)
+dim(flights_n5)
+```
+
+- `sample_frac`: randomly sample 20% of observations
+
+```{r}
+flights_perc20 = flights %>%
+  sample_frac(0.2, replace = FALSE)
+dim(flights_perc20)
+```
+
+---
+
+## `arrange` to sort a `data.frame` on its values
+
+What flights departed earliest before their scheduled time?
+```{r}
+flights %>% arrange(dep_delay) %>% relocate(dep_delay)
+```
+
+---
+
+## Descending arrange
+
+What were the most delayed flights? 
+```{r}
+flights %>% arrange(desc(arr_delay)) %>%
+  relocate(arr_delay)
+```
+---
+
+## Arranging with ties
+
+```{r}
+flights %>% select(sched_dep_time, origin, dest, day, carrier, flight) %>%
+  arrange(origin, dest,sched_dep_time, day)
+```
+This might reveal when flight numbers are reused or changed for the same route and timing.
+
+---
+
+## `distinct` to filter for unique rows
+
+```{r}
+flights %>% 
+  select(origin, dest) %>% 
+  distinct() %>% 
+  arrange(origin, dest)
+```
+
+---
+class: code70
+
+## `pull` to extract a column as a vector
+
+```{r}
+flights %>% slice_head(n = 5) %>% pull(dest)
+```
+
+Compare to 
+```{r}
+flights %>% slice_head(n = 5) %>% select(dest)
+```
+
+.question[What is similar and what is different in the return value between these two?]
+---
+
+## The two `pull`s in your lives
+
+.pull-left[
+![pipe](l03/img/hex-dplyr.png)
+]
+.pull-right[
+![magrittr](l03/img/Octocat.png)
+]
+
+- Don't get `pull` happy when wrangling data! It's rarely needed while you are using tidyverse functions.
+- But always `r emo::ji("arrow_down")` `Pull` before starting your work when collaborating on GitHub.
+
+---
+class: middle, center
+
+# grouped operations
+
+---
+
+## group_by()
+
+We'll discuss this in much greater detail next week.  But to whet your appetite, how might we calculate the carrier with the worst on-time percentage?
+
+```{r}
+ontime = flights %>% mutate(ontime = arr_delay <= 0)  
+ontime %>% summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100)
+```
+This calculates over all carriers. 
+
+---
+
+## grouped summaries
+
+To do it by carrier, we just add
+
+```{r}
+ontime %>% 
+  group_by(carrier) %>% #<<
+  summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100) %>%
+  arrange(ontime_pct)
+```
+
+--
+.pull-left[
+![FL is Airtran](https://upload.wikimedia.org/wikipedia/en/3/35/AirTran_Airways_logo.svg)
+]
+.pull-right[
+![F9 is Frontier](https://upload.wikimedia.org/wikipedia/en/c/cf/Frontier_Airlines_logo.svg)
+]
+
+???
+
+FL is Airtran, F9 is Frontier
+---
+
+# Resources
+
+- Chapter 5 of [RDS](https://r4ds.had.co.nz/)
+- [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf).
+- [Dplyr Overview](https://dplyr.tidyverse.org/).
+
+---
+
+# Acknowledgments
+
+This lecture contains materials adapted from  [Mine Çetinkaya-Rundel and colleagues](https://github.com/Sta199-S18/website/blob/master/static/slides/lec-slides/02b-tidy-data-wrangle.Rmd) and [David Gerard](https://github.com/URMC-BST/stat_412_612/blob/master/lectures/04_dplyr/04_dplyr.Rmd).

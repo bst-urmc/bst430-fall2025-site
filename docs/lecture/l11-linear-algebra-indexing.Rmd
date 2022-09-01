@@ -1,0 +1,1007 @@
+---
+title: "BST430  Lecture 11"
+subtitle: "Vectors, matrices and linear algebra"
+author: "Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-09-27 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+  
+```{r child = "setup.Rmd"}
+```
+
+## Announcement:
+
+Andrew's Office hours at 4:30-5:30 Thursday by zoom.
+
+---
+
+## Motivation: time series
+
+Let's suppose we tabulate<sup>1</sup> the average delay at the NYC airports at every hour during the month of June.
+
+```{r tabulate-delay, include = FALSE}
+library(nycflights13)
+library(tidyverse)
+knitr::opts_chunk$set(cache = TRUE)
+delay_stats = flights %>%  filter(month %in% c(3, 6)) %>%
+  mutate(day = factor(day), hour = factor(hour, levels = 0:23), origin = factor(origin), month= factor(month)) %>%
+  group_by(day, hour, origin, month) %>% 
+  mutate(n = n(), pos_delay =  pmax(0, dep_delay)) %>%
+   group_by(day, hour, origin, month, .drop = FALSE) %>% 
+  summarize(n = n(), 
+            total_delay = ifelse(n>0, sum(pos_delay, na.rm = TRUE), NA_real_),
+            total_delay_5 = sum(dep_delay > 5, na.rm = TRUE),
+            prop_delay_5 = total_delay_5/n,
+            mean_delay = total_delay/n) %>%
+  group_by(hour, origin, month) %>%
+  mutate(residual_mean_delay = mean_delay - mean(mean_delay, na.rm = TRUE),
+         residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
+delay_june = filter(delay_stats, month == "6") %>% select(day:origin, total_delay)
+theme_set(theme_minimal())
+```
+
+
+
+```{r}
+delay_june %>% slice_max(n = 1, order_by = total_delay)
+```
+.footnote[[1] See appendix.]
+---
+
+```{r, warning=FALSE}
+dstat = ggplot(delay_june, aes(x = as.numeric(hour), y = total_delay, color = origin)) + 
+  geom_point() + geom_smooth() 
+dstat
+```
+
+We see, as we have before, that flights aren't so delayed early in the day, and peak delays occur in the evening.
+
+---
+
+## Detrend
+
+```{r, warning = FALSE}
+delay_june = delay_june %>% group_by(hour, origin, month) %>%
+         mutate(residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
+(dstat %+% delay_june) + aes(y = residual_total_delay)
+```
+
+---
+
+## Are delays contagious between airports?
+
+First, we'd need to pivot wider.
+
+```{r}
+delay_wide = delay_june %>% 
+  pivot_wider(id_cols = day:hour, names_from = origin, values_from = residual_total_delay) %>% ungroup()
+
+delay_wide %>% slice(10:15)
+```
+
+
+---
+
+
+
+```{r}
+airport_delay_plot = ggplot(delay_wide, aes(x = EWR, y = JFK)) + 
+  geom_point(aes(color = as.numeric(hour))) + geom_smooth() + 
+  scale_color_viridis_c() 
+airport_delay_plot + labs(title = "Resid. delay (minutes) on each hour")
+```
+
+Then scatter plot.
+
+---
+
+## Are delays contagious across time?
+.panelset[
+
+.panel[.panel-name[Code]
+```{r delay-cow, fig.show='hide', results = 'hide', warning=FALSE, message=FALSE}
+airport_delay_plot_simple = airport_delay_plot + guides(color = 'none')
+cowplot::plot_grid(
+  airport_delay_plot_simple + aes(x = JFK, y = dplyr::lag(JFK, n = 1)),
+   airport_delay_plot_simple + aes(x = JFK, y = dplyr::lag(JFK, n = 2)),
+  airport_delay_plot_simple + aes(x = JFK, y = dplyr::lag(JFK, n = 4)),
+  airport_delay_plot_simple + aes(x = JFK, y = dplyr::lag(JFK, n = 8)))
+  
+```
+]
+.panel[.panel-name[Plot]
+.pull-left[
+```{r, echo = FALSE, ref.label="delay-cow",  warning=FALSE, message=FALSE, fig.asp = 1, out.width = '500px'}
+```
+]
+.pull-right[
+Really, we'd like to examine the correlation matrix between airports, or the correlation matrix between lags at various airports...
+]
+]
+]
+---
+class: code70
+## To do this, we need the delays as a .alert[matrix.]
+
+.pull-left[
+Using `reshape2::acast` (preferred, gives sensible rownames)
+```{r, R.options=list(digits = 2)}
+library(reshape2)
+delay_matrix = acast(delay_june, day + hour ~ origin, value.var = 'residual_total_delay')
+delay_matrix
+```
+]
+.pull-right[
+Or casting with `as.matrix` (simple)
+```{r, R.options=list(digits = 2, width = 50)}
+delay_matrix2 = as.matrix(delay_wide %>% select(EWR:LGA))
+delay_matrix2
+```
+]
+
+---
+
+## Mind your NAs
+```
+cor(<MATRIX1>, [<MATRIX2>], use = ..., 
+method = c("pearson", "kendall", "spearman"))
+```
+
+.pull-left[
+```{r}
+cor(delay_matrix) 
+```
+]
+.pull-right[
+```{r, R.options=list(digits = 2)}
+cor(delay_matrix, use = 'complete')
+```
+
+]
+
+---
+
+## A first taste of matrix indexing
+
+```{r, error = TRUE}
+delay_matrix$EWR
+```
+
+Need to use brackets
+```{r, output.lines = 4}
+delay_matrix[,'EWR'] # or delay_matrix[,1]
+```
+
+---
+class: code70
+## A second taste 
+
+```{r}
+## 10th row, 9am
+delay_matrix[10,]
+## row titled "10_14", June 10, 2PM.
+delay_matrix["10_14",]
+## exclude first 7 rows
+delay_matrix[-(1:7),]
+```
+
+
+---
+
+## Lagged cross correlations
+
+1 hour lag
+```{r, R.options=list(digits = 2)}
+cor(delay_matrix[-nrow(delay_matrix),], 
+    delay_matrix[-1,],
+    use = 'pairwise')
+```
+
+$$\begin{bmatrix} \text{cor}(\text{EWR}_{t-1}, \text{EWR}_{t}) & \text{cor}(\text{EWR}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{EWR}_{t-1}, \text{LGA}_{t}) \\
+\text{cor}(\text{JFK}_{t-1}, \text{EWR}_{t}) & \text{cor}(\text{JFK}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{JFK}_{t-1}, \text{LGA}_{t}) \\
+\text{cor}(\text{LGA}_{t-1}, \text{LGA}_{t}) & \text{cor}(\text{LGA}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{LGA}_{t-1}, \text{LGA}_{t}) 
+\end{bmatrix}$$
+
+
+
+---
+
+## 2 hour lag
+
+```{r, R.options=list(digits = 2)}
+cor(delay_matrix[1:(nrow(delay_matrix)-2),],
+    delay_matrix[-(1:2),],
+    use = 'pairwise')
+```
+
+---
+
+## The whole ballgame
+
+```{r, fig.width = 6}
+acf_arr = acf(delay_matrix, na.action = na.pass, lag.max = 12, plot = FALSE)
+plot(acf_arr)
+```
+
+Some caveats as to why the output from acf differs slightly from the lagged correlations. [1](https://stats.stackexchange.com/questions/81754/understanding-this-acf-output) [2](https://stackoverflow.com/a/16403622/3777396).
+
+---
+
+## Motivation: programming
+
+*  dplyr is great for one-off analyses!
+*  ...but can be a hassle to program abstracted routines.  
+*  Manipulation of vectors and matrices in R is more flexible and transparent.
+*  We'll get more motivation for this when we discuss functions (next week)
+
+---
+
+## Pre-test
+
+Please give [this quiz](https://docs.google.com/forms/d/e/1FAIpQLSexoCRQ0WqMH_yh38_cvpj28mM7Au8OJX8psuMJuTx9QNUgdw/viewform?usp=sf_link) a whirl.  Go fast and don't worry too much about getting it right -- we'll have a chance to make corrections at the end of lecture.
+
+---
+class: middle
+
+.hand[Care and feeding of vectors]
+
+---
+## Vectors are everywhere
+
+Your garden variety R object is a vector. Square brackets are used for isolating elements of a vector. This is often called __indexing__. Indexing begins at 1 in R, unlike many other languages that index from 0.
+
+```{r start_indexing}
+x = 3 * 4
+x
+length(x)
+```
+
+
+```{r}
+x[2] = 100
+x
+```
+
+---
+
+## R is very (probably too) forgiving with indexing.
+
+```{r}
+x[5] = 3
+x
+x[11]
+x[0]
+```
+
+---
+
+## Most functions are vectorized
+
+When reading docs,look for arguments that can be vectors. For example, the mean and standard deviation of random normal variates can be provided as vectors.
+
+```{r, R.options=list(digits = 3, scipen = 100)}
+set.seed(2021)
+rnorm(5, mean = 10^(1:5))
+rnorm(5, sd = 10^(1:5))
+```
+
+`1:5` is shorthand for `c(1,2,3,4,5)`, and so on.  To generate more complicated sequences, see `seq(from, to, by, length.out)`.
+
+---
+
+## Vector arithmetic
+
+
+Arithmetic operator apply to vectors in a "componentwise" fashion
+
+```{r}
+x = c(7, 8, 10, 20)
+y = c(-7, -8, -10, -20)
+x + y
+x * y
+```
+
+---
+
+Can do componentwise comparisons with vectors:
+
+```{r}
+x > 9
+```
+
+Logical operators also work elementwise:
+
+```{r}
+(x > 9) & (x < 20)
+```
+
+---
+
+To compare whole vectors, best to use `identical()` or `all.equal()`:
+.pull-left[
+`identical()` and `==`
+```{r}
+x == -y
+identical(x, -y)
+u = c(0.5-0.3,0.3-0.1)
+v = c(0.3-0.1,0.5-0.3)
+identical(u,v)
+```
+]
+.pull-right[
+`all.equal` and `near` allow for machine representation error in floating point values.
+```{r}
+all.equal(u, v)
+all.equal(u,v, tolerance = 0)
+near(u,v)
+```
+
+]
+
+---
+
+## Vectorization: awesome, yet dangerous
+
+Vectorization can be awesome but dangerous if you exploit it by mistake and get no warning.  While we're on the topic of awesome, yet dangerous:
+
+.alert[R also recycles] vectors, if they are not the necessary length. 
+
+You will get a warning when the lengths is not an integer multiples of each another, but recycling is silent if it seems like you know what you're doing.
+
+---
+
+## Recycled with a warning
+
+```{r}
+(y = 1:3)
+(z = 3:7)
+y + z
+```
+
+Hint: set `options(warn = 2)` to convert warnings to errors to catch this problem definitively.
+---
+
+## Recycled without warning
+
+
+```{r}
+(y = 1:10)
+(z = 3:7)
+y + z
+```
+
+
+`1` is a vector, so this is also a form of recycling!
+```{r}
+z + 1
+```
+
+---
+
+## Making vectors
+
+The combine function `c()` is your go-to function for making vectors.
+
+```{r}
+str(c("hello", "world"))
+str(c(1:3, 100, 150))
+```
+
+
+---
+
+## Implicit coercion 
+
+We have already seen that the elements will be coerced to the same flavor, using a "lowest common denominator" approach (usually character).
+
+```{r}
+(x = c("cabbage", pi, TRUE, 4.3))
+str(x)
+length(x)
+
+```
+
+---
+
+Let's create some simple vectors for more demos below.
+
+```{r}
+n = 8
+set.seed(1)
+(w = round(rnorm(n), 2)) # numeric floating point
+(x = 1:n) # numeric integer
+(y = LETTERS[1:n]) # character
+(z = runif(n) > 0.3) # logical
+```
+
+
+---
+
+## Indexing a vector
+
+Square brackets are used to index a vector. There is great flexibility in what one can put inside the square brackets.
+
+Common ways to index a vector:
+
+* __logical vector__: keep elements associated with TRUE's, ditch the FALSE's
+* __vector of positive integers__: specifying the keepers
+* __vector of negative integers__: specifying the losers
+* __character vector__: naming the keepers
+
+---
+
+## Names
+
+```{r}
+w
+names(w) = letters[seq_along(w)]
+w
+w[c('a', 'b', 'd')]
+```
+
+
+---
+
+## Boolean vectors
+
+```{r}
+w < 0
+which(w < 0)
+w[w < 0]
+```
+
+`which()` gives the elements of a Boolean vector that are `TRUE`, excludes .alert[NA].
+
+---
+
+## Integer vectors
+
+```{r}
+seq(from = 1, to = length(w), by = 2)
+w[seq(from = 1, to = length(w), by = 2)]
+w[-c(2, 5)]
+w[c('c', 'a', 'f')]
+```
+
+
+---
+class: middle
+
+.hand[Lists...again]
+
+---
+
+## Lists...again
+
+We have seen that lists before: the über-vector in R. It's got length, like a vector, but with no requirement that the elements be of the same type In data analysis, you won't make lists very often, at least not consciously. But
+
+* data.frames are lists! They are a special case where each element is an vector, all having the same length.
+* Many non-tidyverse functions return lists. You will want to extract goodies from them, such as the p-value for a hypothesis test or the estimated error variance in a regression model
+
+---
+
+## Lists...again
+
+Using `list()` instead of `c()` to combine things and you'll notice that the different flavors of the constituent parts are retained this time.
+```{r}
+## earlier: a = c("cabbage", pi, TRUE, 4.3)
+(a = list("cabbage", pi, TRUE, 4.3))
+```
+
+---
+
+## Names in lists
+
+.pull-left[List components can also have names. You can create or change names after a list already exists or this can be integrated into the initial assignment.]
+.pull-right[
+```{r}
+names(a)
+names(a) = c("veg", "dessert", "my_aim", "number")
+a
+a = list(veg = "cabbage", dessert = pi, my_aim = TRUE, number = 4.3)
+```
+]
+
+---
+
+## Indexing lists
+
+Indexing a list is similar to indexing a vector but it is necessarily more complex.  If you request more than one element, you should and will get a list back.  But if you request a single element:
+*  Do you want list of length 1 containing only that element? Use single square brackets, `[` and `]`.This is rarely desired...
+*  Or do you want the element itself? Use a dollar sign `$`, or double square brackets, `[[` and `]]`.
+
+The ["pepper shaker photos" in R for Data Science](https://r4ds.had.co.nz/vectors.html#lists-of-condiments) are a splendid visual explanation of the different ways to get stuff out of a list. 
+
+---
+
+## More list indexing
+
+```{r}
+(a = list(veg = c("cabbage", "eggplant"),
+           t_num = c(pi, exp(1), sqrt(2)),
+           my_aim = TRUE,
+           joe_num = 2:6))
+```
+
+A slightly more complicated list for demo purposes.
+
+---
+
+## Single, unlisted elements
+
+```{r}
+a[[2]] # index with a positive integer
+str(a$my_aim) # use dollar sign and element name
+str(a[["t_num"]]) # index with length 1 character vector
+```
+
+---
+
+## Single, unlisted elements
+
+```{r}
+i_want_this = "joe_num" # indexing with length 1 character object
+a[[i_want_this]] # we get joe_num itself, a length 5 integer vector
+```
+
+*  When the indexing object is an R object, prefer the double brackets.
+
+---
+
+## Double bracket only for single elements
+
+```{r, error = TRUE}
+a[[c("joe_num", "veg")]] 
+```
+
+We get an error if we try to extract more than element with double brackets
+
+---
+
+## More than one element 
+
+```{r}
+names(a)
+str(a[c("t_num", "veg")]) # returns list of length 2
+str(a["veg"])# returns list of length 1
+length(a["veg"][[1]]) # contrast with length of the veg vector itself
+```
+
+The return value will always be a list, even if you only request 1 element.
+
+---
+
+## Creating a data.frame explicitly
+
+In data analysis, we often import data into data.frame via `read_csv()`. But one can also construct a data.frame directly using `tibble()`.
+
+```{r, tidy = FALSE}
+n = 8
+(j_dat = tibble(w = rnorm(n),
+                x = 1:n,
+                y = LETTERS[1:n],
+                z = runif(n) > 0.3))
+```
+
+---
+
+## data.frames really are lists!
+
+```{r, tidy = FALSE}
+is.list(j_dat) # data.frames are lists
+j_dat[[4]] # this works but I prefer ...
+j_dat$z # using dollar sign and name, when possible
+```
+
+---
+
+## data.frames really are lists!
+
+```{r, tidy = FALSE}
+str(j_dat[c("x", "z")]) # get multiple variables
+# We prefer in interactive work
+identical(select(j_dat, x, z), j_dat[c("x", "z")])
+```
+
+Coerce a list directly to a data.frame directly `as_tibble()`.
+
+
+---
+class: middle
+
+.hand[Matrices are vectors with `dim`.]
+
+---
+
+## Matrices vs data frames
+
+A matrix is a generalization of an atomic vector and the requirement that all the elements be of the same flavor still holds.
+
+*  Data frames: default receptacle for rectangular data
+*  But when we need to do linear algebra, we may want to use a matrix instead.  
+*  Higher-order arrays are also available in R.  A matrix is an important special case having dimension 2.
+
+
+---
+class: code70
+
+## Matrices
+
+Let's make a simple matrix and give it decent row and column names, which we know is a good practice. You'll see familiar or self-explanatory functions below for getting to know a matrix.
+
+```{r}
+## don't worry if the construction of this matrix confuses you; just focus on
+## the product
+j_mat = outer(as.character(1:4), as.character(1:4),
+              function(x, y) {
+                paste0('x', x, y)
+                })
+j_mat
+```
+
+```{r}
+str(j_mat)
+```
+
+---
+
+## Useful matrix functions
+
+```{r}
+dim(j_mat)
+length(j_mat)
+nrow(j_mat)
+ncol(j_mat)
+```
+
+---
+
+## Dimensions can have names
+
+```{r}
+rownames(j_mat)
+rownames(j_mat) = str_c("row", seq_len(nrow(j_mat)))
+colnames(j_mat) = str_c("col", seq_len(ncol(j_mat)))
+dimnames(j_mat) # also useful for assignment
+j_mat
+```
+
+---
+
+## Indexing a matrix
+
+```{r}
+j_mat[2, 3]
+j_mat[2, ] # getting row 2
+is.vector(j_mat[2, ]) # we get row 2 as an atomic vector
+j_mat[ , 3, drop = FALSE] # getting column 3
+dim(j_mat[ , 3, drop = FALSE]) # we get column 3 as a 4 x 1 matrix
+
+```
+
+---
+
+## Use all of your favorite vector methods, too.
+
+```{r}
+j_mat[c("row1", "row4"), c("col2", "col3")]
+j_mat[-c(2, 3), c(TRUE, TRUE, FALSE, FALSE)] # wacky but possible
+```
+
+---
+
+## Indexing a matrix
+
+In summary:
+*  Use `[`, `]` and a logical, integer numeric (positive or negative), or character vector. 
+*  The comma `,` to distinguishes rows and columns. 
+*  The $i,j$-th element is the element at the intersection of row $i$ and column $j$ and is obtained with `j_mat[i, j]`. 
+*  Request an entire row/column by leaving the associated index empty. 
+* `drop = FALSE` preserves singleton dimensions.  Almost always  want this when programming with variable indices.
+
+---
+
+## R uses column major order
+
+Under the hood, of course, matrices are just vectors with some extra facilities for indexing. R uses column-major order: the columns are stacked up one after the other. (Contrast to C and Python which use row-major order).
+
+```{r, echo = FALSE, fig.width=4}
+knitr::include_graphics('l11/img/major-order.png') 
+```
+
+---
+
+## Matrices are vectors !
+
+Matrices can be indexed *exactly* like a vector, i.e. with no comma $i,j$ business, like so:
+```{r}
+j_mat[7]
+j_mat
+```
+
+How to understand this: start counting in the upper left corner, move down the column, continue  from the top of column 2 and you'll land on the element "x32" when you get to 7.
+
+---
+
+## Matrices are vectors!
+
+Note also that one can put an indexed matrix on the receiving end of an assignment operation and, as long as your replacement values have valid shape or extent, you can change the matrix.
+```{r}
+j_mat["row1", 2:3] = c("HEY!", "THIS IS NUTS!")
+j_mat
+```
+
+---
+class: code90
+
+## Recycling also works!
+
+```{r}
+(norm_mat = matrix(rnorm(6), nrow = 3))
+rowMeans(norm_mat)
+```
+
+Recycle over each entry in first column, each entry in second column
+```{r}
+(center_mat = norm_mat - rowMeans(norm_mat))
+```
+
+---
+
+
+## Creating arrays, e.g. matrices
+
+All matrix elements must be the same flavor. If that's not true, you risk an error or, worse, silent conversion to character.
+
+To make a matrix:
+* Fill with a vector
+* Glue vectors together as rows or columns
+* Or conversion from a data.frame
+
+---
+
+## Fill with a vector 
+
+```{r}
+matrix(1:15, nrow = 5)
+matrix(1:15, nrow = 5, byrow = TRUE)
+```
+
+* `reshape2::acast()`!
+
+---
+
+## Recycle a vector
+
+```{r}
+matrix(c("yo!", "foo?"), nrow = 3, ncol = 4)
+```
+
+---
+
+## Provide names
+
+```{r}
+matrix(1:15, nrow = 5,
+       dimnames = list(paste0("row", 1:5),
+                       paste0("col", 1:3)))
+```
+
+---
+
+## Bind columns
+
+Here we create a matrix by binding vectors together. Watch the vector names propagate as row or column names.
+
+```{r}
+vec1 = 5:1
+vec2 = 2^(1:5)
+cbind(vec1, vec2)
+```
+
+---
+
+## bind rows
+
+```{r}
+rbind(vec1, vec2)
+```
+
+You may have also seen me use `bind_rows()` and `bind_cols()` -- 
+these are analogous tidyverse functions that you will want to use when working with **data frames**--they don't work with matrices.
+They have nicer defaults for data frames than `cbind()` and `rbind()`.
+
+---
+
+## From a data frame.
+
+```{r, tidy = FALSE}
+(vecDat = tibble(vec1 = 5:1,
+                vec2 = 2^(1:5)))
+vecMat = as.matrix(vecDat)
+str(vecMat)
+```
+
+---
+
+## From a data frame with silent coercion `r emo::ji("person_facepalming")`
+
+```{r, tidy = FALSE}
+multiDat = tibble(vec1 = 5:1,
+                  vec2 = paste0("hi", 1:5))
+(multiMat = as.matrix(multiDat))
+```
+
+---
+class: code70
+
+## Matrix multiplication
+
+Matrices have its own special multiplication operator, written `%*%`:
+
+```{r}
+(six_sevens = matrix(rep(7,6), ncol=3))
+(z_mat = matrix(c(40,1,60,3), nrow=2))
+z_mat %*% six_sevens # [2x2] * [2x3]
+```
+
+---
+
+## Rowwise/columnwise manipulations
+
+*  `rowSums()` `rowMeans()`
+*  `colSums()` `colMeans()`
+*  many more in `matrixStats`
+*  roll your own with `apply(<MATRIX>, <1|2>, <FUN>)`.  Use `1` for rows, `2` for columns.
+
+---
+
+## rowSums vs apply
+
+```{r}
+rowSums(z_mat)
+apply(z_mat, 1, sum)
+```
+
+---
+
+## Matrix diagonal
+
+The `diag()` function can be used to extract the diagonal entries of a matrix:
+
+```{r}
+diag(z_mat)
+```
+
+It can also replace  the diagonal:
+
+```{r}
+diag(z_mat) = c(35,4)
+z_mat
+```
+
+---
+
+## Creating a diagonal matrix
+
+Finally, `diag()` can be used to create a diagonal matrix:
+
+```{r}
+diag(c(3,4))
+diag(2)
+```
+
+---
+
+## Other matrix operators
+
+**Transpose**:
+```{r}
+t(z_mat)
+```
+
+**Determinant**:
+```{r}
+det(z_mat)
+```
+
+---
+
+## Other matrix operators
+
+**Inverse**:
+```{r}
+solve(z_mat)
+z_mat %*% solve(z_mat)
+```
+
+---
+
+## Putting it all together...implications for data.frames
+
+Hopefully the slog through vectors, matrices, and lists will be redeemed by greater prowess at data analysis. Consider:
+
+* a data.frame is a *list*
+* the list elements are the variables and they are *atomic vectors*
+* data.frames are rectangular, like their matrix friends, so your intuition -- and even some syntax -- can be borrowed from the matrix world
+
+.alert[A data.frame is a list that quacks like a matrix.]
+
+---
+
+## Reviewing list-style indexing of a data.frame
+
+```{r, output.lines = 6}
+j_dat
+j_dat$z
+i_want_this = "z" 
+(j_dat[[i_want_this]]) # atomic
+```
+
+---
+
+## Reviewing vector-style indexing of a data.frame:
+
+```{r, output.lines = 6}
+j_dat["y"]
+i_want_this = c("w", "z")
+j_dat[i_want_this] # index with a vector of variable names
+```
+
+---
+
+## Demonstrating matrix-style indexing of a data.frame:
+
+```{r end_indexing, tidy = FALSE,  output.lines = 6}
+j_dat[ , "z"] #For tibbles, drop = FALSE by default.
+j_dat[ , "z", drop = TRUE]
+```
+
+---
+## Demonstrating matrix-style indexing of a data.frame:
+
+```{r, tidy = FALSE,  output.lines = 6}
+j_dat[c(2, 4, 7), c(1, 4)] # awful and arbitrary but syntax works
+j_dat[j_dat$z, ]
+```
+
+---
+
+## Post-test
+
+Ok, now let's make another attempt on [the quiz](https://docs.google.com/forms/d/e/1FAIpQLSexoCRQ0WqMH_yh38_cvpj28mM7Au8OJX8psuMJuTx9QNUgdw/viewform?usp=sf_link).
+
+
+---
+
+## Acknowledgments
+
+Based off of [materials from](https://www.stat.cmu.edu/~ryantibs/statcomp/lectures/intro.html) Ryan Tibshirani "Statistical Computing" at CMU and
+[Stat 545](https://stat545.com/r-objects.html) at UBC.
+
+More reading: [r4ds chapter 20](https://r4ds.had.co.nz/vectors.html).
+
+---
+
+# Appendix
+
+---
+class: code70
+
+```{r, ref.label='tabulate-delay', echo = TRUE, eval = FALSE}
+```
+

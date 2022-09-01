@@ -1,0 +1,230 @@
+---
+title: "HW3 Key"
+author: "Andrew McDavid"
+date: "10/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-packages-data, message = FALSE, eval = TRUE}
+library(tidyverse)
+library(lubridate)
+library(ggrepel)
+library(vroom)
+```
+
+```{r load-data}
+crashes = vroom("https://urmc-bst.github.io/bst430-fall2021-site/hw_lab_instruction/hw02-accidents/data/ny_collisions_2018_2019.csv.gz")
+```
+
+## Ex1
+
+```{r}
+crashes = crashes %>% janitor::clean_names() %>% filter(crash_descriptor %in% c("Fatal Accident"))
+#  filter(crash_descriptor %in% c("Fatal Accident", 'Injury Accident', 'Property Damage & Injury Accident'))
+```
+
+## Ex2
+
+```{r}
+crashes = crashes %>% 
+  mutate(event_descriptor = str_to_lower(event_descriptor)) %>% 
+  mutate(is_pedbike = if_else(str_detect(event_descriptor, 'ped|bicy'), 
+                              'Pedestrian/Bicycle', 'Other'))
+```
+
+Should have `r nrow(crashes)` fatal crashes distributed as follows:
+
+```{r}
+crashes %>% count(is_pedbike)
+```
+
+
+
+## Ex 3
+
+```{r}
+crash_count = crashes %>% 
+  mutate(county_name = str_to_title(county_name)) %>% 
+  mutate(across(c(county_name, is_pedbike), as.factor)) %>% 
+  count(county_name, is_pedbike, .drop = FALSE) %>%
+  filter( county_name != 'Unknown') %>% 
+  replace_na(list(n = 0))
+```
+
+Coercing to a factor and setting `.drop = FALSE`, then replacing nas is necessary for counties with zero deaths (generally pedestrian) to be included as zeros--it probably doesn't affect this plot.
+
+```{r}
+fct_lump_reorder = function(factor_var, n_var){
+   fct_lump_n(fct_reorder({{factor_var}}, {{n_var}}), 20, w = {{n_var}}, other_level = "Rest of NY")
+}
+
+plt = ggplot(crash_count, aes(y =fct_lump_reorder(county_name, n), fill = is_pedbike, x = n)) + geom_col() + theme_minimal() +
+  labs(x = 'Count', y = 'County', title = 'Fatal Crashes NY, 2018-2019',
+       fill = 'Type')
+plt
+```
+
+Here I sorted by the total number of fatal crashes -- other options are possible but would need a justification.
+As expected, population plays a large effect, though actually Suffolk and Nassau  (Long Island) are worse than Manhattan or the Bronx.  Rochester and Buffalo are also in the top 10. 
+
+```{r}
+crash_wide = crash_count %>% pivot_wider(names_from = is_pedbike, values_from = n, values_fill = 0)
+
+crash_scatter = ggplot(crash_wide, aes(x = Other, y =`Pedestrian/Bicycle`)) + geom_point() + geom_text_repel(aes(label = county_name), max.overlaps = 20)
+crash_scatter
+```
+
+Here's a bonus scatter plot (not part of assignment).
+
+## Ex 4
+
+```{r}
+census = read_csv('data/cc-est2019-agesex-36.csv') %>% 
+  janitor::clean_names() %>% 
+  filter(year == 10) %>% 
+  mutate(popestimate, county_name = str_remove(ctyname, ' County')) %>% 
+  select(county_name, popestimate)
+```
+
+Data should go into a data directory of some sort. (Would mark down a 1/2 point if it's just dumped into the root of the project)
+
+## Ex 5
+
+```{r}
+crash_count = left_join(crash_count, census, by = 'county_name') %>% 
+  mutate(n_per_100k = n/popestimate*100000)
+
+top_20_popcrash = crash_count %>% 
+  group_by(county_name) %>% 
+  summarize(total_per_100k = sum(n_per_100k)) %>% 
+  ungroup() %>% 
+  mutate(is_top20 = ifelse(min_rank(-total_per_100k)<=20, county_name, "Rest of NY"))
+```
+
+Defining a "rest of NY" variable is a bit tricky here, because we can't just "sum" the normalized
+fatalities for the rest of NY, we need to average them, because we are expressing  the per-capita risk.
+To do this, we need to define what groups will be averaged together.
+First we'll make an indicator for the top 20 counties -- 
+this indicator maps the top 20 county names back to themselves, and the remaining counties to
+"Rest of NY".  For example:
+
+```{r}
+top_20_popcrash %>% slice_sample(n = 5)
+```
+
+
+```{r}
+crash_100k = crash_count %>% 
+  left_join(top_20_popcrash %>% select(-total_per_100k), by = 'county_name') %>% 
+  group_by(is_top20, is_pedbike) %>% 
+  summarize(n_per_100k = mean(n_per_100k))
+```
+
+Now we join onto the top20 table, and group by top20 indicator and `is_pedbike`,
+and calculate the average number of crashes.  So the top 20 counties are averaged amongst themselves,
+while other counties are averaged together.  You could argue that this should be a weighted average,
+weighting by county population.  As it stands this is more of a geographic average risk rather than a
+per-capita average risk.
+
+```{r}
+(plt %+% crash_100k) + 
+  aes(y = fct_reorder(is_top20, n_per_100k), x = n_per_100k) +
+  labs(y = 'County', x = "Fatalities per 100k population")
+```
+
+Clearly population did play a large effect -- now Hamilton county (in the Adirondacks) is #1, along with several other rural counties. These counties often do not have very many pedestrian fatalities compared to the number of other fatalities.
+
+```{r}
+crash_wide_100k = crash_count %>% pivot_wider(id_cols = county_name, names_from = is_pedbike, values_from = n_per_100k, values_fill = 0)
+
+crash_scatter %+% crash_wide_100k
+```
+
+Bonus scatter plot
+
+## Ex 6
+
+```{r}
+vmt_metro = readxl::read_excel('data/THT_Data_508.xlsx', sheet = 3, na = c('[no data]')) %>% 
+  janitor::clean_names()
+
+```
+
+Setting `na` appropriately here means that the numeric columns will be loaded correctly -- otherwise there will need to be a
+cast to numeric done.
+
+## Ex 7
+```{r}
+vmt_metro_ny = filter(vmt_metro, str_detect(urbanized_area, 'NY')) %>% 
+  select(urbanized_area)
+```
+
+Actually, filtering down to NY isn't necessary once the cross walk (defined below) is generated
+
+```{r}
+metro_areas = tribble( ~urbanized_area, ~county_name,
+                    "New York-Newark, NY-NJ-CT", c("Queens", "Kings", "New York", "Bronx", "Richmond"),
+                     "Rochester, NY", c("Monroe"),
+                     "Buffalo, NY", c("Erie"),
+                    "Albany-Schenectady, NY", 'Albany',
+                    "Binghamton, NY-PA", "Broome",
+                    "Elmira, NY", "Chemung",
+                    "Glens Falls, NY", "Warren",
+                    "Ithaca, NY", "Tompkins",
+                    "Kingston, NY", "Ulster",
+                    "Poughkeepsie-Newburgh, NY-NJ", "Dutchess",
+                    "Saratoga Springs, NY", "Saratoga",
+                    "Syracuse, NY", 'Onondaga',
+                    "Utica, NY", "Oneida") %>%
+                     unnest(cols = c(county_name))
+```
+
+Here I define the cross walk with tibble (actually at first using a list column and unnesting to save some typing).
+For the students, it is likely more efficient to take the table expressed in the assignment and paste it into an excel sheet, then write it as a .csv file.
+
+I am expecting other hacky answers here -- if it involves torturing the `vmt_metro` table with magic numbers,
+etc, we should mark off (magic numbers are a form of lint).
+
+```{r}
+vmt_metro_sub = vmt_metro %>% 
+  right_join(metro_areas) %>% 
+  select(vmt = vehicle_miles_traveled_per_capita_raw_value, county_name) %>% 
+  mutate(vmt = as.numeric(vmt))
+```
+
+
+
+
+
+## Ex 8
+
+```{r}
+adjusted = crash_count %>% 
+  left_join(vmt_metro_sub) %>%  
+  mutate(n_per_100k_vmt = n_per_100k/vmt)
+
+(plt %+% filter(adjusted, !is.na(vmt))) + 
+  aes(y = fct_reorder(county_name,n_per_100k_vmt), x = n_per_100k_vmt) + 
+  labs(x = "Fatalities per 100k miles driven", y = 'County', 
+       main = glue::glue('Fatal crashes in {nn} NY Counties, 2018-2019', nn = nrow(adjusted)))
+```
+
+
+This plot isn't directly comparable to the previous because we only have 17 counties and some of the rural counties might have placed quite highly here, as well as the Long Island counties -- it would be an interesting exercise to try to infer the vmt driven for the remaining counties, perhaps based on a regression model.
+
+```{r}
+adjusted_wide = adjusted %>% 
+  select(-n_per_100k, -n) %>% 
+  pivot_wider(names_from = is_pedbike, values_from = n_per_100k_vmt)
+crash_scatter %+% adjusted_wide
+```
+
+Bonus scatter plot
+
+## Ex9
+
+The fatalities per 100k VMT is most informative for motorists about their marginal risk of driving.  For pedestrians/cyclists, we really would like to know how much exposure (miles or hours) pedestrians/cyclists logged in a county in order to adjust for the amount of time they spend on the roads.  This would likely make NYC environs appears less hazardous.  I imagine that the amount of driving and amount of pedestrian time probably has a non-linear and complicated interaction.
