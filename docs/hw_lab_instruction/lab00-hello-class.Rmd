@@ -44,8 +44,9 @@ knitr::include_graphics("lab00-demonstration/img/copy-assignment-repo-link.png")
 - Go to RStudio clone the assignment repository. 
 ```{r open-a-project-in-the-clone}
 
-# you need to change this to the right repository and location for you and your local machine
-#usethis::create_from_github("https://github.com/bst-urmc/test-assignment-1-tanzylove",destdir="~/Documents/work/teaching/BST430/", fork=FALSE)
+#you need to change this to the right repository and location for you and your local machine
+#usethis::create_from_github("https://github.com/bst-urmc/test-assignment-1-tanzylove",
+#   destdir="~/Documents/work/teaching/BST430/", fork=FALSE)
 
 ```
 
