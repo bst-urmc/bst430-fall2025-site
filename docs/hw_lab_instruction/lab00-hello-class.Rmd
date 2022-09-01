@@ -124,6 +124,8 @@ attach(hsgrads)
 plot(Rain, Education, 
       xlab="Rainfall", ylab="Average Grade Level", pch=16)
 cor(Rain, Education)
+
+args(cor)
 ```
 
 And one final set of flying times.
