@@ -53,6 +53,7 @@ Run these lines in interactive mode (you can copy-and-paste them but you'll have
 -  Let git know about your github username and email by editing this as appropriate and entering it into the Console:
 
   I put 
+
   ```
   usethis::use_git_config(
   scope = "user",
