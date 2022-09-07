@@ -1,6 +1,6 @@
 ---
 title: "Lab 01 - Hello R!"
-date: "2018-01-18 (updated 2021-08-29 by AM)"
+date: "2018-01-18 (updated 2022-09-07 by TL)"
 author: "Mine Cetinkaya-Rundel and colleagues"
 output: 
   tufte::tufte_html:

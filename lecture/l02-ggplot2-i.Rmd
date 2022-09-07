@@ -1,7 +1,7 @@
 ---
 title: "BST430  Lecture 2"
 subtitle: "ggplot (i)"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the notes of Andrew McDavid"
 institute: "U of Rochester"
 date: "2021-08-29 (updated: `r Sys.Date()`)"
 output:
@@ -42,18 +42,6 @@ color_palette <- list(gray = "#999999",
 #library(emo)
 htmltools::tagList(rmarkdown::html_dependency_font_awesome())
 ```
-
-## Catch up
-    
-- Catch up on informal "requirements":
-    + Add your name (first and last) to your GitHub profile, ideally add your 
-    photo as well
-    + Similarly, add your name (first and last) to your RStudio.Cloud profile 
-    as well
-    
-<!-- - Tips for asking questions via GitHub issues-->
-
----
 
 ## Agenda
 
@@ -462,7 +450,7 @@ class: center, middle
     * skewness: right-skewed, left-skewed, symmetric (skew is to the side of the longer tail)
     * modality: unimodal, bimodal, multimodal, uniform
 * center: mean (`mean`), median (`median`), mode (not always useful)
-* spead: range (`range`), standard deviation (`sd`), inter-quartile range (`IQR`)
+* spread: range (`range`), standard deviation (`sd`), inter-quartile range (`IQR`)
 * unusal observations
 
 ---

@@ -57,7 +57,7 @@ library(tidyverse)
 - Demo: A reproducible data analysis
    - R and RStudio
    - R Markdown
-- Readings for Monday
+- Readings for Tuesday
 
 ---
 
