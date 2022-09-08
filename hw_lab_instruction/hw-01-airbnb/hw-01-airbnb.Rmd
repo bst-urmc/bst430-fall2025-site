@@ -1,5 +1,8 @@
 ---
 title: "HW 01 - Airbnb listings in New York City"
+author: "Tanzy Love, based on the course by Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-08-29 (updated: `r Sys.Date()`)"
 output: 
   tufte::tufte_html:
     css: ../hw.css
@@ -22,17 +25,17 @@ knitr::include_graphics("img/madeleine-kohler-90Qn643Pq9c-unsplash.jpg")
 ```
 
 Once upon a time, people traveled all over the world, and some stayed in hotels and others chose to stay in other people's houses that they booked through Airbnb.
-As in many cities, Airbnb has had an impact on the housing market of New York.
+As in many cities, Airbnb had an impact on the housing market of New York.
 Using data provided by Airbnb, we can explore how Airbnb availability and prices vary by neighborhood.
 
 # Getting started
 
 *  Accept the github classroom assignment
-*  Go to the URMC-BST GitHub organization and locate your homework repo, which should be named `hw-01-airbnb-YOUR_GITHUB_USERNAME`. 
-*  Grab the URL of the repo, and start a new project from Github in RStudio. Make sure you are in the **BST430-fall2021 workspace** (so you get free compute and so you have the necessary packages installed automatically).
+*  Go to the bst-urmc GitHub organization and locate your homework repo, which should be named `hw-01-airbnb-YOUR_GITHUB_USERNAME`. 
+*  Grab the URL of the repo, and start a new project from Github in RStudio. 
 *  Open the R Markdown document `hw-01.Rmd` and Knit it.
 Make sure it compiles without errors.
-The output will be in the file markdown `.md` file with the same name.  (You'll turn in .md file, and the plots generated along with it).
+The output will be in the file markdown `.md` file with the same name.  (You'll turn in the .md file, and the plots generated along with it).
 *  Make sure you have your github PAT handy for the first time you push a commit.
 
 ## Warm up
@@ -48,13 +51,13 @@ Keep an eye out in the instructions for where you are instructed to:
 -   Update the YAML, changing the author name to your name. 
 -   🧶**knit** the document.
 -   ✅ Commit your changes  (with a meaningful commit message.)
--   ⬆ Push your changes to GitHub.
+-   ⬆️ Push your changes to GitHub.
 -   Go to your repo on GitHub and confirm that your changes are visible in your Rmd **and** md files. If anything is missing, commit and push again.
 
 ## Packages
 
 We'll use the **tidyverse** package for much of the data wrangling and visualisation.  The data lives on the course website, and is loaded below.
-These packages are already installed for you as long as you are working in the BST430-fall2021  rstudio.cloud workspace)
+These packages may be already installed, if you've been doing earlier coursework.
 You can load them, and the `nycbnb` data by running the following in your Console:
 
 ```{r load-packages, message = FALSE}
@@ -95,7 +98,7 @@ names(nycbnb)
 ```
 
 
-3.  Create a faceted histogram where each facet represents a neighborhood and displays the distribution of Airbnb prices in that neighborhood. Think critically about whether it makes more sense to stack the facets on top of each other in a column, lay them out in a row, or wrap them around. Along with your visualisation, include your reasoning for the layout you chose for your facets.
+3.  Create a faceted histogram where each facet represents a neighborhood and displays the distribution of Airbnb prices in that neighborhood. Think critically about whether it makes more sense to stack the facets on top of each other in a column, lay them out in a row, or wrap them around. Along with your visualization, include your reasoning for the layout you chose for your facets.
 
 ```{r}
 ggplot(data = ___, mapping = aes(x = ___)) +
@@ -127,4 +130,4 @@ Let's de-construct this code:
 
 * 21 points for responses to Ex1-Ex7 @ 3 points per Ex.
 * 5 points for consistent and informative commit messages
-* Up to 5 points extra credit available for Ex 8.  Needs to be an excellent answer to get all five points, though!
+* Up to 5 points extra credit available for Ex 8.  Though it needs to be an excellent answer to get all five points!
