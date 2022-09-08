@@ -237,7 +237,7 @@ DEMO!
 
 - Run the analysis using **R Markdown**
 
-- Edit the analysis to add the true weight
+- Edit the file
 
 - Re-run the analysis using **R Markdown**
 

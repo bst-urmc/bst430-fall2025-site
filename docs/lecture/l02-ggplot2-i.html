@@ -28,25 +28,13 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-08-29 (updated: 2022-09-07)
+### 2021-08-29 (updated: 2022-09-08)
 ]
 
 ---
 
   
 
-
-## Catch up
-    
-- Catch up on informal "requirements":
-    + Add your name (first and last) to your GitHub profile, ideally add your 
-    photo as well
-    &lt;!-- + Similarly, add your name (first and last) to your RStudio.Cloud profile  --&gt;
-    &lt;!-- as well --&gt;
-    
-&lt;!-- - Tips for asking questions via GitHub issues--&gt;
-
----
 
 ## Agenda
 
@@ -99,30 +87,6 @@ class: center, middle
 - ggplot2 is a data visualization package
 - To use ggplot2 functions, first load tidyverse
 
-```
-## Warning: package 'tidyverse' was built under R version 4.1.3
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 4.1.3
-```
-
-```
-## Warning: package 'tibble' was built under R version 4.1.3
-```
-
-```
-## Warning: package 'tidyr' was built under R version 4.1.3
-```
-
-```
-## Warning: package 'readr' was built under R version 4.1.3
-```
-
-```
-## Warning: package 'dplyr' was built under R version 4.1.3
-```
-
 ```r
 library(tidyverse)
 ```
@@ -152,6 +116,8 @@ ggplot(data = [dataset], mapping = aes(x = [x-variable], y = [y-variable])) +
 - Inspired by the book **Grammar of Graphics** by Leland Wilkinson
 - `ggplot()` is the main function in ggplot2
 - For help with the ggplot2, see http://ggplot2.tidyverse.org/
+
+- Note the "+" at the end of the line lets ggplot know when to stop adding components
 
 ---
 
@@ -310,6 +276,11 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
 
 - Going forward I'll suppress the warning to save room on slides, but it's important to note it
 
+- **Warnings** mean the author thinks something funny is happening
+  - sometimes adding an explicit argument makes them go away
+
+- **Errors** stop R from working
+
 ---
 
 ## Mass vs. height
@@ -324,6 +295,14 @@ How would you describe this relationship? What other variables would help us und
 
 ## Jabba!
 
+
+```r
+starwars$name[starwars$mass&gt;1000&amp;!is.na(starwars$mass)]
+```
+
+```
+## [1] "Jabba Desilijic Tiure"
+```
 &lt;img src="l02/img/jabbaplot.png" width="768" /&gt;
 
 ---
@@ -370,7 +349,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass, color = gender)) +
   geom_point()
 ```
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -411,7 +390,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
   geom_point()
 ```
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -432,7 +411,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
   facet_grid(gender ~ .)
 ```
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -443,7 +422,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
   facet_grid(. ~ gender)
 ```
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -454,7 +433,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
   facet_wrap(~ eye_color)
 ```
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -472,7 +451,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
 How are these plots similar? How are they different?
 &lt;/div&gt;
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -486,7 +465,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
   ylim(0, 1400)
 ```
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -526,7 +505,7 @@ class: center, middle
     * skewness: right-skewed, left-skewed, symmetric (skew is to the side of the longer tail)
     * modality: unimodal, bimodal, multimodal, uniform
 * center: mean (`mean`), median (`median`), mode (not always useful)
-* spead: range (`range`), standard deviation (`sd`), inter-quartile range (`IQR`)
+* spread: range (`range`), standard deviation (`sd`), inter-quartile range (`IQR`)
 * unusal observations
 
 ---
@@ -540,11 +519,7 @@ ggplot(data = starwars, mapping = aes(x = height)) +
   geom_histogram(binwidth = 10)
 ```
 
-```
-## Warning: Removed 6 rows containing non-finite values (stat_bin).
-```
-
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -558,11 +533,7 @@ ggplot(data = starwars, mapping = aes(x = height)) +
   geom_density()
 ```
 
-```
-## Warning: Removed 6 rows containing non-finite values (stat_density).
-```
-
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -576,11 +547,7 @@ ggplot(data = starwars, mapping = aes(y = height, x = gender)) +
   geom_boxplot()
 ```
 
-```
-## Warning: Removed 6 rows containing non-finite values (stat_boxplot).
-```
-
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -600,7 +567,7 @@ ggplot(data = starwars, mapping = aes(x = gender)) +
   geom_bar()
 ```
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -614,7 +581,7 @@ ggplot(data = starwars, mapping = aes(x = gender, fill = hair_color)) +
   geom_bar()
 ```
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -629,7 +596,7 @@ ggplot(data = starwars, mapping = aes(x = gender, fill = hair_color)) +
   labs(y = "proportion")
 ```
 
-![](l02-ggplot2-i_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+![](l02-ggplot2-i_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
 ]
 
 ---
