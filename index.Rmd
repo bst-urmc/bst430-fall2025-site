@@ -36,16 +36,15 @@ TTh 11:00-12:40, SRB 1410
     1. [install GIT](https://happygitwithr.com/install-git.html)
     2. [install *base* R](https://cran.r-project.org/)
     3. [install RStudio](https://www.rstudio.com/products/rstudio/download/#download)
-    * Lab 0 [instructions](hw_lab_instruction/lab00-hello-class.html) and repo (accept GH classroom invite in Blackboard). Due 5pm Sept 8.
-<!-- 2. [ggplot(i)](lecture/l02-ggplot2-i.html) -->
-<!--     * CandyWeight for real. -->
-<!--     * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom invite). Due 5pm Sept 3. -->
+    * Lab 0 [instructions](hw_lab_instruction/lab00-hello-class.html) and repo (accept GH classroom invite in Blackboard).
+2. [ggplot(i)](lecture/l02-ggplot2-i.html)
+    * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/Zqu2rV6v)). Due 5pm Sept 13.
 <!-- 3.  [dplyr(i)](lecture/l03-transform-dplyr-i.html) -->
 <!--     * Continue working on lab 1 -->
 <!-- 4.  [Data types in R](lecture/l04-data-types.html). Finish dplyr(i) lecture. -->
 <!--     * HW 1 assigned.  [instructions](hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html) and repo (accept GH classroom invite).  Due 5pm EDT, Sept 13. -->
 <!-- 5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html). Finish data types lecture. -->
-<!--     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept an invitation to join the URMC-BST organization to get access to your repositories to complete these.  Most labs will be completed **in groups** going forward -- if you cannot attend class in person for whatever reason, let me know and I'll set up zoom so you can participate **synchronously and remotely.** -->
+<!--     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept an invitation as before. -->
 <!-- 6.  Finish L5a. -->
 <!--     *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2. -->
 <!-- 7.  [dplyr(ii)](lecture/l05b-advanced-dplyr.html), [styleguide](lecture/l06-style.html) -->
@@ -56,7 +55,6 @@ TTh 11:00-12:40, SRB 1410
 <!--     * Continue working on lab 4. -->
 <!-- 10. [Data from files](lecture/l09-data-from-files.html) -->
 <!--     *  [Lab 5 assigned](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html) -->
-<!--     *  Andrew's office hours will be at 4:30 Thursday this week. -->
 <!-- 11. Work on lab 5. -->
 <!-- 12. [Text processing](lecture/l10-text.html) -->
 <!--     *  Discuss lab 5.  [HW 3 assigned](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html). -->
