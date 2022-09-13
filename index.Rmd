@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # Administrivia
 
-TTh 11:00-12:40, SRB 1410
+TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
 <br>
 **Instructor**: Tanzy Love
 <br>
