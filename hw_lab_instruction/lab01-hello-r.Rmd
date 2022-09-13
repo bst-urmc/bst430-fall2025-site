@@ -1,6 +1,6 @@
 ---
 title: "Lab 01 - Hello R!"
-date: "2018-01-18 (updated 2022-09-07 by TL)"
+date: "2018-01-18 (updated `r Sys.Date()` by TL)"
 author: "Mine Cetinkaya-Rundel and colleagues"
 output: 
   tufte::tufte_html:
@@ -87,7 +87,6 @@ Install these packages by running the following in the console.
 ```{r eval = FALSE}
 install.packages("tidyverse")
 install.packages("datasauRus")
-install.packages('usethis')
 ```
 
 Now that the necessary packages are installed, you should be able to Knit your document and see the results.  This last package is only necessary as a helper to configure git to know about your github account.
@@ -165,11 +164,13 @@ knitr::include_graphics("lab01-hello-r/img/update-author-name-commit.png")
 
 You don't have to commit after every change, this would get quite cumbersome. You should consider committing states that are *meaningful to you* for inspection, comparison, or restoration. In the first few assignments we will tell you exactly when to commit and in some cases, what commit message to use. As the semester progresses we will let you make these decisions.
 
-## Pushing changes: 
+## **Pulling** and Pushing changes: 
 
-Now that you have made an update and committed this change, it's time to push these changes to the web! Or more specifically, to your repo on GitHub. Why? So that others can see your changes. And by others, we mean the course teaching team (your repos in this course are private to you and us, only). 
+Now that you have made an update and committed this change, it's time to push these changes to the web! Or more specifically, to your repo on GitHub. Why? So that others can see your changes. And by others, we mean the course teaching team for individual assignments (your repos in this course are private to you and us, only). 
 
-In order to push your changes to GitHub, click on **Push**. This will prompt a dialogue box where you first need to enter your user name, and then your PAT.
+Today we are trying a group assignment, so we need to **Pull** each time before we **Push**. Why? If your team member made a change and you *Push*, you could **erase** it.
+
+In order to pull and push your changes to GitHub, click on **Pull**(down) and **Push**(up). This will popup a box to tell you the status. If there are no difference in the online repository, you'll get "Already up to date."
 
 # Data
 
