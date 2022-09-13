@@ -192,55 +192,97 @@ programmer. Before we get to that stage, however, you need to build some
 basic fluency in R. Today we begin with the fundamental building blocks
 of R and RStudio: the interface, reading in data, and basic
 commands.</p>
-<p>And to make versioning simpler, this is a solo lab. Additionally, we
-want to make sure everyone gets a significant amount of time at the
-steering wheel. Next week you’ll learn about collaborating on GitHub and
-produce a single lab report for your team.</p>
 </div>
 <div id="getting-started" class="section level1">
 <h1>Getting started</h1>
 <p>Each of your assignments will begin with the following steps. You can
 always refer back to this lab for a detailed list of the steps involved
 for getting started with an assignment.</p>
-<pre class="marginfigure"><code>Note that some of the steps in this video are now out of date, due to changes in how github handles authenication.   So you might watch this in order to get an overview, but read below for the details.</code></pre>
-<p>The following screencast also walks you through these steps,
-<strong>though as of August 2021, some of this is now out of
-date</strong>:</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/8Ta_SJq3MrU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-</iframe>
+</div>
+<div id="housekeeping" class="section level1">
+<h1>Housekeeping</h1>
+<pre class="marginfigure"><code>Your email address is the address tied to your GitHub account and your name should be first and last name.</code></pre>
+<p>Before we can get started we need to take care of some required
+housekeeping. These should only need to be done once, or maybe once a
+month for the PAT.</p>
+<p>Specifically, we need to configure your git so that RStudio can
+communicate with GitHub. This requires two pieces of information: your
+email address and your name.</p>
 <ul>
-<li>Click on the assignment link that you should have received in your
-email to create your GitHub repository (which we’ll refer to as “repo”
-going forward) for the assignment. This repo contains a template you can
-build on to complete your assignment.</li>
+<li><p>Install GIT, R, Rstudio (see the Resources on the homepage for
+links).</p></li>
+<li><p>Open RStudio and go to the <strong>Console</strong> for these
+one-off bits. Run these lines in interactive mode (you can
+copy-and-paste them but you’ll have to make them specific to
+yourself).</p></li>
 </ul>
-<p><img src="lab01-hello-r/img/clone-repo-link.png" width="265" /></p>
+<pre><code>  library(usethis, gitcreds)
+
+  #if that doesn&#39;t work, install the packages and try the previous    line again.
+  install.packages(&quot;usethis&quot;)  #These should only be needed once
+  install.packages(&quot;gitcreds&quot;) 
+  </code></pre>
 <ul>
-<li>On GitHub, click on the green <strong>Clone or download</strong>
+<li>Let git know about your github username and email by editing this as
+appropriate and entering it into the Console:</li>
+</ul>
+<p>I put</p>
+<pre><code>usethis::use_git_config(
+scope = &quot;user&quot;,
+user.name = &quot;Tanzy Love&quot;,
+user.email = &quot;Tanzy_Love@urmc.rochester.edu&quot;)</code></pre>
+<ul>
+<li><p>Next, we need to set up a personal access token so that you can
+write from rstudio cloud to github. To do this, enter use the following
+command into the Console:</p>
+<pre><code>usethis::create_github_token()</code></pre>
+<p>Follow the instructions. <strong>Be sure to save the PAT in a
+password manager</strong>, you will have to re-enter it, depending on
+your set-up.</p>
+<pre><code>gitcreds::gitcreds_set()</code></pre>
+<p>paste in the token from the last step. If you picked this token to
+have a 6 month expiration, you shouldn’t have to do this again.</p></li>
+</ul>
+</div>
+<div id="getting-started-1" class="section level1">
+<h1>Getting started</h1>
+<p>Each of your assignments will begin with the following steps. You can
+always refer back to this lab (or other labs) for a detailed list of the
+steps involved for getting started with an assignment.</p>
+<p>This part you will do every time you have an assignment or lab.</p>
+<p><img src="lab00-demonstration/img/copy-assignment-repo-link.PNG" width="420" /></p>
+<ul>
+<li><p>Click on the assignment link that you should have received in
+your email to create your GitHub repository (which we’ll refer to as
+“repo” going forward) for the assignment. This repo contains a template
+you can build on to complete your assignment.</p></li>
+<li><p>Note that it’s not in <em>your</em> GitHub folder, it’s in the
+coursespace (so I can see it but you can’t see each other’s) and it is a
+copy of the template that I made to be here.</p></li>
+<li><p>On GitHub, click on the green <strong>Clone or download</strong>
 button, select <strong>Use HTTPS</strong> (this might already be
 selected by default, and if it is, you’ll see the text <strong>Clone
 with HTTPS</strong> as in the image below). Click on the clipboard icon
-to copy the repo URL.</li>
+to copy the repo URL. It will start with the class “bst-urmc” and end
+with your username “tanzylove” (for me) and the middle is based on what
+the assignment is named.</p></li>
+<li><p>Go to RStudio clone the assignment repository. This is the one
+copy and paste into RStudio part that you will do each time you start to
+work.</p></li>
 </ul>
-<p><img src="lab01-hello-r/img/new-project-from-gh.png" width="224" /></p>
+<pre><code>###  #&#39;s comment out lines in R code
+
+#you need to change this to the right repository and location for you and your local machine
+usethis::create_from_github(&quot;https://github.com/bst-urmc/lab-1-tanzylove&quot;,
+   destdir=&quot;~/Documents/work/teaching/BST430/&quot;)
+</code></pre>
 <ul>
-<li>Go to RStudio Cloud and into the course workspace. Create a
-<strong>New Project from Git Repo</strong>. You will need to click on
-the down arrow next to the <strong>New Project</strong> button to see
-this option.</li>
+<li>Copy and paste the URL of your assignment repo into the
+function</li>
+<li>If you need to login to github, a login box should pop up.</li>
+<li>It opens up a new copy of RStudio with all the files from the
+repository in question.</li>
 </ul>
-<p><img src="lab01-hello-r/img/paste-gh-repo-url.png" width="500" /></p>
-<ul>
-<li>Copy and paste (AM: OK to copy-paste here) the URL of your
-assignment repo into the dialog box:</li>
-<li>If haven’t linked rstudio cloud to github, you should now be
-prompted to link rstudio cloud to your github account. Do this, and make
-sure you click the “enable private repo link”. This page can also be
-found by clicking on your username / avatar in the top right corner of
-the screen, then browsing to the “Authentication” page there. It should
-look like this once you are done:</li>
-</ul>
-<p><img src="lab01-hello-r/img/rsc-gh-authentication.png" width="1044" /></p>
 </div>
 <div id="packages" class="section level1">
 <h1>Packages</h1>
@@ -262,42 +304,8 @@ library(datasauRus)</code></pre>
 <p>Note that the packages are also loaded with the same commands in your
 R Markdown document.</p>
 </div>
-<div id="housekeeping" class="section level1">
-<h1>Housekeeping</h1>
-<pre class="marginfigure"><code>Your email address is the address tied to your GitHub account and your name should be first and last name.</code></pre>
-<p>Before we can get started we need to take care of some required
-housekeeping. Specifically, we need to configure your git so that
-RStudio can communicate with GitHub. This requires two pieces of
-information: your email address and your name.</p>
-<ul>
-<li>Let git know about your github username and email by editing this as
-appropriate and entering it into the Console:</li>
-</ul>
-<pre class="r"><code>usethis::use_git_config(
-scope = &quot;user&quot;,
-user.name = &quot;Firstname Lastname&quot;,
-user.email = &quot;your-github-email@example.com&quot;
-)</code></pre>
-<p>For instance, I put</p>
-<pre class="r"><code>usethis::use_git_config(
-scope = &quot;user&quot;,
-user.name = &quot;Andrew McDavid&quot;,
-user.email = &quot;andrew.n.mcdavid@gmail.com&quot;
-)</code></pre>
-<ul>
-<li><p>Next, we need to set up a personal access token so that you can
-write from rstudio cloud to github. To do this, enter use the following
-command into the Console:</p>
-<pre class="r"><code>usethis::create_github_token()</code></pre>
-<p>Follow the instructions. <strong>Be sure to save the PAT in a
-password manager</strong>, it seems that you will have to re-enter it
-every time you start a new project on rstudio cloud, and possibly as
-often as a once a day otherwise.</p></li>
-</ul>
-</div>
 <div id="warm-up" class="section level1">
 <h1>Warm up</h1>
-<pre class="marginfigure"><code>NB: you should enter your PAT rather than your password, and actually it doesn&#39;t matter what you enter for your userid.  Your PAT will be cached, so you won&#39;t have to keep entering it 😎</code></pre>
 <p>Before we introduce the data, let’s warm up with some simple
 exercises. The following video is an overview of some of these warmup
 exercises.</p>
@@ -308,6 +316,10 @@ exercises.</p>
 <h2>YAML:</h2>
 <p><strong>CHECK</strong> that the output lists html first. That will
 help later in the lab.</p>
+<pre><code>output: 
+  html_document: 
+    self_contained: no
+  tufte::tufte_html:</code></pre>
 <p>Open the R Markdown (Rmd) file in your project, change the author
 name to your name, and knit the document.</p>
 <p><img src="lab01-hello-r/img/yaml-raw-to-rendered.png" width="930" /></p>
@@ -445,7 +457,7 @@ we want to use to represent each observation in the data. In this case
 we want these to be points,m hence <code>geom_point</code>.</p>
 <pre class="r"><code>ggplot(data = dino_data, mapping = aes(x = x, y = y)) +
   geom_point()</code></pre>
-<p><img src="lab01-hello-r_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="lab01-hello-r_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>If this seems like a lot, it is. And you will learn about the
 philosophy of building data visualizations in layer in detail next week.
 For now, follow along with the code that is provided.</p>
@@ -519,7 +531,7 @@ figures, and hit OK when done. Then, knit your document and see how you
 like the new sizes. Change and knit again and again until you’re happy
 with the figure sizes. Note that these values get saved in the YAML.</p>
 <p><img src="lab01-hello-r/img/fig-resize-local.png" width="634" /></p>
-<p>You can also use different figure sizes for differen figures. To do
+<p>You can also use different figure sizes for different figures. To do
 so click on the gear icon within the chunk where you want to make a
 change. Turn on “Use custom figure size” and enter the size for this
 figure. Changing the figure sizes added new options to these chunks:
