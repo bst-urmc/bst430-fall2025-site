@@ -31,12 +31,13 @@ Using data provided by Airbnb, we can explore how Airbnb availability and prices
 # Getting started
 
 *  Accept the github classroom assignment
-*  Go to the bst-urmc GitHub organization and locate your homework repo, which should be named `hw-01-airbnb-YOUR_GITHUB_USERNAME`. 
+*  Go to the bst-urmc GitHub organization and locate your homework repo, which should be named `hw-1-YOUR_GITHUB_USERNAME`. 
 *  Grab the URL of the repo, and start a new project from Github in RStudio. 
 *  Open the R Markdown document `hw-01.Rmd` and Knit it.
 Make sure it compiles without errors.
 The output will be in the file markdown `.md` file with the same name.  (You'll turn in the .md file, and the plots generated along with it).
-*  Make sure you have your github PAT handy for the first time you push a commit.
+*  If you need your github PAT, it's in your github account here: 
+"https://github.com/settings/tokens"
 
 ## Warm up
 
