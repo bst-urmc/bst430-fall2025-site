@@ -788,6 +788,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1860,15 +1861,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2067,7 +2074,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2120,58 +2127,44 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 <div class="d-article">
 <h1 id="administrivia">Administrivia</h1>
-<p>TTh 11:00-12:40, SRB 1404 (but sometimes 1402) <br>
-<strong>Instructor</strong>: Tanzy Love <br> <strong>Website</strong>:
-<a href="https://bst-urmc.github.io/bst430-fall2022-site/"
-class="uri">https://bst-urmc.github.io/bst430-fall2022-site/</a> <br> <a
-href="static/syllabus430-2022.pdf"><strong>Syllabus</strong></a></p>
+<p>TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
+<br>
+<strong>Instructor</strong>: Tanzy Love
+<br>
+<strong>Website</strong>: <a href="https://bst-urmc.github.io/bst430-fall2022-site/" class="uri">https://bst-urmc.github.io/bst430-fall2022-site/</a>
+<br>
+<a href="static/syllabus430-2022.pdf"><strong>Syllabus</strong></a></p>
 <h1 id="content">Content</h1>
 <ol start="0" type="1">
 <li><a href="lecture/l00-intro.html">Introduction</a></li>
 <li><a href="lecture/l01-meet-toolkit.html">Meet the toolkit</a>
 <ul>
-<li>Invites to GitHub class room are on <a
-href="https://learn.rochester.edu">blackboard</a></li>
+<li>Invites to GitHub class room are on <a href="https://learn.rochester.edu">blackboard</a></li>
 <li>Req readings: r4ds 3.1-3.5, 4.</li>
-<li>Optional readings: <a href="https://happygitwithr.com/"
-class="uri">https://happygitwithr.com/</a></li>
+<li>Optional readings: <a href="https://happygitwithr.com/" class="uri">https://happygitwithr.com/</a></li>
 </ul></li>
 </ol>
 <ul>
 <li>Resources:
 <ol type="1">
-<li><a href="https://happygitwithr.com/install-git.html">install
-GIT</a></li>
-<li><a href="https://cran.r-project.org/">install <em>base</em>
-R</a></li>
-<li><a
-href="https://www.rstudio.com/products/rstudio/download/#download">install
-RStudio</a></li>
+<li><a href="https://happygitwithr.com/install-git.html">install GIT</a></li>
+<li><a href="https://cran.r-project.org/">install <em>base</em> R</a></li>
+<li><a href="https://www.rstudio.com/products/rstudio/download/#download">install RStudio</a></li>
 </ol>
 <ul>
-<li>Lab 0 <a
-href="hw_lab_instruction/lab00-hello-class.html">instructions</a> and
-repo (accept GH classroom invite in Blackboard).</li>
+<li>Lab 0 <a href="hw_lab_instruction/lab00-hello-class.html">instructions</a> and repo (accept GH classroom invite in Blackboard).</li>
 </ul></li>
 </ul>
 <ol start="2" type="1">
 <li><a href="lecture/l02-ggplot2-i.html">ggplot(i)</a>
 <ul>
-<li>Lab 1 <a
-href="hw_lab_instruction/lab01-hello-r.html">instructions</a> and repo
-(accept GH classroom <a
-href="https://classroom.github.com/a/Zqu2rV6v">invite</a>). Due 5pm Sept
-16.</li>
+<li>Lab 1 <a href="hw_lab_instruction/lab01-hello-r.html">instructions</a> and repo (accept GH classroom <a href="https://classroom.github.com/a/Zqu2rV6v">invite</a>). Due 5pm Sept 16.</li>
 </ul></li>
 <li><a href="lecture/l03-transform-dplyr-i.html">dplyr(i)</a></li>
 </ol>
 <ul>
 <li>Continue working on lab 1</li>
-<li>HW 1 assigned. <a
-href="hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html">instructions</a>
-and repo (accept GH classroom <a
-href="https://classroom.github.com/a/MQ3t9onK">invite</a>). Due 5pm EDT,
-Sept 23.
+<li>HW 1 assigned. <a href="hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html">instructions</a> and repo (accept GH classroom <a href="https://classroom.github.com/a/MQ3t9onK">invite</a>). Due 5pm EDT, Sept 23.
 <!-- 4.  [Data types in R](lecture/l04-data-types.html). Finish dplyr(i) lecture. -->
 <!-- 5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html). Finish data types lecture. -->
 <!--     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept an invitation as before. -->
@@ -2202,8 +2195,7 @@ Sept 23.
 <!--      * [HW5](hw_lab_instruction/hw05-modeling-gss/hw-05-modeling-gss.html) due 24 Nov. -->
 <!--22.  Resampling and hypothesis testing--></li>
 </ul>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
