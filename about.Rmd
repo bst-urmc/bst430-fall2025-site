@@ -1,5 +1,8 @@
 ---
 title: "Notes on github classrooms and rstudio cloud"
+# author: "Tanzy Love, based on the course by Andrew McDavid"
+institute: "U of Rochester"
+# date: "(updated: `r Sys.Date()` by TL)"
 description: |
   Some updates about interfacing between github classroom
 ---

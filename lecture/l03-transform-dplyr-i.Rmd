@@ -1,9 +1,9 @@
 ---
 title: "BST430 Lecture 3"
 subtitle: "Data transformation with dplyr"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-08-31 (updated: `r Sys.Date()`)"
+date: "2021-08-31 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -21,6 +21,8 @@ output:
 ---
 
 ```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+#remotes::install_github("hadley/emo")
+
 library(tidyverse)
 # library(magick)
 library(knitr)

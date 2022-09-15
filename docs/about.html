@@ -110,7 +110,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["Notes on github classrooms and rstudio cloud"]},{"type":"character","attributes":{},"value":["Some updates about interfacing between github classroom"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","institute","description"]}},"value":[{"type":"character","attributes":{},"value":["Notes on github classrooms and rstudio cloud"]},{"type":"character","attributes":{},"value":["U of Rochester"]},{"type":"character","attributes":{},"value":["Some updates about interfacing between github classroom"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2121,23 +2121,17 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="d-article">
 <h2 id="rstudio">Rstudio</h2>
 <ol type="1">
-<li>Students will need to link their rstudio cloud account to github and
-enable private repos. RSC is good about prompting for when attempting to
-create a project from a private repo.</li>
-<li>Less obviously, you will need to enable 3rd-party API access from
-the GH classroom organization. Note that I don’t entirely understand the
-security implications, rstudio probably should find a way to invite
-access via the github API rather than requiring carte blanche
-access.</li>
-<li>Remind students to use the class workspace on RSC, not their default
-workspaces (or they’ll run out of compute..)</li>
-<li>It’s amazing how much compute your class will burn. The calculated
-usage seemed to be about 2x what students self-reported that their
-homework took. I only had 9 students, and don’t know if it would be
-tenable to use RSC in a larger classroom.</li>
+<li>Sign-up for a GitHub account. Install R, RStudio, and GIT on your
+computer.</li>
+<li>Students will need to load their GIT config in RStudio. (see section
+7,9,11,12 of <a href="https://happygitwithr.com/"
+class="uri">https://happygitwithr.com/</a>)</li>
+<li>Students need to delete their cloned directories manually between
+RStudio sessions.</li>
 </ol>
 <h2 id="rstudio-cloud">Rstudio cloud</h2>
 <ol type="1">
+<li>Sign-up for a rstudio cloud account and a github account.</li>
 <li>Students will need to link their rstudio cloud account to github and
 enable private repos. RSC is good about prompting for when attempting to
 create a project from a private repo.</li>
@@ -2146,18 +2140,20 @@ the GH classroom organization. Note that I don’t entirely understand the
 security implications, rstudio probably should find a way to invite
 access via the github API rather than requiring carte blanche
 access.</li>
-<li>Remind students to use the class workspace on RSC, not their default
-workspaces (or they’ll run out of compute..)</li>
+<li>Students don’t have a class workspace on RSC this year, their
+default (free) workspaces will eventually run out of compute…</li>
 <li>It’s amazing how much compute your class will burn. The calculated
 usage seemed to be about 2x what students self-reported that their
 homework took. I only had 9 students, and don’t know if it would be
-tenable to use RSC in a larger classroom.</li>
+tenable to use RSC in a larger classroom. (This is part of why we’re not
+using it this year.)</li>
 </ol>
 <h2 id="github-classrooms">Github classrooms</h2>
-<p>Even if you use the github classroom web api, you’ll want to install
+<p>Even if you use the github classroom web api, you may want to install
 Mine Cetinkaya-Rundel and colleagues’ excellent <a
 href="https://rundel.github.io/ghclass/articles/articles/ghclass.html">ghclass</a>
-package. I used it to</p>
+package.</p>
+<p>Andrew used it to manage the class:</p>
 <ul>
 <li>Set up team assignments</li>
 <li>Push edits to existing assignments</li>
