@@ -59,16 +59,21 @@ Keep an eye out in the instructions for where you are instructed to:
 
 We'll use the **tidyverse** package for much of the data wrangling and visualisation.  The data lives on the course website, and is loaded below.
 These packages may be already installed, if you've been doing earlier coursework.
-You can load them, and the `nycbnb` data by running the following in your Console:
+You can load them by running the following in your Console:
 
 ```{r load-packages, message = FALSE}
 library(tidyverse)
-nycbnb = read_csv("https://urmc-bst.github.io/bst430-fall2021-site/hw_lab_instruction/hw-01-airbnb/data/nylistings.csv")
 ```
 
 ## Data
 
-The data is loaded in the first code chunk in your template into an object called `nycbnb`.
+Load the `nycbnb` data.
+
+```{r load-packages, message = FALSE}
+nycbnb = read_csv("https://urmc-bst.github.io/bst430-fall2021-site/hw_lab_instruction/hw-01-airbnb/data/nylistings.csv")
+```
+
+The data is loaded in the last code chunk in your template into an object called `nycbnb`.
 
 You can view the dataset as a spreadsheet using the `View()` function.
 Note that you should not put this function in your R Markdown document, but instead type it directly in the Console, as it pops open a new window (and the concept of popping open a window in a static document doesn't really make sense...).
