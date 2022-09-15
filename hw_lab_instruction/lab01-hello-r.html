@@ -170,7 +170,7 @@ pre code {
 
 <h1 class="title toc-ignore">Lab 01 - Hello R!</h1>
 <h4 class="author">Mine Cetinkaya-Rundel and colleagues</h4>
-<h4 class="date">2018-01-18 (updated 2022-09-13 by TL)</h4>
+<h4 class="date">2018-01-18 (updated 2022-09-15 by TL)</h4>
 
 </div>
 
@@ -375,15 +375,19 @@ statistics alone can be misleading. The different datasets are maked by
 the <code>dataset</code> variable.</p>
 <p>To find out more about the dataset, type the following in your
 Console:</p>
-<pre class="?datasaurus_dozen```"><code>A question mark before the name of an object will always bring up its help file. This command must be run in the Console.
-
-1. Based on the help file, how many rows and how many columns does the `datasaurus_dozen` file have? What are the variables included in the data frame? Add your responses to your lab report. When you&#39;re done, commit your changes with the commit message &quot;Added answer for Ex 1&quot;, and push.
-
-Let&#39;s take a look at what these datasets are. To do so we can make a *frequency table* of the dataset variable:
-
-
-```r
-datasaurus_dozen %&gt;%
+<pre><code>?datasaurus_dozen</code></pre>
+<p>A question mark before the name of an object will always bring up its
+help file. This command must be run in the Console.</p>
+<ol style="list-style-type: decimal">
+<li>Based on the help file, how many rows and how many columns does the
+<code>datasaurus_dozen</code> file have? What are the variables included
+in the data frame? Add your responses to your lab report. When you’re
+done, commit your changes with the commit message “Added answer for Ex
+1”, and push.</li>
+</ol>
+<p>Let’s take a look at what these datasets are. To do so we can make a
+<em>frequency table</em> of the dataset variable:</p>
+<pre class="r"><code>datasaurus_dozen %&gt;%
   count(dataset) %&gt;%
   print(13)</code></pre>
 <pre><code>## # A tibble:
@@ -503,11 +507,11 @@ this dataset. How does this value compare to the <code>r</code> of
 </ol>
 <p><em>You should pause again, commit changes with the commit message
 “Added answer for Ex 4”, and push.</em></p>
-<pre class="marginfigure"><code>Facet by the dataset variable, placing the plots in a 3 column grid, and don&#39;t add a legend.</code></pre>
 <ol start="5" style="list-style-type: decimal">
 <li>Finally, let’s plot all datasets at once. In order to do this we
 will make use of facetting.</li>
 </ol>
+<pre class="marginfigure"><code>Facet by the dataset variable, placing the plots in a 3 column grid, and don&#39;t add a legend.</code></pre>
 <pre class="r"><code>ggplot(datasaurus_dozen, aes(x = x, y = y, color = dataset))+
   geom_point()+
   facet_wrap(~ dataset, ncol = 3) +

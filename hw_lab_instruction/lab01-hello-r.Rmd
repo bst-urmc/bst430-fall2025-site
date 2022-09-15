@@ -202,7 +202,9 @@ If it's confusing that the data frame is called `datasaurus_dozen` when it conta
 The data frame we will be working with today is called `datasaurus_dozen` and it's in the `datasauRus` package. Actually, this single data frame contains 13 datasets, designed to show us  why data visualisation is important and how summary statistics alone can be misleading. The different datasets are maked by the `dataset` variable.
 
 To find out more about the dataset, type the following in your Console: 
-```?datasaurus_dozen``` 
+```
+?datasaurus_dozen
+``` 
 A question mark before the name of an object will always bring up its help file. This command must be run in the Console.
 
 1. Based on the help file, how many rows and how many columns does the `datasaurus_dozen` file have? What are the variables included in the data frame? Add your responses to your lab report. When you're done, commit your changes with the commit message "Added answer for Ex 1", and push.
@@ -272,11 +274,11 @@ dino_data %>%
 
 *You should pause again, commit changes with the commit message "Added answer for Ex 4", and push.*
 
+5. Finally, let's plot all datasets at once. In order to do this we will make use of facetting.
+
 ```{marginfigure}
 Facet by the dataset variable, placing the plots in a 3 column grid, and don't add a legend.
 ```
-
-5. Finally, let's plot all datasets at once. In order to do this we will make use of facetting.
 
 ```{r all-viz, eval=FALSE, fig.fullwidth=TRUE}
 ggplot(datasaurus_dozen, aes(x = x, y = y, color = dataset))+
