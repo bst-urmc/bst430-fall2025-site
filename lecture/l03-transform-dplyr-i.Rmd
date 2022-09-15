@@ -21,7 +21,8 @@ output:
 ---
 
 ```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
-#remotes::install_github("hadley/emo")
+#remotes::install_github("hadley/emo") 
+###how to install the emoji library
 
 library(tidyverse)
 # library(magick)
@@ -45,7 +46,7 @@ options(
   pillar.width = 60
   )
 # Set dpi and height for images
-knitr::opts_chunk$set(fig.height = 2.65, dpi = 300) 
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300, warning=FALSE) 
 # ggplot2 color palette with gray
 color_palette <- list(gray = "#999999", 
                       salmon = "#E69F00", 
@@ -66,9 +67,9 @@ dev.off <- function(){
 
 ## Announcements
 
-- Reminder: lab 1 due Friday 5pm.
-- Jonathan and Sam will have their office hour tomorrow 12:15-1:15, in the TA office.
-- Andrew will have an office hour Friday 10am-11am, in his office or via zoom.  (Link on blackboard).
+- Revision: lab 1 due Friday 5pm.
+- Josh and Christian will have their office hour tomorrow 9-10, in the TA office.
+- Send me an email if you need help.
 
 ---
 
@@ -87,47 +88,45 @@ class: center, middle
 ---
 
 ## Where does the name come from?
-
-We have already see the `%>%` operator a bit.  The pipe operator is implemented in the package **magrittr**.<sup>1</sup>
-
+We have already seen the `%>%` operator a bit.  The pipe operator is implemented in the package **magrittr**.
+<!-- <sup>1</sup> -->
 .pull-left[
 ![Magritte's representation of a pipe (that's not a pipe!)](l03/img/magritte.jpg)
 ]
 .pull-right[
 ![magrittr](l03/img/magrittr.jpg)
 ]
-
-.footnote[[1] In R 4.1, there is also support for a variant of the pipe with `|>`. It behaves similarly, but not identically to magrittr's `%>%`.  For the moment, personally, I am holding off using it in this course or in my own projects to avoid a hard dependency on R 4.1.]
-
-???
-
-The Treachery of Images is a 1929 painting by Belgian surrealist painter René Magritte. It is also known as This Is Not a Pipe[2]. It is on display at the Los Angeles County Museum of Art.[1]
-
+<!-- .footnote[[1] In R 4.1, there is also support for a variant of the pipe with `|>`. It behaves similarly, but not identically to magrittr's `%>%`.  For the moment, personally, I am holding off using it in this course or in my own projects to avoid a hard dependency on R 4.1.] -->
+<!-- ??? -->
+<font size="3">
+"The Treachery of Images" is a 1929 painting by Belgian surrealist painter René Magritte. 
+<!-- It is also known as This Is Not a Pipe[2]. It is on display at the Los Angeles County Museum of Art.[1] -->
 The painting shows an image of a pipe. Below it, Magritte painted, "Ceci n'est pas une pipe", French for "This is not a pipe".
-The famous pipe. How people reproached me for it! And yet, could you stuff my pipe? No, it's just a representation, is it not? So if I had written on my picture "This is a pipe", I'd have been lying!
+</font>
+> The famous pipe. How people reproached me for it! And yet, could you stuff my pipe? No, it's just a representation, is it not? So if I had written on my picture "This is a pipe", I'd have been lying!
 ---
 
-## Review: How does a pipe work?
+## How does a pipe work?
 
 - You can think about the following sequence of actions - find your helmet, 
  ride your bike to school, then lock it somewhere.
 - Expressed as a set of nested functions in R pseudocode this would look like:
 ```{r eval=FALSE}
-lock(ride(find(who=andrew, what = "helmet"), to = "campus"))
+lock(ride(find(who=tanzy, what = "helmet"), to = "campus"))
 ```
 we have to read this from the "inside-out".
 
 ---
-## Review: How does a pipe work?
+## How does a pipe work?
 
 - The pipe gives it a more natural (and easier to read) 
 **postfix** syntax<sup>1</sup>, where we can read from left to right:
 ```{r eval=FALSE}
-andrew %>% find(what = "helmet") %>%
+tanzy %>% find(what = "helmet") %>%
   ride(to = "campus") %>%
   lock()
 ```
-.footnote[[1] Note similar syntax in java(script), C++ and python where the method accessor "`.`" can be chained in some cases: `andrew.find('helmet').ride('campus').lock()`]
+.footnote[[1] Note similar syntax in java(script), C++ and python where the method accessor "`.`" can be chained in some cases: `tanzy.find('helmet').ride('campus').lock()`]
 
 ---
 
@@ -141,15 +140,15 @@ starwars %>%
   lm(mass ~ height, data = .)
 ```
 
----
+<!-- --- -->
 
-## The pipe vs ggplot2 layers
+<!-- ## The pipe vs ggplot2 layers -->
 
-- The `+` operator in **ggplot2**<sup>1</sup> is used for "layering." This means you create the plot in layers, separated by `+`.
+<!-- - The `+` operator in **ggplot2**<sup>1</sup> is used for "layering." This means you create the plot in layers, separated by `+`. -->
 
-- Some of the reason for this distinction is historical rather than mechanistic
+<!-- - Some of the reason for this distinction is historical rather than mechanistic -->
 
-.footnote[[1] to make matters even more confusing, ggplot2 also has the `%+%` operator.  This modifies the `data` being used in the plot.]
+<!-- .footnote[[1] to make matters even more confusing, ggplot2 also has the `%+%` operator.  This modifies the `data` being used in the plot.] -->
 ---
 
 class: center, middle
@@ -166,11 +165,11 @@ library(nycflights13)
 
 This data frame contains all `r format(nrow(nycflights13::flights), big.mark = ",")` flights that departed from New York City in 2013. The data comes from the US [Bureau of Transportation Statistics](http://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0), and is documented in `?flights`.
 
----
+<!-- --- -->
 
-# Want to follow along?
+<!-- # Want to follow along? -->
 
-Go to RStudio Cloud and make a copy of "Lecture 3 - dplyr"
+<!-- Go to RStudio Cloud and make a copy of "Lecture 3 - dplyr" -->
 
 ---
 
@@ -193,6 +192,8 @@ class: font120
 
 Single data frame functions / verbs:
 
+<!-- <font size = "3"> -->
+
 * `filter`: pick rows matching criteria
 * `slice`: pick rows using index(es)
 * `select`: pick columns by name
@@ -207,13 +208,15 @@ Single data frame functions / verbs:
 * `group_by`: run an operation by levels of a categorical variable
 * ... (many more)
 
+<!-- </font> -->
+
 ---
 
 ## **dplyr** rules for functions
 
 1. First argument is *always* a `data.frame`<sup>1</sup>
 2. Subsequent arguments say what to do with that `data.frame`
-3. Always return a `data.frame` 
+3. Always return a new `data.frame` 
 4. Doesn't modify in place
 
 .footnote[[1] Or `tibble`, the tidyverse version of a `data.frame`.  These are mostly interchangable, but with a few differences we'll consider in a couple weeks.]
@@ -223,6 +226,12 @@ Single data frame functions / verbs:
 
 - Select a subset of rows in a data frame based on when a logical expression returns `TRUE`
 - Easily filter for many conditions at once by combining logical expressions
+
+*remember* we used filter in lab 1
+```
+dino_data = datasaurus_dozen %>%
+  filter(dataset == "dino")
+```
 
 ---
 class: code70
@@ -284,6 +293,7 @@ class: code70, font120
 ```{r}
 dfdat = tibble(x = c(1, 2, NA),
                     y = c('A', 'B', 'C'))
+dfdat
 dfdat %>% filter(x == 1)
 ```
 - If you want to extract those rows as well, you have to ask for them
@@ -297,15 +307,14 @@ class: code70
 ## Missing Values are contagious
 
 ```{r}
-NA > 5
-10 == NA
-NA + 10
+NA > 5; 10 == NA; NA + 10
 ```
 
 - Therefore, **you cannot test for missingness with `== NA`**:
 ```{r}
 x = NA
 x == NA
+is.na(x)
 ```
 ---
 
@@ -385,7 +394,7 @@ x == NA
 ## Commonly used logical operators in R
 
 operator    | definition                   || operator     | definition
-------------|------------------------------||--------------|----------------
+------------ | ------------------------------ || -------------- | ----------------
 `<`         | less than                    ||`x`&nbsp;&#124;&nbsp;`y`     | `x` OR `y` 
 `<=`        |	less than or equal to        ||`is.na(x)`    | test if `x` is `NA`
 `>`         | greater than                 ||`!is.na(x)`   | test if `x` is not `NA`
@@ -398,23 +407,29 @@ operator    | definition                   || operator     | definition
 
 ## Check your understanding 
 
-.large[[Quiz 1](https://docs.google.com/forms/d/e/1FAIpQLSd54fszIDa-f2mAH2kcy2rhIXLxOWNGXhshSF8-tkn7XHWFeA/viewform?usp=sf_link)]
-
 1. .question[Extract the January LGA flights and the December JFK flights.]
 4. .question[Extract flights whose `dep_time` was `NA`.]
 2. .question[Extract flights that left in November or December.]
 3. .question[Extract flights that left in November or December using the `%in%` operator.]
 
---
+---
 
-```{r}
-    flights %>%
-      filter((month == 1 & origin == "LGA") | (month == 12 & origin == "JFK"))
+## Answers
+
+```
+flights %>% filter((month == 1 & origin == "LGA") | (month == 12 & origin == "JFK"))
 ```
 
+```
+flights %>% filter(is.na(dep_time))
+```
 
-```{r, eval = FALSE}
-nov_dec <- filter(flights, month %in% c(11, 12))
+```
+flights %>% filter(month == 11 | month == 12)
+```
+
+```
+nov_dec = filter(flights, month %in% c(11, 12))
 ```
 
 ---
@@ -434,9 +449,11 @@ class: code70
 - We can use `mutate()` to create new variables from old.
 
 ```{r}
-flights %>% mutate(gain = dep_delay - arr_delay,
-             speed = distance / air_time * 60,
-             .before = year) #add before `year` variable
+temp=flights %>% mutate(gain = dep_delay - arr_delay,
+                 speed = distance / air_time * 60,
+                 .before = year) #add before `year` variable
+colnames(temp)
+temp[,c("gain","speed")]
 ```
 
 ---
@@ -452,11 +469,10 @@ ggplot(flights, aes(x = dep_time)) + geom_histogram(binwidth = 10)
 ---
 ## Check your understanding
 
-.large[[Quiz 2](https://docs.google.com/forms/d/e/1FAIpQLSdOiUARDqpHbNd2M_n1lw0QidWl3Z0fsiD-kiIjaxC93gcC7A/viewform?usp=sf_link)]
-
 - Convert `dep_time` into `dep_minutes_midnight`, the number of minutes since midnight. Hint: `%/%` is truncating integer division and `%%` is  remainder.  For instance:
   
 ```{r}
+101 / 10
 101 %/% 10
 101 %% 10
 ```
@@ -653,7 +669,7 @@ class: code70
 filter(flights, is.na(dep_delay))
 ```
 
-These are flights that were cancelled!  So in same ways the `dep_delay` is infinite.
+These are flights that were cancelled!  So in the same way, the `dep_delay` is infinite.
 
 ---
 
@@ -821,10 +837,10 @@ ontime %>%
 ![FL is Airtran](https://upload.wikimedia.org/wikipedia/en/3/35/AirTran_Airways_logo.svg)
 ]
 .pull-right[
-![F9 is Frontier](https://upload.wikimedia.org/wikipedia/en/c/cf/Frontier_Airlines_logo.svg)
+![F9 is Frontier](https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Frontier_Airlines_logo.svg/375px-Frontier_Airlines_logo.svg.png)
 ]
 
-???
+--
 
 FL is Airtran, F9 is Frontier
 ---

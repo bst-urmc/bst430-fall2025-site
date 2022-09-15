@@ -38,10 +38,10 @@ TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
     3. [install RStudio](https://www.rstudio.com/products/rstudio/download/#download)
     * Lab 0 [instructions](hw_lab_instruction/lab00-hello-class.html) and repo (accept GH classroom invite in Blackboard).
 2. [ggplot(i)](lecture/l02-ggplot2-i.html)
-    * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/Zqu2rV6v)). Due 5pm Sept 15.
+    * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/Zqu2rV6v)). Due 5pm Sept 16.
 3.  [dplyr(i)](lecture/l03-transform-dplyr-i.html)
 * Continue working on lab 1
-* HW 1 assigned.  [instructions](hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/MQ3t9onK)).  Due 5pm EDT, Sept 22.
+* HW 1 assigned.  [instructions](hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/MQ3t9onK)).  Due 5pm EDT, Sept 23.
 <!-- 4.  [Data types in R](lecture/l04-data-types.html). Finish dplyr(i) lecture. -->
 <!-- 5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html). Finish data types lecture. -->
 <!--     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept an invitation as before. -->
