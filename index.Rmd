@@ -1,6 +1,6 @@
 ---
 title: "BST430 - Introduction to Statistical Computing"
-description: "University of Rochester, Fall 2022"
+description: "Rochester of University, Fall 2022"
 site: distill::distill_website
 ---
 
