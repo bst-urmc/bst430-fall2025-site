@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 4"
 subtitle: "Data types in R"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-09-01 (updated: `r Sys.Date()`)"
+date: "2021-09-01 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
