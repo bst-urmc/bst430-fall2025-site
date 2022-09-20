@@ -47,6 +47,7 @@ cat_lovers = read_csv("l04/data/cat-lovers.csv")
 cat_lovers
 ```
 
+Here's the [R code in this lecture](l04/l04-data-types-i.R)
 ---
 
 ## Oh why won't you work?!
@@ -242,6 +243,7 @@ R also natively supports complex numbers, which are their own type:
 roots_of_unity = 
   c(1+0i, -1+0i, 0+1i, 0-1i)
 typeof(roots_of_unity)
+roots_of_unity^2
 ```
 ]
 .pull-right[
@@ -276,6 +278,8 @@ str(mylist) #<<
 
 # `str` is our friend
 .font130[
+*  shows the *str*ucture of the data
+
 *  `str` is *nearly* a synonym for `glimpse`
 
 *  It shows detailed information on the composition of object. 
@@ -314,6 +318,7 @@ Get the number of entries in a vector with `length(x)`.
 .pull-left[
 ```{r}
 x = c(1, 2, 3)
+y = character(2)
 empty_dbl = numeric(0)
 empty_chr = character(0)
 ```
@@ -322,6 +327,7 @@ empty_chr = character(0)
 .pull-right[
 ```{r}
 length(x)
+length(y)
 length(empty_dbl)
 length(empty_chr)
 ```
@@ -469,41 +475,8 @@ Let's give formal names to what we've seen so far:
 --
 - **Implicit coercion** happens when you use a vector in a specific context that expects a certain type of vector
 
----
+<!-- --- -->
 
-.midi[
-.your-turn[
-### .hand[Your turn!]
-
-- RStudio Cloud > `AE 05 - Hotels + Data types` > open `type-coercion.Rmd` and knit.
-- What is the type of the given vectors? First, guess. Then, try it out in R. 
-If your guess was correct, great! If not, discuss why they have that type.
-]
-]
-
---
-
-.small[
-**Example:** Suppose we want to know the type of `c(1, "a")`. First, I'd look at: 
-
-.pull-left[
-```{r}
-typeof(1)
-```
-]
-.pull-right[
-```{r}
-typeof("a")
-```
-]
-
-and make a guess based on these. Then finally I'd check:
-.pull-left[
-```{r}
-typeof(c(1, "a"))
-```
-]
-]
 
 ---
 
@@ -962,12 +935,12 @@ Source: [forcats.tidyverse.org](http://forcats.tidyverse.org/)
     
 - Be careful about data types / classes
     + Sometimes `R` makes silly assumptions about your data class 
-        +  tibble`s have safer defaults, but won't fold your laundry for you
+        +  `tibble`s have safer defaults, but won't fold laundry for you
         + Think about your data in context, e.g. 0/1 variable is most likely a `factor`
     + If a plot/output is not behaving the way you expect, first
     investigate the data class with `str`
-    + If you are absolutely sure of a data class, over-write it in your
-    tibble so that you don't need to keep having to keep track of it
+    + If you are absolutely sure how you want a factor, over-write it 
+    so that you don't need to keep having to keep track of it
         + `mutate` the variable with the correct class
         
 ---
