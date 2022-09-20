@@ -135,9 +135,9 @@ cat_lovers %>%
   summarise(mean_cats = mean(number_of_cats))
 ```
 
-???
+<!-- ??? -->
 
-This generates a warning for unknown (case_when specific) reasons
+<!-- This generates a warning for unknown (case_when specific) reasons -->
 ---
 
 ## Now that we know what we're doing...

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Tanzy Love-Solutions" />
+
+<meta name="date" content="2018-01-18" />
+
+<title>Lab 01 - Hello R!</title>
+
+<script src="lab01-hello-r_files/header-attrs/header-attrs.js"></script>
+<script src="lab01-hello-r_files/jquery/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lab01-hello-r_files/bootstrap/css/sandstone.min.css" rel="stylesheet" />
+<script src="lab01-hello-r_files/bootstrap/js/bootstrap.min.js"></script>
+<script src="lab01-hello-r_files/bootstrap/shim/html5shiv.min.js"></script>
+<script src="lab01-hello-r_files/bootstrap/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="lab01-hello-r_files/navigation/tabsets.js"></script>
+<link href="lab01-hello-r_files/highlightjs/default.css" rel="stylesheet" />
+<script src="lab01-hello-r_files/highlightjs/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 01 - Hello R!</h1>
+<h4 class="author">Tanzy Love-Solutions</h4>
+<h4 class="date">2018-01-18</h4>
+
+</div>
+
+
+<p><strong>Solutions in bold.</strong></p>
+<div id="data" class="section level1">
+<h1>Data</h1>
+<p>The data frame we will be working with today is called
+<code>datasaurus_dozen</code> and it’s in the <code>datasauRus</code>
+package. Actually, this single data frame contains 13 datasets, designed
+to show us why data visualisation is important and how summary
+statistics alone can be misleading. The different datasets are maked by
+the <code>dataset</code> variable.</p>
+<p>To find out more about the dataset, type the following in your
+Console:</p>
+<pre><code>?datasaurus_dozen</code></pre>
+<p>A question mark before the name of an object will always bring up its
+help file. This command must be run in the Console.</p>
+<ol style="list-style-type: decimal">
+<li>Based on the help file, how many rows and how many columns does the
+<code>datasaurus_dozen</code> file have? What are the variables included
+in the data frame? Add your responses to your lab report. When you’re
+done, commit your changes with the commit message “Added answer for Ex
+1”, and push.</li>
+</ol>
+<p><strong>The dataframe has 1846 rows and 3 columns. The variables are
+‘dataset’, ‘x’, and ‘y’. </strong>*</p>
+<p>Let’s take a look at what these datasets are. To do so we can make a
+<em>frequency table</em> of the dataset variable:</p>
+<pre class="r"><code>datasaurus_dozen %&gt;%
+  count(dataset) %&gt;%
+  print()</code></pre>
+<pre><code>## # A tibble: 13 x 2
+##    dataset        n
+##    &lt;chr&gt;      &lt;int&gt;
+##  1 away         142
+##  2 bullseye     142
+##  3 circle       142
+##  4 dino         142
+##  5 dots         142
+##  6 h_lines      142
+##  7 high_lines   142
+##  8 slant_down   142
+##  9 slant_up     142
+## 10 star         142
+## 11 v_lines      142
+## 12 wide_lines   142
+## 13 x_shape      142</code></pre>
+</div>
+<div id="data-visualization-and-summary" class="section level1">
+<h1>Data visualization and summary</h1>
+<ol start="2" style="list-style-type: decimal">
+<li>Plot <code>y</code> vs. <code>x</code> for the <code>dino</code>
+dataset. Then, calculate the correlation coefficient between
+<code>x</code> and <code>y</code> for this dataset.</li>
+</ol>
+<p>Start with the <code>datasaurus_dozen</code> and pipe it into the
+<code>filter</code> function to filter for observations where
+<code>dataset == "dino"</code>. Store the resulting filtered data frame
+as a new data frame called <code>dino_data</code>.</p>
+<pre class="r"><code>dino_data = datasaurus_dozen %&gt;%
+  filter(dataset == &quot;dino&quot;)</code></pre>
+<p>Next, we need to visualize these data. We will use the
+<code>ggplot</code> function for this. Its first argument is the data
+you’re visualizing. Next we define the <code>aes</code>thetic mappings.
+In other words, the columns of the data that get mapped to certain
+aesthetic features of the plot, e.g. the <code>x</code> axis will
+represent the variable called <code>x</code> and the <code>y</code> axis
+will represent the variable called <code>y</code>. Then, we add another
+layer to this plot where we define which <code>geom</code>etric shapes
+we want to use to represent each observation in the data. In this case
+we want these to be points, hence <code>geom_point</code>.</p>
+<pre class="r"><code>ggplot(data = dino_data, mapping = aes(x = x, y = y)) +
+  geom_point()</code></pre>
+<p><img src="lab01-hello-r_files/figure-html/unnamed-chunk-4-1.png" width="576" /></p>
+<p>For the second part of this exercises, we need to calculate a summary
+statistic: the correlation coefficient. Correlation coefficient, often
+referred to as <span class="math inline">\(r\)</span> in statistics,
+measures the linear association between two variables. You will see that
+some of the pairs of variables we plot do not have a linear relationship
+between them. This is exactly why we want to visualize first: visualize
+to assess the form of the relationship, and calculate <span
+class="math inline">\(r\)</span> only if relevant. In this case,
+calculating a correlation coefficient really doesn’t make sense since
+the relationship between <code>x</code> and <code>y</code> is definitely
+not linear – it’s dinosaurial!</p>
+<p>But, for illustrative purposes, let’s calculate correlation
+coefficient between <code>x</code> and <code>y</code>.</p>
+<pre class="r"><code>dino_data %&gt;%
+  summarize(r = cor(x, y))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##         r
+##     &lt;dbl&gt;
+## 1 -0.0645</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Plot <code>y</code> vs. <code>x</code> for the <code>star</code>
+dataset. You can (and should) reuse code we introduced above, just
+replace the dataset name with the desired dataset. Then, calculate the
+correlation coefficient between <code>x</code> and <code>y</code> for
+this dataset. How does this value compare to the <code>r</code> of
+<code>dino</code>?</li>
+</ol>
+<pre class="r"><code>star_data = datasaurus_dozen %&gt;%
+  filter(dataset == &quot;star&quot;)
+ggplot(data = star_data, mapping = aes(x = x, y = y)) +
+  geom_point()</code></pre>
+<p><img src="lab01-hello-r_files/figure-html/unnamed-chunk-6-1.png" width="576" /></p>
+<pre class="r"><code>star_data %&gt;%
+  summarize(r = cor(x, y))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##         r
+##     &lt;dbl&gt;
+## 1 -0.0630</code></pre>
+<p><strong>The correlation in the star data is the same as the
+correlation in the dino data.</strong></p>
+<ol start="4" style="list-style-type: decimal">
+<li>Plot <code>y</code> vs. <code>x</code> for the <code>circle</code>
+dataset. You can (and should) reuse code we introduced above, just
+replace the dataset name with the desired dataset. Then, calculate the
+correlation coefficient between <code>x</code> and <code>y</code> for
+this dataset. How does this value compare to the <code>r</code> of
+<code>dino</code>?</li>
+</ol>
+<pre class="r"><code>circle_data = datasaurus_dozen %&gt;%
+  filter(dataset == &quot;circle&quot;)
+ggplot(data = circle_data, mapping = aes(x = x, y = y)) +
+  geom_point()</code></pre>
+<p><img src="lab01-hello-r_files/figure-html/unnamed-chunk-7-1.png" width="576" /></p>
+<pre class="r"><code>circle_data %&gt;%
+  summarize(r = cor(x, y))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##         r
+##     &lt;dbl&gt;
+## 1 -0.0683</code></pre>
+<p><strong>The correlation in the circle data is nearly the same as the
+correlation in the dino data.</strong></p>
+<ol start="5" style="list-style-type: decimal">
+<li>Finally, let’s plot all datasets at once. In order to do this we
+will make use of facetting.</li>
+</ol>
+<pre class="r"><code>ggplot(datasaurus_dozen, aes(x = x, y = y, color = dataset))+
+  geom_point()+
+  facet_wrap(~ dataset, ncol = 3) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="lab01-hello-r_files/figure-html/all-viz-1.png" width="768" /></p>
+<p>And we can use the <code>group_by</code> function to generate all the
+summary correlation coefficients.</p>
+<pre class="r"><code>datasaurus_dozen %&gt;%
+  group_by(dataset) %&gt;%
+  summarize(r = cor(x, y)) %&gt;%
+  print()</code></pre>
+<pre><code>## # A tibble: 13 x 2
+##    dataset          r
+##    &lt;chr&gt;        &lt;dbl&gt;
+##  1 away       -0.0641
+##  2 bullseye   -0.0686
+##  3 circle     -0.0683
+##  4 dino       -0.0645
+##  5 dots       -0.0603
+##  6 h_lines    -0.0617
+##  7 high_lines -0.0685
+##  8 slant_down -0.0690
+##  9 slant_up   -0.0686
+## 10 star       -0.0630
+## 11 v_lines    -0.0694
+## 12 wide_lines -0.0666
+## 13 x_shape    -0.0656</code></pre>
+<p>You’re done with the data analysis exercises, but we’d like you to do
+two more things:</p>
+<ul>
+<li><strong>Resize your figures:</strong></li>
+</ul>
+<p><strong>I changed the default figure size to 6 by 6, except for the
+faceted plot which I set to 8 by 8.</strong></p>
+<ul>
+<li><strong>Change the look of your report:</strong></li>
+</ul>
+<p><strong>I changed the theme to “united” and then
+“sandstone”.</strong></p>
+<div id="rubric-15-points-possible" class="section level2">
+<h2>Rubric (15 points possible)</h2>
+<p>10 points if code and descriptions are complete for all questions. 5
+points for &gt;= five commits with informative messages made to the
+repo.</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
