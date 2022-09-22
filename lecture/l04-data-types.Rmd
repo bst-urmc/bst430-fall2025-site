@@ -43,11 +43,14 @@ A survey asked respondents their name and number of cats. The instructions said 
 cat_lovers = read_csv("l04/data/cat-lovers.csv")
 ```
 
-```{r echo=FALSE}
+```{r }
 cat_lovers
 ```
 
 Here's the [R code in this lecture](l04/l04-data-types-i.R)
+
+Here's the [datafile](l04/data/cat-lovers.csv)
+*You have to have a good filepath to the dataset*
 ---
 
 ## Oh why won't you work?!

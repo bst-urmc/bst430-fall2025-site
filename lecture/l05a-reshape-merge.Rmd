@@ -1,9 +1,9 @@
 ---
 title: "BST430 Lecture 5a"
 subtitle: "Reshaping and combining data frames"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-09-06 (updated: `r Sys.Date()`)"
+date: "2021-09-06 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -28,14 +28,6 @@ output:
 1.  Reshaping a single data frame
 2.  Joining multiple data frames
 
-## Announcements
-
-1.  Office hours Friday moved to noon (or by appointment) and will be virtual.
-<br>
-1.  Make sure that you don't have any "M" status in your homework 1 -- these are files with modifications that haven't been pushed to github.  I have observed that some people  haven't pushed the .md files.
-2.  If you are having troubles, I am available for consult after class.
-3.  Remember that you can always make corrections to an assignment for partial credit.
-
 ---
 class: middle
 
@@ -56,6 +48,13 @@ customers = read_csv("l05a/data/sales/customers.csv")
 prices = read_csv("l05a/data/sales/prices.csv")
 ```
 
+Here's the [R code in this lecture](l05/l05a-reshape-merge.R)
+
+Here's the [datafile1](l05a/data/sales/customers.csv)
+
+Here's the [datafile2](l05a/data/sales/prices.csv)
+
+*You have to have a good filepath to the dataset*
 
 <br>
 
