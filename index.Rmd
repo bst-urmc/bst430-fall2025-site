@@ -44,8 +44,8 @@ TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
 * Continue working on lab 1
 * HW 1 assigned.  [instructions](hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/MQ3t9onK)).  Due 5pm EDT, Sept 23.
 4.  [Data types in R](lecture/l04-data-types.html). 
-<!-- 5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html). -->
-<!--     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept the [invitation](https://classroom.github.com/a/7aAO3lDZ). -->
+5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html).
+    *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept the [invitation](https://classroom.github.com/a/7aAO3lDZ).
 <!-- 6.  Finish L5a. -->
 <!--     *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2. -->
 <!-- 7.  [dplyr(ii)](lecture/l05b-advanced-dplyr.html), [styleguide](lecture/l06-style.html) -->

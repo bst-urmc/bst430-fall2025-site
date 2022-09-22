@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-09-06 (updated: 2022-09-21 by TL)
+### 2021-09-06 (updated: 2022-09-22 by TL)
 ]
 
 ---
@@ -62,13 +62,12 @@ class: code50
 
 Here's the [R code in this lecture](l05/l05a-reshape-merge.R)
 
-Here's the [datafile1](l05a/data/sales/customers.csv)
-
-Here's the [datafile2](l05a/data/sales/prices.csv)
+Here's the [customers](l05a/data/sales/customers.csv)
+and [prices](l05a/data/sales/prices.csv)
+and [biden](l05a/data/trump/biden.csv)
 
 *You have to have a good filepath to the dataset*
 
-&lt;br&gt;
 
 .pull-left[
 ### .green[We have...]
@@ -393,6 +392,27 @@ biden
 ## # ... with 831 more rows
 ```
 
+```r
+summary(biden)
+```
+
+```
+##    subgroup              date               approval    
+##  Length:835         Min.   :2021-01-21   Min.   :42.36  
+##  Class :character   1st Qu.:2021-03-18   1st Qu.:50.74  
+##  Mode  :character   Median :2021-05-10   Median :52.50  
+##                     Mean   :2021-05-13   Mean   :52.36  
+##                     3rd Qu.:2021-07-10   3rd Qu.:53.74  
+##                     Max.   :2021-09-05   Max.   :63.34  
+##   disapproval   
+##  Min.   :27.55  
+##  1st Qu.:38.28  
+##  Median :41.27  
+##  Mean   :40.94  
+##  3rd Qu.:43.27  
+##  Max.   :52.83
+```
+
 ---
 
 ## Goal
@@ -513,10 +533,8 @@ ggplot(biden_longer,
 ]
 
 ---
-class: font100, code50
-## Your turn.
-
-[Quiz 1](https://docs.google.com/forms/d/e/1FAIpQLSc_uw7gkcSP1hHi502dg6Nx-E1b1aFGYPY3t4dyZEySUiI5xw/viewform?usp=sf_link)
+class: font120, code50
+## Let's try
 
 1. Suppose you have data (available with `library(tidyr)`) on TB incidence as follows:
 
@@ -1763,9 +1781,8 @@ Each relation always concerns a pair of tables.
 ]
 ---
 
-## Your turn
+## Let's try
 
-[Quiz 2](https://docs.google.com/forms/d/e/1FAIpQLSeQnfY6QXsXhIomcQ92dW70DSpYtZq-Yql4dlUvIUrE7FwYZg/viewform?usp=sf_link)
 
 1.  Imagine you wanted to draw (approximately) the route each plane flies from
     its origin to its destination. What variables would you need? What tables
@@ -1917,12 +1934,6 @@ However, it can be very helpful to think about dividing data into a primary tabl
 
 .footnote[[1] See Kimball and Ross. *The Data Warehouse Toolkit* for details.  It's surprisingly interesting and relevant.]
 
-
----
-
-# Class survey
-
-[How are things going so far?]( https://docs.google.com/forms/d/e/1FAIpQLSc2ThD_7Q9yCWJs5ucHpnVeDg9JougMe7shI__Wb332UmAVzg/viewform?usp=sf_link)
 
 ---
 # Acknowledgments

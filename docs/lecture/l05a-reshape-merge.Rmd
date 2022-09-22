@@ -50,13 +50,12 @@ prices = read_csv("l05a/data/sales/prices.csv")
 
 Here's the [R code in this lecture](l05/l05a-reshape-merge.R)
 
-Here's the [datafile1](l05a/data/sales/customers.csv)
-
-Here's the [datafile2](l05a/data/sales/prices.csv)
+Here's the [customers](l05a/data/sales/customers.csv)
+and [prices](l05a/data/sales/prices.csv)
+and [biden](l05a/data/trump/biden.csv)
 
 *You have to have a good filepath to the dataset*
 
-<br>
 
 .pull-left[
 ### .green[We have...]
@@ -300,6 +299,7 @@ biden = read_csv("l05a/data/trump/biden.csv")
 
 ```{r}
 biden
+summary(biden)
 ```
 
 ---
@@ -428,10 +428,8 @@ ggplot(biden_longer,
 ]
 
 ---
-class: font100, code50
-## Your turn.
-
-[Quiz 1](https://docs.google.com/forms/d/e/1FAIpQLSc_uw7gkcSP1hHi502dg6Nx-E1b1aFGYPY3t4dyZEySUiI5xw/viewform?usp=sf_link)
+class: font120, code50
+## Let's try
 
 1. Suppose you have data (available with `library(tidyr)`) on TB incidence as follows:
 ```{r}
@@ -1104,9 +1102,8 @@ Each relation always concerns a pair of tables.
 ]
 ---
 
-## Your turn
+## Let's try
 
-[Quiz 2](https://docs.google.com/forms/d/e/1FAIpQLSeQnfY6QXsXhIomcQ92dW70DSpYtZq-Yql4dlUvIUrE7FwYZg/viewform?usp=sf_link)
 
 1.  Imagine you wanted to draw (approximately) the route each plane flies from
     its origin to its destination. What variables would you need? What tables
@@ -1206,12 +1203,6 @@ However, it can be very helpful to think about dividing data into a primary tabl
 
 .footnote[[1] See Kimball and Ross. *The Data Warehouse Toolkit* for details.  It's surprisingly interesting and relevant.]
 
-
----
-
-# Class survey
-
-[How are things going so far?]( https://docs.google.com/forms/d/e/1FAIpQLSc2ThD_7Q9yCWJs5ucHpnVeDg9JougMe7shI__Wb332UmAVzg/viewform?usp=sf_link)
 
 ---
 # Acknowledgments
