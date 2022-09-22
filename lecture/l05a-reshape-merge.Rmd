@@ -50,9 +50,15 @@ prices = read_csv("l05a/data/sales/prices.csv")
 
 Here's the [R code in this lecture](l05/l05a-reshape-merge.R)
 
-Here's the [customers](l05a/data/sales/customers.csv)
-and [prices](l05a/data/sales/prices.csv)
-and [biden](l05a/data/trump/biden.csv)
+Here's the [customers](l05a/data/sales/customers.csv),
+ [prices](l05a/data/sales/prices.csv),
+ [biden](l05a/data/trump/biden.csv),
+ [professions](l05a/data/scientists/professions.csv),
+ [dates](l05a/data/scientists/dates.csv),
+ [works](l05a/data/scientists/works.csv),
+ [enrollment](l05a/data/students/enrolment.csv),
+ [survey](l05a/data/students/survey.csv)
+
 
 *You have to have a good filepath to the dataset*
 
