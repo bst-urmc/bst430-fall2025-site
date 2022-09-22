@@ -127,3 +127,8 @@ Discuss the following in your group:
 -   Knit, commit, and push often to minimize merge conflicts and/or to make merge conflicts easier to resolve.
 -   If you find yourself in a situation that is difficult to resolve, ask questions ASAP. Don't let it linger and get bigger.
 
+## Rubric (15 points possible)
+
+4 points if questions 1 and 2 have answers added as text.
+5 points for >= five commits with informative messages made to the repo.
+6 points for commits being from alternating team members following the directions above to create and resolve merge conflicts.
