@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 5b"
 subtitle: "dplyr ii"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-09-12 (updated: `r Sys.Date()`)"
+date: "2021-09-12 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -34,7 +34,7 @@ library(tidyverse)
 ## Agenda
 
 * grouping by multiple variables
-* Empty groups and summarizing
+* empty groups and summarizing
 * ungrouping
 * grouped mutates and filters
 * special selection operators

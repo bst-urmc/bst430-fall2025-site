@@ -46,9 +46,9 @@ TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
 4.  [Data types in R](lecture/l04-data-types.html). 
 5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html).
     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept the [invitation](https://classroom.github.com/a/7aAO3lDZ).
-<!-- 6.  Finish L5a. -->
-<!--     *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2. -->
-<!-- 7.  [dplyr(ii)](lecture/l05b-advanced-dplyr.html), [styleguide](lecture/l06-style.html) -->
+6.  Finish L5a. [dplyr(ii)](lecture/l05b-advanced-dplyr.html)
+    *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2.
+<!-- 7.  [styleguide](lecture/l06-style.html) -->
 <!--     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! -->
 <!-- 8.  [Factors and dates](lecture/l07-factors-dates.html) -->
 <!--     *  [HW 2](hw_lab_instruction/hw02-accidents/hw02-accidents.html) assigned. -->
