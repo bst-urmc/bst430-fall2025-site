@@ -1,6 +1,9 @@
 ---
 title: "Lab 03 - La Quinta is Spanish for next to Denny's, Pt. 1"
 subtitle: "Visualizing spatial data"
+author: "Tanzy Love, based on the course by Andrew McDavid"
+institute: "U of Rochester"
+date: "(updated: `r Sys.Date()` by TL)"
 output: 
   tufte::tufte_html:
     tufte_variant: "envisioned"
@@ -33,8 +36,8 @@ In this lab we explore the validity of this joke and along the way learn some mo
 
 # Getting started
 
-Go to the course GitHub organization and locate your homework repo, clone it in RStudio **in the BST430fall2021 workspace** and open the R Markdown document.
-Knit the document to make sure it compiles without errors.
+Find your homework repo link, clone it in RStudio and open the R Markdown document.
+Knit the document to make sure it compiles without errors, it should be largely empty to start.
 
 ## Warm up
 
@@ -45,11 +48,19 @@ Before we introduce the data, let's warm up with some simple exercises.
 -   Push your changes to GitHub. `r emo::ji('up arrow')`
 -   Go to your repo on GitHub and confirm that your changes are visible in your Rmd **and** md files. If anything is missing, commit and push again.
 
+## Team work
+
+We have an opportunity here for dividing tasks.  For example, exercises 1 and 2 are on two different datasets, so two different people can work on them at the same time. Be sure to **pull then push** often, you don't need to knit every time. Resolve conflicts often to keep them small. If you work on different lines, the GIT should be able to put them together.
+Look at the final .md file. **That** is what will be graded.
+
 ## Packages
 
 We'll use the **tidyverse** package for much of the data wrangling and visualisation and the data lives in the **dsbox** package.
-These packages are already installed for you.
-You can load them by running the following in your Console:
+Install these packages if they are not already there.
+```
+install.packages("dsbox")
+```
+You can load them by running the following. If you're also running code in real time, you need to load them in your Console:
 
 ```{r message = FALSE}
 library(tidyverse) 
@@ -229,5 +240,5 @@ But for now we focus on the data that has already been scraped and tidied for yo
 ## Rubric
 
 29 points:
--  2 points per exercise for correctness of code and adequate prose description (where specified)
+-  2 points per exercise for correctness of code and adequate prose answers/description (where specified)
 -  5 points for adequately commented commits
