@@ -208,7 +208,7 @@ Note that the latitude is plotted on the x-axis and the longitude on the y-axis.
 
 ```{r}
 ggplot(dn_lq, mapping = aes(x = longitude, y = latitude, color = establishment)) +
-  geom_point()
+  geom_point(alpha=1)
 ```
 
 The following two questions ask you to create visualizations.
