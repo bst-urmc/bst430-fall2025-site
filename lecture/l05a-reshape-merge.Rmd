@@ -48,7 +48,7 @@ customers = read_csv("l05a/data/sales/customers.csv")
 prices = read_csv("l05a/data/sales/prices.csv")
 ```
 
-Here's the [R code in this lecture](l05/l05a-reshape-merge.R)
+Here's the [R code in this lecture](l05a/l05a-reshape-merge.R)
 
 Here's the [customers](l05a/data/sales/customers.csv),
  [prices](l05a/data/sales/prices.csv),

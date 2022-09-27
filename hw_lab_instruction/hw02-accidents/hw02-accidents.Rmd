@@ -27,7 +27,7 @@ It covers all recorded accidents in NY in 2018 and 2019.  Some of the variables 
 
 # Getting started
 
-Go to the course GitHub organization and locate your homework repo, which should be named `hw02-accidents-YOUR_GITHUB_USERNAME`.
+Go to the course GitHub organization and locate your homework repo, which should be named `hw-2-YOUR_GITHUB_USERNAME`.
 Grab the URL of the repo, and clone it in RStudio.
 First, open the R Markdown document `hw02.Rmd` and Knit it.
 Make sure it compiles without errors.
@@ -71,10 +71,6 @@ You can find out more about the dataset in the NY open data portal:  https://dat
 # Exercises
 
 1.  How many observations (rows) does the dataset have? Instead of hard coding the number in your answer, use inline code.
-
-```{marginfigure}
-**Tired of typing your password?** Chances are your browser has already saved your password, but if not, you can ask Git to save (cache) your password for a period of time, where you indicate the period of time in seconds. For example, if you want it to cache your password for 1 hour, that would be 3,600 seconds. To do so, run the following *in the Console*: `usethis::use_git_config(credential.helper = "cache --timeout=3600")`. If you want to cache it for a longer time, you can adjust the number of seconds in the code.
-```
 
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*

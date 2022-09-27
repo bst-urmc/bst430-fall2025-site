@@ -41,6 +41,7 @@ library(tidyverse)
 * repeating operations on multiple columns with `across`
 <!-- * row names and row numbers-->
 
+Here's the [R code in this lecture](l05b/l05b-advanced-dplyr.R)
 ---
 class: code70
 
