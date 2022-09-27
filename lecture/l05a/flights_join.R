@@ -1,4 +1,5 @@
 library(tidyverse)
+library(nycflights13)
 airports_lat_long = airports %>% select(lat, lon, faa)
 routes = flights %>% 
   mutate(flight_id = seq_len(nrow(.))) %>% # add surrougate key
