@@ -57,6 +57,10 @@ Here's the [customers](l05a/data/sales/customers.csv),
  [dates](l05a/data/scientists/dates.csv),
  [works](l05a/data/scientists/works.csv),
  [enrollment](l05a/data/students/enrolment.csv),
+ [survey](l05a/data/students/survey.csv),
+ 
+ [works](l05a/data/scientists/works.csv),
+ [enrollment](l05a/data/students/enrolment.csv),
  [survey](l05a/data/students/survey.csv)
 
 

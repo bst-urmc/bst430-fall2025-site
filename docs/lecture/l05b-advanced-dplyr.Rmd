@@ -41,7 +41,7 @@ library(tidyverse)
 * repeating operations on multiple columns with `across`
 <!-- * row names and row numbers-->
 
-Here's the [R code in this lecture](l05b/l05b-advanced-dplyr.R)
+Here's the [R code in this lecture](l05a/l05b-advanced-dplyr.R)
 ---
 class: code70
 
@@ -50,7 +50,7 @@ class: code70
 As we saw in lecture 3 by adding `group_by()` to a pipeline, we stratify by a categorical variable when we `summarize()`:
 .pull-left[
 **Grand margin**
-```{r}
+```{r, warning=FALSE}
 library(nycflights13)
 ontime = flights %>% 
   mutate(ontime = arr_delay <= 0)  
@@ -87,9 +87,9 @@ Be aware that this only returns the combinations of var_1, var_2, ... that exist
 1.  Convert `var1`, `var2`, ... to factors with `factor`.<sup>1</sup>
 2.  Set  `group_by(..., .drop = FALSE)`.
 
-.footnote[[1] We'll discuss the pain and pleasure<sup>2</sup> of factors in greater detail next week.
+.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail next week.
 
-[2] If you are a masochist.]
+<!-- [2] If you are a masochist.] -->
 
 ---
 
@@ -200,7 +200,7 @@ ontime_drop %>% ungroup() %>% #<<
 
 ## `group_by() filter()`
 
-We can combine group_by with filter, mutate or arrange to evaluate these verbes on each group.
+We can combine group_by with filter, mutate or arrange to evaluate these verbs on each group.
 
 ```{r}
 ontime_1500 = ontime %>% group_by(dest) %>% filter(n() > 1500) %>%
