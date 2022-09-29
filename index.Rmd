@@ -41,7 +41,7 @@ TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
     * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/Zqu2rV6v)). Due 5pm, Sept 16.
     * Lab 1 [solutions](hw_lab_instruction/lab01-hello-r/lab01-hello-r.html)
 3.  [dplyr(i)](lecture/l03-transform-dplyr-i.html)
-    * Continue working on lab 1
+    * Continue working on Lab 1
     * HW 1 assigned.  [instructions](hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/MQ3t9onK)).  Due 5pm EDT, Sept 23.
 4.  [Data types in R](lecture/l04-data-types.html). 
 5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html).
@@ -49,11 +49,11 @@ TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
 Due 5pm, Sept 28.
 6.  Finish L5a. [dplyr(ii)](lecture/l05b-advanced-dplyr.html)
     *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2, [invitation here](https://classroom.github.com/a/mvAGD44S). Due 5pm, Sept 30.
-<!-- 7.  [styleguide](lecture/l06-style.html) -->
-<!--     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! -->
-    <!-- * HW 2 assigned.  [instructions](hw_lab_instruction/hw02-accidents/hw02-accidents.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/fy4E-H-b)).  Due 5pm EDT, Oct 7. -->
+7.  Finish L5b. [styleguide](lecture/l06-style.html)
+    * Continue working on Lab 3
+    * HW 2 assigned.  [instructions](hw_lab_instruction/hw02-accidents/hw02-accidents.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/fy4E-H-b)).  Due 5pm EDT, Oct 7.
 <!-- 8.  [Factors and dates](lecture/l07-factors-dates.html) -->
-<!--     *  [HW 2](hw_lab_instruction/hw02-accidents/hw02-accidents.html) assigned. -->
+<!--     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! -->
 <!-- 9.  Effective data visualization [video](https://youtu.be/ZrifrBvFWgg) and [slides](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d14-effective-dataviz/u2-d14-effective-dataviz.html#1),  [rstudio.cloud project](https://rstudio.cloud/spaces/162296/project/2929636) and [quiz](https://docs.google.com/forms/d/e/1FAIpQLSdHAZGSFmErFF0FnZNRgbrxOPfcjFAQsjNA2Xlj-SdsOnWyqw/viewform?usp=sf_link). -->
 <!--     * Continue working on lab 4. -->
 <!-- 10. [Data from files](lecture/l09-data-from-files.html) -->

@@ -3,7 +3,7 @@
   <head>
     <title>BST430 Lecture 6</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Andrew McDavid" />
+    <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
@@ -15,11 +15,21 @@
     <textarea id="source">
 class: ur-title, center, middle, title-slide
 
+.title[
 # BST430 Lecture 6
+]
+.subtitle[
 ## Coding Style
-### Andrew McDavid
+]
+.author[
+### Tanzy Love, based on the course by Andrew McDavid
+]
+.institute[
 ### U of Rochester
-### 2021-09-10 (updated: 2021-09-19)
+]
+.date[
+### 2021-09-10 (updated: 2022-09-29 by TL)
+]
 
 ---
 
@@ -44,7 +54,7 @@ class: middle
 
 &gt;"As a pedant,  I have chosen the right profession."
 &gt;
-&gt;--Andrew McDavid (and statisticians everywhere?)
+&gt;--Andrew McDavid (and professors everywhere?)
 
 ---
 
@@ -303,18 +313,13 @@ class: middle
 
 ---
 
-## Linting on github
+### Implications for you
 
+*Try to follow these style guides in your code.
 *  Your labs and homeworks will have "lint" (commentary based on the style guide) provided automatically via the (dark) magic of github Actions.
-*  Having lint-free (or as close as practical) at the time of final submission will be a part of your grade.
-*  The style guide and what I wrote here is ultimately the controlling source. It a bit more lenient then the lint (eg infix spacing).
-*  So if you have no lint warnings, you'll get full credit on this criteria.
-
---
-
+*  Possibly, in the future, having lint-free (or as close as practical) at the time of final submission will be a part of your grade.
+* This will only happen if I can get it to work and think it's useful.
 * Much of the linting can be handled by Rstudio -&gt; Code -&gt; Reformat code!
-
-[demo of lint_assignment]
 
 ---
 
@@ -369,6 +374,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

@@ -147,7 +147,7 @@ dn = dennys %>%
 ```{r eval = FALSE}
 lq = laquinta %>%
   mutate(country = case_when(
-    state %in% state$abbreviation ~ "United States",
+    state %in% states$abbreviation ~ "United States",
     state %in% c("ON", "BC") ~ "Canada",
     state == "ANT"           ~ "Colombia",
     ...                      # fill in the rest

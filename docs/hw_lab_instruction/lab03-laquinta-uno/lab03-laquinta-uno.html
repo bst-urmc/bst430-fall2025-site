@@ -379,7 +379,7 @@ Denny’s, Pt. 1</h1>
 <h3 class="subtitle">Visualizing spatial data</h3>
 <h4 class="author">Tanzy Love, based on the course by Andrew
 McDavid</h4>
-<h4 class="date">(updated: 2022-09-27 by TL)</h4>
+<h4 class="date">(updated: 2022-09-29 by TL)</h4>
 
 
 
@@ -536,7 +536,7 @@ locations are in. Here is some starter code to get you going:</p></li>
 </ol>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>lq <span class="ot">=</span> laquinta <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">country =</span> <span class="fu">case_when</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    state <span class="sc">%in%</span> state<span class="sc">$</span>abbreviation <span class="sc">~</span> <span class="st">&quot;United States&quot;</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    state <span class="sc">%in%</span> states<span class="sc">$</span>abbreviation <span class="sc">~</span> <span class="st">&quot;United States&quot;</span>,</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    state <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;ON&quot;</span>, <span class="st">&quot;BC&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Canada&quot;</span>,</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    state <span class="sc">==</span> <span class="st">&quot;ANT&quot;</span>           <span class="sc">~</span> <span class="st">&quot;Colombia&quot;</span>,</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    ...                      <span class="co"># fill in the rest</span></span>

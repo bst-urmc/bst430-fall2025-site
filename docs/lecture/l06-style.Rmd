@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 6"
 subtitle: "Coding Style"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-09-10 (updated: `r Sys.Date()`)"
+date: "2021-09-10 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -61,7 +61,7 @@ htmltools::tagList(rmarkdown::html_dependency_font_awesome())
 
 >"As a pedant,  I have chosen the right profession."
 >
->--Andrew McDavid (and statisticians everywhere?)
+>--Andrew McDavid (and professors everywhere?)
 
 ---
 
@@ -271,18 +271,13 @@ class: middle
 
 ---
 
-## Linting on github
+### Implications for you
 
+*Try to follow these style guides in your code.
 *  Your labs and homeworks will have "lint" (commentary based on the style guide) provided automatically via the (dark) magic of github Actions.
-*  Having lint-free (or as close as practical) at the time of final submission will be a part of your grade.
-*  The style guide and what I wrote here is ultimately the controlling source. It a bit more lenient then the lint (eg infix spacing).
-*  So if you have no lint warnings, you'll get full credit on this criteria.
-
---
-
+*  Possibly, in the future, having lint-free (or as close as practical) at the time of final submission will be a part of your grade.
+* This will only happen if I can get it to work and think it's useful.
 * Much of the linting can be handled by Rstudio -> Code -> Reformat code!
-
-[demo of lint_assignment]
 
 ---
 

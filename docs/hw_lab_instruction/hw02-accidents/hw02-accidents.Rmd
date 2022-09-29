@@ -38,7 +38,6 @@ The output will be in the file markdown `.md` file with the same name.
 Before we introduce the data, let's warm up with some simple exercises.
 
 -   Update the YAML, changing the author name to your name, and **knit** the document.
--   `r emo::ji("broom")` Run `lint_assignment()` and verify that you are lint free.
 -   Commit your changes with a meaningful commit message.
 -   Push your changes to GitHub.
 -   Go to your repo on GitHub and confirm that your changes are visible in your Rmd **and** md files. If anything is missing, commit and push again.
@@ -111,7 +110,7 @@ crashes %>%
 
 Describe the patterns you see for Property accidents vs Fatal accidents on the weekdays vs weekends.
 
-`r emo::ji("broom")` 🧶 ✅ ⬆️ Lint, Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
+ 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
 
 5.  Recreate this plot:
 
@@ -136,10 +135,9 @@ Hint: use `lubridate::month`to extract the numeric index of the month.
 
 7.  Create another data visualization based on these data and interpret it. You can choose any variables and any type of visualization you like, but it must have at least three variables, e.g. a scatterplot of x vs. y isn't enough, but if points are colored or faceted by z, that's fine. In your answer, don't forget to label your R chunk as well.
 
-`r emo::ji("broom")` 🧶 ✅ ⬆️ Lint, Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document, and the lintr report on GitHub to make sure you're happy with the final state of your work.*
+ 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document, and the lintr report on GitHub to make sure you're happy with the final state of your work.*
 
-## Rubric: 39 points total
+## Rubric: 29 points total
 
 *  8 ex @ 3 pts per
 *  5 points github commits
-*  10 points lint 0-2 lint, -.5 point for every lint past 2.
