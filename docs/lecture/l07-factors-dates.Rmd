@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 7"
 subtitle: "Factors, Dates and Times"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-09-19 (updated: `r Sys.Date()`)"
+date: "2021-09-19 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -53,6 +53,8 @@ Recall: we talked about *types* (elements) and  *classes* (compounds)
 --
 - Examples: factors, dates, and data frames
   
+Here's the [R code in this lecture](l07/l07-factors-dates.R)
+
 ---
 
 ## Factors
