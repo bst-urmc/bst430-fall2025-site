@@ -134,6 +134,7 @@ flights10 = flights_sml %>%
 ## Store and read data as character strings
 
 ```{r}
+#a subest of the NYC flights with 15 biggest destinations
 glimpse(flights10)
 ```
 
@@ -280,7 +281,7 @@ flights %>%
 
 ---
 
-.hand[zooming in a bit...]
+.hand[zooming in a bit... first 7 days `slice(1:7)`]
 
 .question[
 Why does 10 Jan come after 1 Jan?
