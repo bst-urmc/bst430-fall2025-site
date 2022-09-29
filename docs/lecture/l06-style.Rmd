@@ -265,6 +265,22 @@ if(F) print("This shouldn't happen. I have broken the universe.")
 
 ---
 
+### Labeling R code chunks
+
+* I expect you to label your code chunks
+* It helps to tell the story
+* It names the figures that get made so you can find them more easily
+
+```
+``{r load-packages-data, message = FALSE, eval = TRUE}
+library(tidyverse)
+library(lubridate)
+library(vroom)
+``
+```
+
+---
+
 class: middle
 
 <img src="https://media1.giphy.com/media/3o7abA4a0QCXtSxGN2/giphy.gif?cid=ecf05e47sgk0h030uln8hkxkyg8tsgtmuk0bajy04l5tt7wj&rid=giphy.gif&ct=g" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/futurama-professor-farnsworth-good-news-everyone-3o7abA4a0QCXtSxGN2">via GIPHY</a></p>

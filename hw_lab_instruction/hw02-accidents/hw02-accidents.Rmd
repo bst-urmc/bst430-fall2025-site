@@ -11,6 +11,7 @@ link-citations: yes
 ```{r include = FALSE}
 knitr::opts_chunk$set(
   eval = TRUE,
+  warning = FALSE,
   out.width = "80%",
   fig.asp = 0.618,
   fig.width = 10,
@@ -81,6 +82,7 @@ You can find out more about the dataset in the NY open data portal:  https://dat
 3.  Add a new a column `decimal_hours` that converts `Time` into fractional hours since midnight, also using `lubridate`.
 
 4.  Recreate the following plot, and describe in context of the data. 
+Describe the patterns you see for Property accidents vs Fatal accidents on the weekdays vs weekends.
 
 ```{r, echo = FALSE, fig.fullwidth = TRUE, message = FALSE, results = 'hide'}
 crashes = crashes %>% 
@@ -89,7 +91,7 @@ crashes = crashes %>%
                                          "Injury & Property" = "Property Damage & Injury Accident",
                                          "Injury" = "Injury Accident",
                                          "Property" = "Property Damage Accident")) %>%
-  mutate(dt = mdy(Date), Time = hm(Time), 
+  mutate(dt = mdy(Date), Time = hms(Time), 
          is_weekend = ifelse(`Day of Week` %in% c('Saturday', 'Sunday'), 'weekend', 'weekday'), 
          decimal_hours = hour(Time) + minute(Time)/60)
 
@@ -107,8 +109,6 @@ crashes %>%
     fill = "Severity"
   )
 ```
-
-Describe the patterns you see for Property accidents vs Fatal accidents on the weekdays vs weekends.
 
  🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
 
