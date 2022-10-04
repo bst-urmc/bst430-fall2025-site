@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 09"
 subtitle: "Data from files"
-author: "Andrew McDavid"
+author: "Don Harrington, based on slides by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-09-24 (updated: `r Sys.Date()`)"
+date: "2021-09-24 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -110,11 +110,11 @@ read_csv("l09/data/df.csv")
 
 ---
 
-.your-turn[
 ### .hand[Your turn!]
 
-- [RStudio Cloud > l09 - Application Exercise - Nobels and Sales](https://rstudio.cloud/spaces/162296/project/2939203) > open `nobels-csv.Rmd` and knit.
-- Read in the `nobels.csv` file from the `data-raw/` folder.
+- Clone the repository from the webpage invitation.
+- open `nobels-csv.Rmd` and knit.
+- Read in the `nobels.csv`.
 - Split into two (STEM and non-STEM): 
   - Create a new data frame, `nobel_stem`, that filters for the STEM fields 
 (Physics, Medicine, Chemistry, and Economics).
@@ -123,8 +123,6 @@ fields.
 - Write out the two data frames to `nobel-stem.csv` and `nobel-nonstem.csv`, 
 respectively, to `data/`.
 
-**Hint:** Use the `%in%` operator when `filter()`ing.
-]
 
 ---
 
@@ -472,14 +470,10 @@ class: middle
 
 ---
 
-.your-turn[
 ### .hand[Your turn!]
-.midi[
-- [RStudio Cloud > l09 - Application Exercise - Nobels and Sales](https://rstudio.cloud/spaces/162296/project/2939203) > `sales-excel.Rmd`. 
+- open `sales-excel.Rmd`. 
 - Load the `sales.xlsx` file from the `data-raw/` folder, using appropriate arguments for the `read_excel()` function such that it looks like the output on the left.
 - **Stretch goal:** Manipulate the sales data such that it looks like the output on the right.
-]
-]
 
 .pull-left[
 ```{r echo=FALSE}
