@@ -281,21 +281,21 @@ library(vroom)
 
 ---
 
-class: middle
+<!-- class: middle -->
 
-<img src="https://media1.giphy.com/media/3o7abA4a0QCXtSxGN2/giphy.gif?cid=ecf05e47sgk0h030uln8hkxkyg8tsgtmuk0bajy04l5tt7wj&rid=giphy.gif&ct=g" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/futurama-professor-farnsworth-good-news-everyone-3o7abA4a0QCXtSxGN2">via GIPHY</a></p>
+<!-- <img src="https://media1.giphy.com/media/3o7abA4a0QCXtSxGN2/giphy.gif?cid=ecf05e47sgk0h030uln8hkxkyg8tsgtmuk0bajy04l5tt7wj&rid=giphy.gif&ct=g" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/futurama-professor-farnsworth-good-news-everyone-3o7abA4a0QCXtSxGN2">via GIPHY</a></p> -->
 
----
+<!-- --- -->
 
-### Implications for you
+<!-- ### Implications for you -->
 
-*Try to follow these style guides in your code.
-*  Your labs and homeworks will have "lint" (commentary based on the style guide) provided automatically via the (dark) magic of github Actions.
-*  Possibly, in the future, having lint-free (or as close as practical) at the time of final submission will be a part of your grade.
-* This will only happen if I can get it to work and think it's useful.
-* Much of the linting can be handled by Rstudio -> Code -> Reformat code!
+<!-- *Try to follow these style guides in your code. -->
+<!-- *  Your labs and homeworks will have "lint" (commentary based on the style guide) provided automatically via the (dark) magic of github Actions. -->
+<!-- *  Possibly, in the future, having lint-free (or as close as practical) at the time of final submission will be a part of your grade. -->
+<!-- * This will only happen if I can get it to work and think it's useful. -->
+<!-- * Much of the linting can be handled by Rstudio -> Code -> Reformat code! -->
 
----
+<!-- --- -->
 
 ### Acknowledgments
 

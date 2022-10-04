@@ -48,15 +48,17 @@ TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept the [invitation](https://classroom.github.com/a/7aAO3lDZ).
 Due 5pm, Sept 28.
 6.  Finish L5a. [dplyr(ii)](lecture/l05b-advanced-dplyr.html)
-    *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2, [invitation here](https://classroom.github.com/a/mvAGD44S). Due 5pm, Sept 30.
+    *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2, [invitation here](https://classroom.github.com/a/mvAGD44S). Due 5pm, Oct 5.
 7.  Finish L5b. [Factors and dates](lecture/l07-factors-dates.html)
 * Continue working on Lab 3
     * HW 2 assigned.  [instructions](hw_lab_instruction/hw02-accidents/hw02-accidents.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/fy4E-H-b)).  Due 5pm EDT, Oct 7.
-<!-- 8.  [styleguide](lecture/l06-style.html) -->
-<!--     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! -->
+8.  Effective data visualization [(i)](lecture/03a2-tips-for-effective-dataviz.pdf) [(ii)](lecture/03b-tips-for-effective-dataviz.pdf) [video](https://youtu.be/ZrifrBvFWgg)
+* [styleguide](lecture/l06-style.html)
+    * Turn in lab 3 by tomorrow.
 <!-- 9.  Effective data visualization [video](https://youtu.be/ZrifrBvFWgg) and [slides](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d14-effective-dataviz/u2-d14-effective-dataviz.html#1),  [rstudio.cloud project](https://rstudio.cloud/spaces/162296/project/2929636) and [quiz](https://docs.google.com/forms/d/e/1FAIpQLSdHAZGSFmErFF0FnZNRgbrxOPfcjFAQsjNA2Xlj-SdsOnWyqw/viewform?usp=sf_link). -->
 <!--     * Continue working on lab 4. -->
 <!-- 10. [Data from files](lecture/l09-data-from-files.html) -->
+<!--     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! -->
 <!--     *  [Lab 5 assigned](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html) -->
 <!-- 11. Work on lab 5. -->
 <!-- 12. [Text processing](lecture/l10-text.html) -->
