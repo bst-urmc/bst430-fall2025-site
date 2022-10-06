@@ -53,19 +53,19 @@ Due 5pm, Sept 28.
 * Continue working on Lab 3
     * HW 2 assigned.  [instructions](hw_lab_instruction/hw02-accidents/hw02-accidents.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/fy4E-H-b)).  Due 5pm EDT, Oct 11.
 8.  Effective data visualization [(i)](lecture/03a2-tips-for-effective-dataviz.pdf) [(ii)](lecture/03b-tips-for-effective-dataviz.pdf) [video](https://youtu.be/ZrifrBvFWgg)
-* [styleguide](lecture/l06-style.html)
     * Turn in lab 3 by tomorrow.
 <!-- 9.  Effective data visualization [video](https://youtu.be/ZrifrBvFWgg) and [slides](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d14-effective-dataviz/u2-d14-effective-dataviz.html#1),  [rstudio.cloud project](https://rstudio.cloud/spaces/162296/project/2929636) and [quiz](https://docs.google.com/forms/d/e/1FAIpQLSdHAZGSFmErFF0FnZNRgbrxOPfcjFAQsjNA2Xlj-SdsOnWyqw/viewform?usp=sf_link). -->
 <!--     * Continue working on lab 4. -->
 10. [Data from files](lecture/l09-data-from-files.html)
 *   Repository for lecture 9 [here](https://classroom.github.com/a/vAS3mGej) will not be graded, but gets you everything you need at once.
     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! At least one new teammate for each person.
-    <!-- [Invitation here](https://classroom.github.com/a/566Cy7tL). Due 5pm, Oct 5. -->
+    [Invitation here](https://classroom.github.com/a/566Cy7tL). Due 5pm, Oct 5.
+<!-- 11. [Text processing](lecture/l10-text.html) -->
+<!-- * [styleguide](lecture/l06-style.html) -->
 <!--     *  [Lab 5 assigned](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html) -->
-<!-- 11. Work on lab 5. -->
-<!-- 12. [Text processing](lecture/l10-text.html) -->
 <!--     *  Discuss lab 5.  [HW 3 assigned](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html). -->
 <!--     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html) -->
+<!-- 12. Work on lab 5. -->
 <!-- 13. Continue L10. -->
 <!-- 14. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html) -->
 <!--     * [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned. -->

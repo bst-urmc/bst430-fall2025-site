@@ -35,6 +35,8 @@ class: middle
 
 # Reading rectangular data into R
 
+Here's the [R code in this lecture](l09/l09-data-from-files.R) (also in the repo)
+
 ---
 
 class: middle
