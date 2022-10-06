@@ -19,11 +19,11 @@ In this lab we revisit the Denny's and La Quinta Inn and Suites data we visualiz
 
 -   Working with spatial data
 -   Writing and using a custom function
--   Practice formatting code according to a style guide.
+<!-- -   Practice formatting code according to a style guide. -->
 
 # Getting started
 
-Go to the course GitHub organization and locate your homework repo, clone it in RStudio and open the R Markdown document.
+Go to the course website and accept the lab assignment, clone it in RStudio and open the R Markdown document.
 Knit the document to make sure it compiles without errors.
 
 ## Warm up
@@ -36,45 +36,32 @@ If anything is missing, commit and push again.
 
 ## Packages
 
-We'll use the **tidyverse** package for much of the data wrangling and visualization and the data lives in the **dsbox** package.  We'll be using `lintr` to check the code formatting, but the mechanics of this being handled by scripts the `lintr` directory.
-These packages are already installed for you.
-You can load them by running the following in your Console:
+We'll use the **tidyverse** package for much of the data wrangling and visualization and the data lives in the **dsbox** package, but I've commented that out because it didn't work for all. So either use the library, or load the data from .csv files in your repo.
+You can load the libaries by running the following in your Console:
 
-```{r message = FALSE}
+```{r message = FALSE, eval=FALSE}
 library(tidyverse) 
 library(dsbox) 
 ```
 
-```{marginfigure}
-Feel free to poke around in the `lintr` directory if you are curious.  If you want to experiment with different arguments to the lintr you may do so locally, but you will want to keep the `revert` button handy on the git pane so you can easily undo your changes.  **Don't push any changes to files here or you might unleash skynet, or at least a bitcoin mining farm.**
-```
-
-## Linting your assignment
-
-Part of you grade will be based on having a "lint"-free markdown at the end. (Or at least as close as possible.)  You can check the lint two ways:
-
-*  **1** `r emo::ji("broom")` Run `lint_assignment()` from the Console and then look in the "Markers" pane, which will open as a tab next to the "Console".
-*  **2** After you push, click on the `r emo::ji("play_button")` Actions tab, find your most recent commit at the top, and click on it.  You should see a `r emo::ji("check")`
- and then, if you don't have a clean markdown, you should see Annotations / Warnings below.  If you click around in the lint-project job, and find the *Lint root directory* step, you can find the offending line numbers. But it will probably be easier to just run `lint_assignment()` from rstudio cloud.
- 
-Note that the lintr doesn't parse markdown prose (yet), 
-but it's still a good idea to keep your lines to under 80 characters, 
-if for no other reason than it makes git merge conflicts slightly less likely.
 
 ## Data
 
-Remember that the datasets we'll use are called `dennys` and `laquinta` from the **dsbox** package.
-Since the datasets are distributed with the package, we don't need to load them separately; they become available to us when we load the package.
+Remember that the datasets we'll use are called `dennys` and `laquinta` from the **dsbox** package. If you want to load them in your console, run this:
+
+```{r load-data, eval=FALSE, message = FALSE}
+dennys <- read_csv("data/dennys.csv")
+laquinta <- read_csv("data/laquinta.csv")
+```
+
 You can find out more about the datasets by inspecting their documentation, which you can access by running `?dennys` and `?laquinta` in the Console or using the Help menu in RStudio to search for `dennys` or `laquinta`.
 You can also find this information [here](https://rstudio-education.github.io/dsbox/reference/dennys.html) and [here](https://rstudio-education.github.io/dsbox/reference/laquinta.html).
 
 # Exercises
 
-0.  *i.*`r emo::ji("broom")` Run `lint_assignment()`.  What messages do you get in the "Markers" panel?  Report them here.  *ii.* Fix the formatting of the code in the `lintr-warm-up` chunk, and run `lint_assignment()` again.   Verify that you now get no messages.  *iii.* Push and verify that you have no annotations on the *lint-project* Action tab on github.com.
-
 1.  Filter the Denny's data frame for Alaska (AK) and save the result as `dn_ak`. How many Denny's locations are there in Alaska?
 
-```{r}
+```{r eval=FALSE}
 dn_ak = dennys %>%
   filter(state == "AK")
 nrow(dn_ak)
@@ -82,7 +69,7 @@ nrow(dn_ak)
 
 2.  Filter the La Quinta data frame for Alaska (AK) and save the result as `lq_ak`. How many La Quinta locations are there in Alaska?
 
-```{r}
+```{r eval=FALSE}
 lq_ak = laquinta %>%
   filter(state == "AK")
 nrow(lq_ak)
@@ -133,7 +120,7 @@ These are called **mutating joins**.
     Where there are not matching values, returns NA for the one missing.
 
 And the other two join functions only keep cases from the left-hand data frame, and are called **filtering joins**.
-We'll learn about these another time but you can find out more about the join functions in the help files for any one of them, e.g. `?full_join`.
+You can find out more about the join functions in the help files for any one of them, e.g. `?full_join`.
 
 In practice we mostly use mutating joins.
 In this case we want to keep all rows and columns from both `dn_ak` and `lq_ak` data frames.
@@ -143,7 +130,7 @@ So we will use a `full_join`.
 
 Let's join the data on Denny's and La Quinta locations in Alaska, and take a look at what it looks like:
 
-```{r}
+```{r eval=FALSE}
 dn_lq_ak = full_join(dn_ak, lq_ak, by = "state")
 dn_lq_ak
 ```
@@ -155,14 +142,14 @@ These variables are renamed to include `.x` and `.y` because the two data frames
 
 Now that we have the data in the format we wanted, all that is left is to calculate the distances between the pairs.
 
-`r emo::ji('broom')` 🧶 ✅ ⬆️ Lint, Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
+ 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
 
 One way of calculating the distance between any two points on the earth is to use the Haversine distance formula.
 This formula takes into account the fact that the earth is not flat, but instead spherical.
 
 This function is not available in R, but we have it saved in a file called `haversine.R` that we can load and then use.  (We do this for you by `source`ing the file in the provided code-chunk.)
 
-```{r}
+```{r eval=FALSE}
 haversine = function(long1, lat1, long2, lat2, round = 3) {
   # convert to radians
   long1 = long1 * pi / 180
@@ -189,7 +176,7 @@ This function takes five arguments:
 5.  Still considering the state of Alaska, calculate the distances between all pairs of Denny's and La Quinta locations and save this variable as `distance`.
     Save this variable in `dn_lq_ak` data frame so that you can use it later.
 
-6.  Calculate the minimum distance between a Denny's and La Quinta for each Denny's location.
+6.  Calculate the minimum distance between a Denny's and La Quinta for each Denny's location (recall there are three).
     To do so we group by Denny's locations and calculate a new variable that stores the information for the minimum distance.
 
 ```{r eval = FALSE}
@@ -209,11 +196,10 @@ dn_lq_ak_mindist = dn_lq_ak %>%
 10. Among the states you examined, where is Mitch Hedberg's joke most likely to hold true?
     Explain your reasoning.
 
-`r emo::ji("broom")` 🧶 ✅ ⬆️ Lint ,Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
+🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
 
 ## Rubric
 
-37 points total.
-*  11 questions @ 2 points for correct and complete answers
-*  5 points github history
-*  10 points for <= 2 lint, and -0.5 point for every 1 lint thereafter
+25 points total.
+*  10 questions @ 2 points for correct and complete answers
+*  5 points github commit history
