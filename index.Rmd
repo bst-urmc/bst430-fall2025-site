@@ -57,12 +57,14 @@ Due 5pm, Sept 28.
     * Turn in lab 3 by tomorrow.
 <!-- 9.  Effective data visualization [video](https://youtu.be/ZrifrBvFWgg) and [slides](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d14-effective-dataviz/u2-d14-effective-dataviz.html#1),  [rstudio.cloud project](https://rstudio.cloud/spaces/162296/project/2929636) and [quiz](https://docs.google.com/forms/d/e/1FAIpQLSdHAZGSFmErFF0FnZNRgbrxOPfcjFAQsjNA2Xlj-SdsOnWyqw/viewform?usp=sf_link). -->
 <!--     * Continue working on lab 4. -->
-10. [Data from files](lecture/l09-data-from-files.html)
+9. [Data from files](lecture/l09-data-from-files.html)
 *   Repository for lecture 9 [here](https://classroom.github.com/a/vAS3mGej) will not be graded, but gets you everything you need at once.
     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! At least one new teammate for each person.
     [Invitation here](https://classroom.github.com/a/566Cy7tL). Due 5pm, Oct 12.
+10. Finish vizualization slides
+    * [styleguide](lecture/l06-style.html)
+* Finish lab 4.
 <!-- 11. [Text processing](lecture/l10-text.html) -->
-<!-- * [styleguide](lecture/l06-style.html) -->
 <!--     *  [Lab 5 assigned](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html) -->
 <!--     *  Discuss lab 5.  [HW 3 assigned](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html). -->
 <!--     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html) -->
