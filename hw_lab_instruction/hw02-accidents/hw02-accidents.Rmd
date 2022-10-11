@@ -70,7 +70,7 @@ You can find out more about the dataset in the NY open data portal:  https://dat
 
 # Exercises
 
-1.  How many observations (rows) does the dataset have? Instead of hard coding the number in your answer, use inline code.
+0.  How many observations (rows) does the dataset have? Instead of hard coding the number in your answer, use inline code.
 
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
