@@ -22,7 +22,9 @@ knitr::opts_chunk$set(
 knitr::include_graphics("img/512px-Ghostcycle-2005.jpg")
 ```
 
-In this assignment we continue our examination of traffic accidents in New York State.
+In this assignment we examine traffic accidents in New York State.
+
+**This is the first assignment where you will get graded and feedback on your coding style.***
 
 # Getting started
 
@@ -37,18 +39,17 @@ The output will be in the file markdown `.md` file with the same name.
 Before we introduce the data, let's warm up with some simple exercises.
 
 -   Update the YAML, changing the author name to your name, and **knit** the document.
--   `r emo::ji("broom")` Run `lint_assignment()` and verify that you are lint free.
 -   Commit your changes with a meaningful commit message.
 -   Push your changes to GitHub.
 -   Go to your repo on GitHub and confirm that your changes are visible in your Rmd **and** md files. If anything is missing, commit and push again.
 
 ## Packages
 
-Again, we use the **tidyverse**, `vroom`, `readxl` and `janitor` packages.
-These packages is already installed for you.
-You can load them by running the following in your Console:
+We use the **tidyverse**, `vroom`, `readxl` and `janitor` packages.
+They should all be installed by now, but install them if they are missing.
+You can load them by running the following:
 
-```{r load-packages-data, message = FALSE, eval = TRUE}
+```{r load-packages-data, message = FALSE, warning=FALSE, eval = TRUE}
 library(tidyverse)
 library(vroom)
 library(readxl)
@@ -73,7 +74,7 @@ You can find out more about the dataset in the NY open data portal:  https://dat
 
 3.  *i)* Convert values stored in `county_name` to **Title Case** (the purpose of this will become clear subsequently, I swear!)  *ii)*  Count the number of fatal crashes per county, per `is_pedbike` *iii)* Consider the top 20 counties (`county_name`) with the most fatal crashes in the data set. Make a barchart showing each county and the number of a) bicycle and pedestrian events and b) other events, filling the bars appropriately to show these two categories.  You will be graded on having an appropriate sort order for the county, and appropriate axis labels.
 
-4.  Download the county population data for New York from [the previous census](https://www.census.gov/data/tables/time-series/demo/popest/2010s-counties-detail.html). Put the file into a sensible place in your rstudio project.  Load it using `read_csv`, clean up the column names using `janitor::clean_names`, filter it down to relevant rows, and select relevant columns from it.
+4.  Download the county population data for New York from [the last census before 2018](https://www.census.gov/data/tables/time-series/demo/popest/2010s-counties-detail.html). Put the file into a sensible place in your rstudio project.  Load it using `read_csv`, clean up the column names using `janitor::clean_names`, filter it down to relevant rows, and select relevant columns from it.
 
 ```{marginfigure}
 Hint: you will want to either remove the "County" part of the `ctyname` in the census data, using functions found in `stringr`, or mutate a new column in your `crashes` counts table that appends (glues) "County" onto the `county_name` variable.
@@ -114,10 +115,11 @@ Hint: you will want to either remove the "County" part of the `ctyname` in the c
 
 9.  Which estimate, if any, would be most informative about the hazard rate of being a pedestrian/cyclist in NY state?  What other factors would be helpful in refining your estimate of the hazard?
 
-`r emo::ji("broom")` 🧶 ✅ ⬆️ Lint, Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document, and the lintr report on GitHub to make sure you're happy with the final state of your work.*
+ 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document, and the lintr report on GitHub to make sure you're happy with the final state of your work.*
 
 ## Rubric
 
+* 37 points total
 *  27 points correct and fully described answers @ 3 points per
 *  5 points adequately describe commit history
-*  10 points 0-2 lints, -.5 point for every lint past 2.
+*  5 points for coding style
