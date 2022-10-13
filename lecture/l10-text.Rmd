@@ -265,7 +265,7 @@ Others are listed in `?'"'` (the help on the quote function).
 ## Glue with newlines and unicode
 
 ```{r}
-glue::glue("{names} \n {favorite_food} \U1F600.")
+glue::glue("{names} \n {favorite_food} \U1F643.")
 ```
 
 
@@ -669,8 +669,21 @@ On average, how many vowels are there per word?  (Hint: use `str_count` and `[]`
 
 --
 
+```{r}
+word_df %>% 
+  mutate(vowels = str_count(word, "[aeiouAEIOU]"),
+         vowels_per_letter = vowels/nchar(word)) %>% 
+  summarise(mean(vowels), mean(vowels_per_letter))
+```
+
 ---
 List all the words with three or more vowels in a row.  Use `{min_matches,max_matches}` as a quantifier.
+
+--
+
+```{r}
+filter(word_df, str_detect(word, '[aeiou]{3,10}'))
+```
 
 ---
 ## Sentences
@@ -679,19 +692,37 @@ Now, consider the `r nrow(sentences)` in the `sentences` data set:
 
 ```{r}
 sentence_df = tibble(sentence  = sentences)
+sentence_df
 ```
 
 ---
 Extract the first word from each sentence.  Hint: negate the space character class "[ ]" to match everything except a space.
 
+--
+
+```{r}
+sentence_df %>% mutate(first_word = str_extract(sentence, '\\w*')) %>% head(3)# doesn't include apostrophes '''
+sentence_df %>% mutate(first_word = str_extract(sentence, '([^ ])*'))
+```
+
 ---
 Return all the sentences that contain the colors "red", "blue" or "green".  Use the `|` disjunction.
+
+--
+
+```{r}
+filter(sentence_df, str_detect(sentence, ("red|blue|green")))
+```
 
 ---
 Extract the first word ending in "s".  Use a capture group `()`, `str_match()` and the everything-but-space `[^ ]` character class.
 
+--
+
 ```{r}
-sentence_df = sentence_df %>% mutate(second = str_match(sentence, "([^ ]*s)\\b")[,2])
+sentence_df = sentence_df %>% 
+  mutate(ends_in_s = str_match(sentence, "([^ ]*s)\\b")[,2])
+sentence_df
 ```
 
 
@@ -700,7 +731,12 @@ sentence_df = sentence_df %>% mutate(second = str_match(sentence, "([^ ]*s)\\b")
 
 > The colt reared and threw the tall rider.
 
-because "reared" contains "red". Fix the regular expression so it only matches the complete words, not just a fragment using the "\<" word start marker.  Hint:  use <code>r"(...)"</code> to construct a "raw" string -- this protects the backslash from being used as an escape character.
+because "reared" contains "red". Fix the regular expression so it only matches the complete words, not just a fragment using the "\b" word start marker.  Hint:  use "\\\\b" to keep the backslash from being used as an escape character.
+--
+
+```{r}
+filter(sentence_df, str_detect(sentence, ("\\bred\\b|\\bblue\\b|\\bgreen\\b")))
+```
 
 
 <!-- --- -->

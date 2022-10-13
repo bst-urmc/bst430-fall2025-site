@@ -364,16 +364,16 @@ Others are listed in `?'"'` (the help on the quote function).
 
 
 ```r
-glue::glue("{names} \n {favorite_food} \U1F600.")
+glue::glue("{names} \n {favorite_food} \U1F643.")
 ```
 
 ```
 ## Jeff B. 
-## caviar &lt;U+0001F600&gt;.
+## caviar &lt;U+0001F643&gt;.
 ## Larry E. 
-## cake &lt;U+0001F600&gt;.
+## cake &lt;U+0001F643&gt;.
 ## Warren B. 
-## Pappy Van Winkle &lt;U+0001F600&gt;.
+## Pappy Van Winkle &lt;U+0001F643&gt;.
 ```
 
 
@@ -1072,8 +1072,42 @@ On average, how many vowels are there per word?  (Hint: use `str_count` and `[]`
 
 --
 
+
+```r
+word_df %&gt;% 
+  mutate(vowels = str_count(word, "[aeiouAEIOU]"),
+         vowels_per_letter = vowels/nchar(word)) %&gt;% 
+  summarise(mean(vowels), mean(vowels_per_letter))
+```
+
+```
+## # A tibble: 1 x 2
+##   `mean(vowels)` `mean(vowels_per_letter)`
+##            &lt;dbl&gt;                     &lt;dbl&gt;
+## 1           1.99                     0.380
+```
+
 ---
 List all the words with three or more vowels in a row.  Use `{min_matches,max_matches}` as a quantifier.
+
+--
+
+
+```r
+filter(word_df, str_detect(word, '[aeiou]{3,10}'))
+```
+
+```
+## # A tibble: 6 x 1
+##   word    
+##   &lt;chr&gt;   
+## 1 beauty  
+## 2 obvious 
+## 3 previous
+## 4 quiet   
+## 5 serious 
+## 6 various
+```
 
 ---
 ## Sentences
@@ -1083,20 +1117,112 @@ Now, consider the  in the `sentences` data set:
 
 ```r
 sentence_df = tibble(sentence  = sentences)
+sentence_df
+```
+
+```
+## # A tibble: 720 x 1
+##   sentence                                   
+##   &lt;chr&gt;                                      
+## 1 The birch canoe slid on the smooth planks. 
+## 2 Glue the sheet to the dark blue background.
+## 3 It's easy to tell the depth of a well.     
+## 4 These days a chicken leg is a rare dish.   
+## 5 Rice is often served in round bowls.       
+## 6 The juice of lemons makes fine punch.      
+## 7 The box was thrown beside the parked truck.
+## 8 The hogs were fed chopped corn and garbage.
+## # ... with 712 more rows
 ```
 
 ---
 Extract the first word from each sentence.  Hint: negate the space character class "[ ]" to match everything except a space.
 
+--
+
+
+```r
+sentence_df %&gt;% mutate(first_word = str_extract(sentence, '\\w*')) %&gt;% head(3)# doesn't include apostrophes '''
+```
+
+```
+## # A tibble: 3 x 2
+##   sentence                                    first_word
+##   &lt;chr&gt;                                       &lt;chr&gt;     
+## 1 The birch canoe slid on the smooth planks.  The       
+## 2 Glue the sheet to the dark blue background. Glue      
+## 3 It's easy to tell the depth of a well.      It
+```
+
+```r
+sentence_df %&gt;% mutate(first_word = str_extract(sentence, '([^ ])*'))
+```
+
+```
+## # A tibble: 720 x 2
+##   sentence                                    first_word
+##   &lt;chr&gt;                                       &lt;chr&gt;     
+## 1 The birch canoe slid on the smooth planks.  The       
+## 2 Glue the sheet to the dark blue background. Glue      
+## 3 It's easy to tell the depth of a well.      It's      
+## 4 These days a chicken leg is a rare dish.    These     
+## 5 Rice is often served in round bowls.        Rice      
+## 6 The juice of lemons makes fine punch.       The       
+## 7 The box was thrown beside the parked truck. The       
+## 8 The hogs were fed chopped corn and garbage. The       
+## # ... with 712 more rows
+```
+
 ---
 Return all the sentences that contain the colors "red", "blue" or "green".  Use the `|` disjunction.
+
+--
+
+
+```r
+filter(sentence_df, str_detect(sentence, ("red|blue|green")))
+```
+
+```
+## # A tibble: 54 x 1
+##   sentence                                   
+##   &lt;chr&gt;                                      
+## 1 Glue the sheet to the dark blue background.
+## 2 Two blue fish swam in the tank.            
+## 3 The colt reared and threw the tall rider.  
+## 4 The wide road shimmered in the hot sun.    
+## 5 See the cat glaring at the scared mouse.   
+## 6 A wisp of cloud hung in the blue air.      
+## 7 He ordered peach pie with ice cream.       
+## 8 Pure bred poodles have curls.              
+## # ... with 46 more rows
+```
 
 ---
 Extract the first word ending in "s".  Use a capture group `()`, `str_match()` and the everything-but-space `[^ ]` character class.
 
+--
+
 
 ```r
-sentence_df = sentence_df %&gt;% mutate(second = str_match(sentence, "([^ ]*s)\\b")[,2])
+sentence_df = sentence_df %&gt;% 
+  mutate(ends_in_s = str_match(sentence, "([^ ]*s)\\b")[,2])
+sentence_df
+```
+
+```
+## # A tibble: 720 x 2
+##   sentence                                    ends_in_s
+##   &lt;chr&gt;                                       &lt;chr&gt;    
+## 1 The birch canoe slid on the smooth planks.  planks   
+## 2 Glue the sheet to the dark blue background. &lt;NA&gt;     
+## 3 It's easy to tell the depth of a well.      It's     
+## 4 These days a chicken leg is a rare dish.    days     
+## 5 Rice is often served in round bowls.        is       
+## 6 The juice of lemons makes fine punch.       lemons   
+## 7 The box was thrown beside the parked truck. was      
+## 8 The hogs were fed chopped corn and garbage. hogs     
+## # ... with 712 more rows
 ```
 
 
@@ -1105,7 +1231,28 @@ sentence_df = sentence_df %&gt;% mutate(second = str_match(sentence, "([^ ]*s)\\
 
 &gt; The colt reared and threw the tall rider.
 
-because "reared" contains "red". Fix the regular expression so it only matches the complete words, not just a fragment using the "\&lt;" word start marker.  Hint:  use &lt;code&gt;r"(...)"&lt;/code&gt; to construct a "raw" string -- this protects the backslash from being used as an escape character.
+because "reared" contains "red". Fix the regular expression so it only matches the complete words, not just a fragment using the "\b" word start marker.  Hint:  use "\\\\b" to keep the backslash from being used as an escape character.
+--
+
+
+```r
+filter(sentence_df, str_detect(sentence, ("\\bred\\b|\\bblue\\b|\\bgreen\\b")))
+```
+
+```
+## # A tibble: 26 x 2
+##   sentence                                        ends_in_s
+##   &lt;chr&gt;                                           &lt;chr&gt;    
+## 1 Glue the sheet to the dark blue background.     &lt;NA&gt;     
+## 2 Two blue fish swam in the tank.                 &lt;NA&gt;     
+## 3 A wisp of cloud hung in the blue air.           &lt;NA&gt;     
+## 4 The spot on the blotter was made by green ink.  was      
+## 5 The sofa cushion is red and of light weight.    is       
+## 6 The sky that morning was clear and bright blue. was      
+## 7 A blue crane is a tall wading bird.             is       
+## 8 It is hard to erase blue or red ink.            is       
+## # ... with 18 more rows
+```
 
 
 &lt;!-- --- --&gt;
