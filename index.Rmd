@@ -64,9 +64,10 @@ Due 5pm, Sept 28.
 10. Finish vizualization slides
     * [styleguide](lecture/l06-style.html)
 * Finish lab 4.
-<!-- 11. [Text processing](lecture/l10-text.html) -->
+11. [Text processing](lecture/l10-text.html)
+    <!-- * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/fy4E-H-b)).  Due 5pm EDT, Oct 21. -->
 <!--     *  [Lab 5 assigned](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html) -->
-<!--     *  Discuss lab 5.  [HW 3 assigned](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html). -->
+<!--     *  Discuss lab 5.   -->
 <!--     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html) -->
 <!-- 12. Work on lab 5. -->
 <!-- 13. Finish text processing slides. -->
