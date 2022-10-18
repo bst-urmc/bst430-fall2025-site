@@ -66,10 +66,11 @@ Due 5pm, Sept 28.
 * Finish lab 4.
 11. [Text processing](lecture/l10-text.html) [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=961dbd5b-ccf6-4fb9-a2ee-af2d012702fe)
     * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/6sqI7bjg)).  Due 5pm EDT, Oct 21.
-<!--     *  [Lab 5 assigned](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html) -->
+12. [Text analysis](lecture/l10-text-ii.html) 
+    *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; take turns and then you won't have so many GitHub problems.
+    [Invitation here](https://classroom.github.com/a/sFi-IjD6). Due 5pm, Oct 25.
+    *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html)
 <!--     *  Discuss lab 5.   -->
-<!--     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html) -->
-<!-- 12. Work on lab 5. -->
 <!-- 13. Finish text processing slides. -->
 <!-- 14. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html) -->
 <!--     * [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned. -->
