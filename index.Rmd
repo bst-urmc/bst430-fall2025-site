@@ -66,17 +66,17 @@ Due 5pm, Sept 28.
 10. Finish vizualization slides
     * [styleguide](lecture/l06-style.html)
 * Finish lab 4.
-11. [Text processing](lecture/l10-text.html) [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=961dbd5b-ccf6-4fb9-a2ee-af2d012702fe)
+11. [Text processing](lecture/l10-text.html)   [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=961dbd5b-ccf6-4fb9-a2ee-af2d012702fe)
     * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/6sqI7bjg)).  Due 5pm EDT, Oct 21.
-12. [Text analysis](lecture/l10-text-ii.html) 
+12. [Text analysis](lecture/l10-text-ii.html)    [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3482b784-14f4-4ff0-8634-af3201202cb5)
     *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; take turns and then you won't have so many GitHub problems.
     [Invitation here](https://classroom.github.com/a/sFi-IjD6). Due 5pm, Oct 25.
     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html)
 <!--     *  Discuss lab 5.   -->
 <!-- 13. Finish text processing slides. -->
 <!-- 14. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html) -->
-<!--     * [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned. -->
 <!-- 15.  Continue with matrices / linear algebra and Lab 6. -->
+<!--     * [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned. -->
 <!-- 16.  [Functions i](lecture/l12-functions.html), continue to work on lab6. -->
 <!-- 17.  [Functions ii and iteration](lecture/l13-functions-ii.html).  [HW04](hw_lab_instruction/hw04-wrangle-r/hw04-wrangle-r.html) (Due 5PM Nov 5) -->
 <!-- 18.  [Knitr tricks and debugging](lecture/l14-debugging.html).  [Lab 07](hw_lab_instruction/lab07-generative-art/lab07-generative-art.html) due 5PM Nov 12.  [Lab 07 notes](lecture/lab07-art-notes.html). -->
