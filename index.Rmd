@@ -48,8 +48,10 @@ TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
 5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html).
     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept the [invitation](https://classroom.github.com/a/7aAO3lDZ).
 Due 5pm, Sept 28.
+    * Lab 2 [solutions](hw_lab_instruction/lab02-merge-conflict/lab-02.html)
 6.  Finish L5a. [dplyr(ii)](lecture/l05b-advanced-dplyr.html)
     *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2, [invitation here](https://classroom.github.com/a/mvAGD44S). Due 5pm, Oct 5.
+    * Lab 3 [solutions](hw_lab_instruction/lab03-laquinta-uno/lab-03.html)
 7.  Finish L5b. [Factors and dates](lecture/l07-factors-dates.html)
 * Continue working on Lab 3
     * HW 2 assigned.  [instructions](hw_lab_instruction/hw02-accidents/hw02-accidents.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/fy4E-H-b)).  Due 5pm EDT, Oct 15.
