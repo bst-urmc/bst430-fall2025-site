@@ -39,10 +39,9 @@ knitr::opts_chunk$set(cache = TRUE)
 
 Here's the [R code in this lecture](l10/l10-text-ii.R)
 
-<!-- Here's the [cardiac-dx](l10/data/cardiac-dx.csv) and  -->
-<!-- [sample_sheet2](l10/ae/data/sample_sheet2.csv) -->
+Here's the [books](l10/data/books.csv) 
 
-<!-- *You have to have a good filepath to each dataset* -->
+*You have to have a good filepath to each dataset*
 
 
 ---
