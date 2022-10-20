@@ -67,7 +67,7 @@ Due 5pm, Sept 28.
     * [styleguide](lecture/l06-style.html)
 * Finish lab 4.
 11. [Text processing](lecture/l10-text.html)   [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=961dbd5b-ccf6-4fb9-a2ee-af2d012702fe)
-    * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/6sqI7bjg)).  Due 5pm EDT, Oct 21.
+    * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/6sqI7bjg)).  Due 5pm EDT, Oct 28.
 12. [Text analysis](lecture/l10-text-ii.html)    [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3482b784-14f4-4ff0-8634-af3201202cb5)
     *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; take turns and then you won't have so many GitHub problems.
     [Invitation here](https://classroom.github.com/a/sFi-IjD6). Due 5pm, Oct 25.
