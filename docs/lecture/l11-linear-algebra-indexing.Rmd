@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 11"
 subtitle: "Vectors, matrices and linear algebra"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-09-27 (updated: `r Sys.Date()`)"
+date: "2021-09-27 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -23,43 +23,49 @@ output:
 ```{r child = "setup.Rmd"}
 ```
 
-## Announcement:
-
-Andrew's Office hours at 4:30-5:30 Thursday by zoom.
-
----
-
 ## Motivation: time series
 
-Let's suppose we tabulate<sup>1</sup> the average delay at the NYC airports at every hour during the month of June.
+Let's suppose we tabulate the average delay at the NYC airports at every hour during the month of June.
 
-```{r tabulate-delay, include = FALSE}
+```{r include=FALSE}
 library(nycflights13)
 library(tidyverse)
-knitr::opts_chunk$set(cache = TRUE)
-delay_stats = flights %>%  filter(month %in% c(3, 6)) %>%
-  mutate(day = factor(day), hour = factor(hour, levels = 0:23), origin = factor(origin), month= factor(month)) %>%
+knitr::opts_chunk$set(cache = FALSE, warning = FALSE)
+theme_set(theme_minimal())
+```
+
+```{r tabulate-delay}
+delay_stats = flights %>%  
+  filter(month %in% c(3, 6)) %>%
+  mutate(day = factor(day), 
+         hour = factor(hour, levels = 0:23), 
+         origin = factor(origin), 
+         month= factor(month)) %>%
   group_by(day, hour, origin, month) %>% 
   mutate(n = n(), pos_delay =  pmax(0, dep_delay)) %>%
-   group_by(day, hour, origin, month, .drop = FALSE) %>% 
+  group_by(day, hour, origin, month, .drop = FALSE) %>% 
   summarize(n = n(), 
             total_delay = ifelse(n>0, sum(pos_delay, na.rm = TRUE), NA_real_),
             total_delay_5 = sum(dep_delay > 5, na.rm = TRUE),
             prop_delay_5 = total_delay_5/n,
-            mean_delay = total_delay/n) %>%
+            mean_delay = total_delay/n)%>%
   group_by(hour, origin, month) %>%
   mutate(residual_mean_delay = mean_delay - mean(mean_delay, na.rm = TRUE),
          residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
-delay_june = filter(delay_stats, month == "6") %>% select(day:origin, total_delay)
-theme_set(theme_minimal())
+
+delay_june = filter(delay_stats, month == "6") %>% 
+  select(day:origin, total_delay)
 ```
 
+---
 
+## delay_june
+
+We show the largest total delay for each hour/origin that is not empty.  
 
 ```{r}
 delay_june %>% slice_max(n = 1, order_by = total_delay)
 ```
-.footnote[[1] See appendix.]
 ---
 
 ```{r, warning=FALSE}
@@ -68,15 +74,16 @@ dstat = ggplot(delay_june, aes(x = as.numeric(hour), y = total_delay, color = or
 dstat
 ```
 
-We see, as we have before, that flights aren't so delayed early in the day, and peak delays occur in the evening.
+We see that flights aren't so delayed early in the day, and peak delays occur in the evening.
 
 ---
 
 ## Detrend
 
 ```{r, warning = FALSE}
-delay_june = delay_june %>% group_by(hour, origin, month) %>%
-         mutate(residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
+delay_june = delay_june %>% 
+  group_by(hour, origin, month) %>%
+  mutate(residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
 (dstat %+% delay_june) + aes(y = residual_total_delay)
 ```
 
@@ -93,10 +100,7 @@ delay_wide = delay_june %>%
 delay_wide %>% slice(10:15)
 ```
 
-
 ---
-
-
 
 ```{r}
 airport_delay_plot = ggplot(delay_wide, aes(x = EWR, y = JFK)) + 
@@ -104,8 +108,6 @@ airport_delay_plot = ggplot(delay_wide, aes(x = EWR, y = JFK)) +
   scale_color_viridis_c() 
 airport_delay_plot + labs(title = "Resid. delay (minutes) on each hour")
 ```
-
-Then scatter plot.
 
 ---
 
@@ -148,7 +150,7 @@ delay_matrix
 .pull-right[
 Or casting with `as.matrix` (simple)
 ```{r, R.options=list(digits = 2, width = 50)}
-delay_matrix2 = as.matrix(delay_wide %>% select(EWR:LGA))
+delay_matrix2 = delay_wide %>% select(EWR:LGA) %>% as.matrix
 delay_matrix2
 ```
 ]
@@ -230,7 +232,7 @@ cor(delay_matrix[1:(nrow(delay_matrix)-2),],
 
 ---
 
-## The whole ballgame
+## The whole ballgame:auto-correlation function
 
 ```{r, fig.width = 6}
 acf_arr = acf(delay_matrix, na.action = na.pass, lag.max = 12, plot = FALSE)
@@ -247,12 +249,6 @@ Some caveats as to why the output from acf differs slightly from the lagged corr
 *  ...but can be a hassle to program abstracted routines.  
 *  Manipulation of vectors and matrices in R is more flexible and transparent.
 *  We'll get more motivation for this when we discuss functions (next week)
-
----
-
-## Pre-test
-
-Please give [this quiz](https://docs.google.com/forms/d/e/1FAIpQLSexoCRQ0WqMH_yh38_cvpj28mM7Au8OJX8psuMJuTx9QNUgdw/viewform?usp=sf_link) a whirl.  Go fast and don't worry too much about getting it right -- we'll have a chance to make corrections at the end of lecture.
 
 ---
 class: middle
@@ -340,6 +336,7 @@ identical(x, -y)
 u = c(0.5-0.3,0.3-0.1)
 v = c(0.3-0.1,0.5-0.3)
 identical(u,v)
+identical(u,v[2:1])
 ```
 ]
 .pull-right[
@@ -366,7 +363,7 @@ You will get a warning when the lengths is not an integer multiples of each anot
 
 ## Recycled with a warning
 
-```{r}
+```{r warning=TRUE}
 (y = 1:3)
 (z = 3:7)
 y + z
@@ -378,7 +375,7 @@ Hint: set `options(warn = 2)` to convert warnings to errors to catch this proble
 ## Recycled without warning
 
 
-```{r}
+```{r warning=TRUE}
 (y = 1:10)
 (z = 3:7)
 y + z
@@ -395,24 +392,11 @@ z + 1
 ## Making vectors
 
 The combine function `c()` is your go-to function for making vectors.
+(OMG, I was taught this was called concatenate.)
 
 ```{r}
 str(c("hello", "world"))
 str(c(1:3, 100, 150))
-```
-
-
----
-
-## Implicit coercion 
-
-We have already seen that the elements will be coerced to the same flavor, using a "lowest common denominator" approach (usually character).
-
-```{r}
-(x = c("cabbage", pi, TRUE, 4.3))
-str(x)
-length(x)
-
 ```
 
 ---
@@ -499,20 +483,25 @@ We have seen that lists before: the über-vector in R. It's got length, like a v
 Using `list()` instead of `c()` to combine things and you'll notice that the different flavors of the constituent parts are retained this time.
 ```{r}
 ## earlier: a = c("cabbage", pi, TRUE, 4.3)
-(a = list("cabbage", pi, TRUE, 4.3))
+(a = list("cabbage", pi, TRUE, c(4.3,3,2.1,10)))
 ```
 
 ---
 
 ## Names in lists
 
-.pull-left[List components can also have names. You can create or change names after a list already exists or this can be integrated into the initial assignment.]
-.pull-right[
+List components can also have names. You can create or change names after a list already exists or in the initial assignment.
+.pull-left[
 ```{r}
 names(a)
 names(a) = c("veg", "dessert", "my_aim", "number")
 a
-a = list(veg = "cabbage", dessert = pi, my_aim = TRUE, number = 4.3)
+```
+]
+.pull-right[
+```{r}
+a = list(veg = "cabbage", dessert = pi, my_aim = TRUE, numbers = c(4.3,10))
+a
 ```
 ]
 
@@ -545,8 +534,8 @@ A slightly more complicated list for demo purposes.
 
 ```{r}
 a[[2]] # index with a positive integer
-str(a$my_aim) # use dollar sign and element name
-str(a[["t_num"]]) # index with length 1 character vector
+a$my_aim # use dollar sign and element name
+a[["t_num"]] # index with length 1 character vector
 ```
 
 ---
@@ -605,6 +594,10 @@ n = 8
 is.list(j_dat) # data.frames are lists
 j_dat[[4]] # this works but I prefer ...
 j_dat$z # using dollar sign and name, when possible
+namez=c("z")
+j_dat[[namez]] # using a character vector of names
+#namez=c("z","w")
+#j_dat[[namez]] # does not work: Error
 ```
 
 ---
@@ -613,7 +606,7 @@ j_dat$z # using dollar sign and name, when possible
 
 ```{r, tidy = FALSE}
 str(j_dat[c("x", "z")]) # get multiple variables
-# We prefer in interactive work
+select(j_dat, x, z) # better in interactive work
 identical(select(j_dat, x, z), j_dat[c("x", "z")])
 ```
 
