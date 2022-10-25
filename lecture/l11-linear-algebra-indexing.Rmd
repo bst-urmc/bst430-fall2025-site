@@ -23,6 +23,12 @@ output:
 ```{r child = "setup.Rmd"}
 ```
 
+Here's the [R code in this lecture](l11/l11-linear-algebra-indexing.R)
+
+The only dataset is in the nycflights13 library.
+
+
+---
 ## Motivation: time series
 
 Let's suppose we tabulate the average delay at the NYC airports at every hour during the month of June.
@@ -574,6 +580,18 @@ The return value will always be a list, even if you only request 1 element.
 
 ---
 
+## A useful list
+
+```{r linear model}
+(lmcars = lm(speed~dist, data=cars))
+
+lmcars[[1]]
+summary(lmcars)$sigma
+names(summary(lmcars))
+```
+
+---
+
 ## Creating a data.frame explicitly
 
 In data analysis, we often import data into data.frame via `read_csv()`. But one can also construct a data.frame directly using `tibble()`.
@@ -972,11 +990,11 @@ j_dat[c(2, 4, 7), c(1, 4)] # awful and arbitrary but syntax works
 j_dat[j_dat$z, ]
 ```
 
----
+<!-- --- -->
 
-## Post-test
+<!-- ## Post-test -->
 
-Ok, now let's make another attempt on [the quiz](https://docs.google.com/forms/d/e/1FAIpQLSexoCRQ0WqMH_yh38_cvpj28mM7Au8OJX8psuMJuTx9QNUgdw/viewform?usp=sf_link).
+<!-- Ok, now let's make another attempt on [the quiz](https://docs.google.com/forms/d/e/1FAIpQLSexoCRQ0WqMH_yh38_cvpj28mM7Au8OJX8psuMJuTx9QNUgdw/viewform?usp=sf_link). -->
 
 
 ---
@@ -988,13 +1006,13 @@ Based off of [materials from](https://www.stat.cmu.edu/~ryantibs/statcomp/lectur
 
 More reading: [r4ds chapter 20](https://r4ds.had.co.nz/vectors.html).
 
----
+<!-- --- -->
 
-# Appendix
+<!-- # Appendix -->
 
----
-class: code70
+<!-- --- -->
+<!-- class: code70 -->
 
-```{r, ref.label='tabulate-delay', echo = TRUE, eval = FALSE}
-```
+<!-- ```{r, ref.label='tabulate-delay', echo = TRUE, eval = FALSE} -->
+<!-- ``` -->
 

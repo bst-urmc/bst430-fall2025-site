@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-09-27 (updated: 2022-10-20 by TL)
+### 2021-09-27 (updated: 2022-10-25 by TL)
 ]
 
 ---
@@ -40,6 +40,12 @@ class: ur-title, center, middle, title-slide
 
 
 
+Here's the [R code in this lecture](l11/l11-linear-algebra-indexing.R)
+
+The only dataset is in the nycflights13 library.
+
+
+---
 ## Motivation: time series
 
 Let's suppose we tabulate the average delay at the NYC airports at every hour during the month of June.
@@ -3324,6 +3330,53 @@ The return value will always be a list, even if you only request 1 element.
 
 ---
 
+## A useful list
+
+
+```r
+(lmcars = lm(speed~dist, data=cars))
+```
+
+```
+## 
+## Call:
+## lm(formula = speed ~ dist, data = cars)
+## 
+## Coefficients:
+## (Intercept)         dist  
+##      8.2839       0.1656
+```
+
+```r
+lmcars[[1]]
+```
+
+```
+## (Intercept)        dist 
+##   8.2839056   0.1655676
+```
+
+```r
+summary(lmcars)$sigma
+```
+
+```
+## [1] 3.155753
+```
+
+```r
+names(summary(lmcars))
+```
+
+```
+##  [1] "call"          "terms"         "residuals"    
+##  [4] "coefficients"  "aliased"       "sigma"        
+##  [7] "df"            "r.squared"     "adj.r.squared"
+## [10] "fstatistic"    "cov.unscaled"
+```
+
+---
+
 ## Creating a data.frame explicitly
 
 In data analysis, we often import data into data.frame via `read_csv()`. But one can also construct a data.frame directly using `tibble()`.
@@ -4235,11 +4288,11 @@ j_dat[j_dat$z, ]
 ...
 ```
 
----
+&lt;!-- --- --&gt;
 
-## Post-test
+&lt;!-- ## Post-test --&gt;
 
-Ok, now let's make another attempt on [the quiz](https://docs.google.com/forms/d/e/1FAIpQLSexoCRQ0WqMH_yh38_cvpj28mM7Au8OJX8psuMJuTx9QNUgdw/viewform?usp=sf_link).
+&lt;!-- Ok, now let's make another attempt on [the quiz](https://docs.google.com/forms/d/e/1FAIpQLSexoCRQ0WqMH_yh38_cvpj28mM7Au8OJX8psuMJuTx9QNUgdw/viewform?usp=sf_link). --&gt;
 
 
 ---
@@ -4251,36 +4304,15 @@ Based off of [materials from](https://www.stat.cmu.edu/~ryantibs/statcomp/lectur
 
 More reading: [r4ds chapter 20](https://r4ds.had.co.nz/vectors.html).
 
----
+&lt;!-- --- --&gt;
 
-# Appendix
+&lt;!-- # Appendix --&gt;
 
----
-class: code70
+&lt;!-- --- --&gt;
+&lt;!-- class: code70 --&gt;
 
-
-```r
-delay_stats = flights %&gt;%  
-  filter(month %in% c(3, 6)) %&gt;%
-  mutate(day = factor(day), 
-         hour = factor(hour, levels = 0:23), 
-         origin = factor(origin), 
-         month= factor(month)) %&gt;%
-  group_by(day, hour, origin, month) %&gt;% 
-  mutate(n = n(), pos_delay =  pmax(0, dep_delay)) %&gt;%
-  group_by(day, hour, origin, month, .drop = FALSE) %&gt;% 
-  summarize(n = n(), 
-            total_delay = ifelse(n&gt;0, sum(pos_delay, na.rm = TRUE), NA_real_),
-            total_delay_5 = sum(dep_delay &gt; 5, na.rm = TRUE),
-            prop_delay_5 = total_delay_5/n,
-            mean_delay = total_delay/n)%&gt;%
-  group_by(hour, origin, month) %&gt;%
-  mutate(residual_mean_delay = mean_delay - mean(mean_delay, na.rm = TRUE),
-         residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
-
-delay_june = filter(delay_stats, month == "6") %&gt;% 
-  select(day:origin, total_delay)
-```
+&lt;!-- ```{r, ref.label='tabulate-delay', echo = TRUE, eval = FALSE} --&gt;
+&lt;!-- ``` --&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
