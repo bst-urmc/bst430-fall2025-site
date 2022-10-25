@@ -63,6 +63,7 @@ Due 5pm, Sept 28.
 *   Repository for lecture 9 [here](https://classroom.github.com/a/vAS3mGej) will not be graded, but gets you everything you need at once.
     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! At least one new teammate for each person.
     [Invitation here](https://classroom.github.com/a/566Cy7tL). Due 5pm, Oct 12.
+    * Lab 4 [solutions](hw_lab_instruction/lab04-laquinta-dos/lab04.html)
 10. Finish vizualization slides
     * [styleguide](lecture/l06-style.html)
 * Finish lab 4.
