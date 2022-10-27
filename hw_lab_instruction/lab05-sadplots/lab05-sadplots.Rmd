@@ -130,7 +130,7 @@ A researcher shared with you the following visualization they created based on t
 knitr::include_graphics("img/fisheries.png")
 ```
 
-4.  Can you help them make improve it? First, brainstorm how you would improve it. It's ok if some of your improvements are aspirational, i.e. you don't know how to implement it, but you think it's a good idea.
+4.  Can you help them improve it? First, brainstorm how you would improve it. It's ok if some of your improvements are aspirational, i.e. you don't know how to implement it, but you think it's a good idea.
 
 Load the data.
 
@@ -159,3 +159,11 @@ Want to see more ugly charts?
 -   [Reddit - Data is ugly](https://www.reddit.com/r/dataisugly/)
 -   [Missed Opportunities and Graphical Failures](http://www.datavis.ca/gallery/missed.php)
 -   [(Mostly Bad) Graphics and Tables](http://users.stat.umn.edu/~rend0020/Teaching/STAT8801-resources/graphics/index.html)
+
+
+## Rubric
+
+25 points total.
+*  5 questions @ 3 points for correct and complete answers
+*  5 points github commit history
+*  5 points coding style, R chunks are properly labelled, and your figures are reasonably sized.

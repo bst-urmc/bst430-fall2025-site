@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 12"
 subtitle: "Functions (i)"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-10-13 (updated: `r Sys.Date()`)"
+date: "2021-10-13 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -44,6 +44,10 @@ theme_set(theme_minimal())
 
 *  As an interpreted, interactive language, the __process__ for writing functions is as important as the laws and syntax of R 
 
+
+Here's the [R code in this lecture](l12/l12-functions-i.R)
+
+no data used
 ---
 
 ## Load the Gapminder data
@@ -96,7 +100,7 @@ range(gapminder[['lifeExp']])[2] - range(gapminder[['lifeExp']])[1]
 diff(range(gapminder$lifeExp))
 ```
 
-Internalize this "answer" because our informal testing relies on you noticing departures from this.
+Remember this, notice departures from this.
 
 ---
 
@@ -180,11 +184,11 @@ max_minus_min("eggplants are purple") ## i have no excuse for this one
 
 How happy are you with those error messages? You must imagine that some entire __script__ has failed and that you were hoping to just knit it without re-reading it. If a colleague or future you encountered these errors, how hard is it to pinpoint the usage problem?
 
----
+<!-- --- -->
 
-### Application exercise
+<!-- ### Application exercise -->
 
-Browse to [rstudio cloud](https://rstudio.cloud/spaces/162296/project/3099211) and take a few minutes with a partner to try to break `max_minus_min`.
+<!-- Browse to [rstudio cloud](https://rstudio.cloud/spaces/162296/project/3099211) and take a few minutes with a partner to try to break `max_minus_min`. -->
 
 
 ---
@@ -254,7 +258,7 @@ max_minus_min(gapminder)
 
 ## Error checking
 
-In addition to a gratuitous apology, the error raised also contains two more pieces of helpful info:
+In addition to a gratuitous apology, the error raised also contains two pieces of helpful info:
   
 * *Which* function threw the error.
 * Hints on how to fix things: expected class of input vs actual class.
@@ -280,11 +284,13 @@ else{
 ```
 
 lets us alter the program behavior depending on conditions.  We'll see more other examples
-of flow control when we discuss iteration with `for`, `while` `repeat`.
+of flow control when we discuss iteration with `for`, `while`, and `repeat`.
 
 ---
 
-```{r, include = FALSE}
+###Define functions that make displays
+
+```{r}
 work_without_question = function(condition){
   print(str_c("Good capitalistic worker bee ", emo::ji("honey_pot")))
 }
@@ -294,6 +300,9 @@ life_crisis = function(condition){
 }
 ```
 
+---
+
+###If life is good then work, else join a commune
 
 ```{r}
 life = function(condition) {
