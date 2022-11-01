@@ -180,10 +180,37 @@ quantile(z, type = 4)
 ## -2.345698 -1.048552 -0.564452  0.353277  1.084441
 ```
 
-???
+---
 
-TLDR: If a quantile is not unambiguously equal to an observed data point, you must somehow average two data points. You can weight this average different ways, depending on the rest of the data, and `type =` controls this.
+If a quantile is not unambiguously equal to an observed data point, you must somehow average two data points. You can weight this average different ways, depending on the rest of the data, and `type =` controls this.
 
+
+```r
+sort(z)
+```
+
+```
+##  [1] -2.3456977 -1.2070657 -0.8900378 -0.5747400 -0.5644520
+##  [6] -0.5466319  0.2774292  0.4291247  0.5060559  1.0844412
+```
+
+```r
+quantile(z, type = 1)
+```
+
+```
+##         0%        25%        50%        75%       100% 
+## -2.3456977 -0.8900378 -0.5644520  0.4291247  1.0844412
+```
+
+```r
+quantile(z, type = 4)
+```
+
+```
+##        0%       25%       50%       75%      100% 
+## -2.345698 -1.048552 -0.564452  0.353277  1.084441
+```
 ---
 
 ## The useful but mysterious `...` argument
@@ -286,11 +313,29 @@ print(a)
 ```
 
 
+```r
+a = 3
+my_function(a, 2)
+```
+
+```
+## [1] 10
+```
+
+```r
+print(a)
+```
+
+```
+## [1] 3
+```
+
 ---
 
 ### Unbound variables are searched for in the enclosing environments
 
-However, R uses something known as **lexical scope** to resolve conflicting variable names, and functions define what is technically called an enclosure.&lt;sup&gt;1&lt;/sup&gt;
+However, R uses something known as **lexical scope** to resolve conflicting variable names, and functions define what is technically called an enclosure.
+&lt;!-- &lt;sup&gt;1&lt;/sup&gt; --&gt;
 
 
 ```r
@@ -308,7 +353,7 @@ my_function2(2)
 
 R looks at the enclosing environments of a function (what was being executed when it was defined) to resolve a binding. 
 
-.footnote[[1] Here, and its S3 object orientation system, R often seems rather bizarre.  It will make more sense if you consume your preferred toxicant, and read up about LISP in the 1980s. Perhaps.]
+&lt;!-- .footnote[[1] Here, and its S3 object orientation system, R often seems rather bizarre.  It will make more sense if you consume your preferred toxicant, and read up about LISP in the 1980s. Perhaps.] --&gt;
 
 ---
 
@@ -327,7 +372,7 @@ process_data = function(dta){
 }
 ```
 
-I have lost an entire days to this.
+You may lose an entire day to this.
 
 ---
 
@@ -381,14 +426,19 @@ body(quartic_eq)
 ```
 
 ```r
-formals(quartic_eq)
+formals(quartic_eq); args(quartic_eq)
 ```
 
 ```
 ## $x
 ```
 
-Can also display a function's source by typing its name into the Console, or hovering over it and hitting F2.
+```
+## function (x) 
+## NULL
+```
+
+You can display a function's source by typing its name into the Console (without parentheses or arguments).
 ---
 
 
@@ -396,7 +446,7 @@ Can also display a function's source by typing its name into the Console, or hov
 curve(quartic_eq, from = -5, to = 5)
 ```
 
-&lt;img src="l13-functions-ii_files/figure-html/unnamed-chunk-17-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l13-functions-ii_files/figure-html/unnamed-chunk-19-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ```r
 optimize(quartic_eq, interval = c(-5, 5))
@@ -455,14 +505,14 @@ for( &lt;COUNTER&gt; in &lt;VECTOR&gt; ){
   &lt;BODY&gt;
 }
 ```
-where `&lt;BODY&gt;` contains a sequence of R expressions, as well as the keywords `break` or `continue`.
+where `&lt;BODY&gt;` contains a sequence of R expressions, as well as the keywords `break` or `next`.
 
 ---
 
 
 ```r
 n = 5
-log.vec = 0
+log.vec = NA
 for (i in seq_len(n)) {
   log.vec[i] = log(i)
 }
@@ -477,7 +527,7 @@ Here `i` is the counter and the vector we are iterating over is `1:n`. The body 
 
 ---
 
-### `1:n` considered harmful
+### `1:n` is my own personal devil
 
 Note that rather than using `1:n`, which when `n = 0` equals `1 0`  we use `seq_len`, which protects us when the index isn't guaranteed to be positive:
 
@@ -532,7 +582,7 @@ We can **break** out of a `for()` loop early (before the counter has been iterat
 
 ```r
 n = 5
-log.vec = 0
+log.vec = NA
 for (i in 1:n) {
   if (log(i) &gt; 1) {
     cat("I'm outta here. I don't like numbers bigger than 1\n")
@@ -554,7 +604,72 @@ log.vec
 ## [1] 0.0000000 0.6931472
 ```
 
-`continue` skips the remainder of the body of a `for()` loop, returning to the top of the body and incrementing the counter. 
+---
+class: code70
+
+### miss some loops
+
+`next` skips the remainder of the body of a `for()` loop, returning to the top of the body and incrementing the counter. 
+
+
+```r
+n = 5
+log.vec = NULL
+for (i in 1:n) {
+  if (log(i) &gt; 1 &amp; log(i) &lt;= 1.5) {
+    cat("I want to skip iteration",i,"\n")
+    next
+  }
+  log.vec[i] = log(i)
+}
+```
+
+```
+## I want to skip iteration 3 
+## I want to skip iteration 4
+```
+
+```r
+log.vec
+```
+
+```
+## [1] 0.0000000 0.6931472        NA        NA 1.6094379
+```
+
+---
+class: code70
+
+### don't add some loops
+
+when `next` skips the counter still grows, but not necessarily the results. 
+
+
+```r
+n = 5
+log.vec = NULL
+for (i in 1:n) {
+  if (log(i) &gt; 1 &amp; log(i) &lt;= 1.5) {
+    cat("I want to skip iteration",i,"\n")
+    next
+  }
+  log.vec = c(log.vec, log(i) )
+}
+```
+
+```
+## I want to skip iteration 3 
+## I want to skip iteration 4
+```
+
+```r
+log.vec
+```
+
+```
+## [1] 0.0000000 0.6931472 1.6094379
+```
+
 ---
 
 ### Variations on standard `for()` loops
@@ -567,19 +682,21 @@ Many different variations on standard `for()` are possible. Two common ones:
 
 ```r
 for (str in c("Tatoosh", "Infimum", "McGrindleCat")) {
-  cat(glue::glue("Free (OBO): {str}, one gently used cat."))
+  print(glue::glue("Free (OBO): {str}, one gently used cat."))
 }
 ```
 
 ```
-## Free (OBO): Tatoosh, one gently used cat.Free (OBO): Infimum, one gently used cat.Free (OBO): McGrindleCat, one gently used cat.
+## Free (OBO): Tatoosh, one gently used cat.
+## Free (OBO): Infimum, one gently used cat.
+## Free (OBO): McGrindleCat, one gently used cat.
 ```
 
-.footnote[[1] Just kidding, Tatoosh, we love you.]
+&lt;!-- .footnote[[1] Just kidding, Tatoosh, we love you.] --&gt;
 
 ---
 
-### Nested `for()` loops -- I guess we're working with pairs
+### Nested `for()` loops --  working with pairs
 
 
 ```r
@@ -610,7 +727,8 @@ A `while()` loop repeatedly runs a code block, again called the **body**, until 
 
 
 ```r
-X = model.matrix(~ scale(mass), data = dplyr::starwars)
+X = filter(starwars, !is.na(height) &amp; !is.na(mass)) %&gt;% pull(mass) %&gt;% scale
+X = cbind(1, X)
 y = filter(starwars, !is.na(height) &amp; !is.na(mass)) %&gt;% pull(height)
 beta = matrix(0, nrow = ncol(X))
 beta_new = matrix(1, nrow = ncol(X))
@@ -746,11 +864,11 @@ purrr::map_dfr(weird_list, function(x){
 
 This uses an **anonymous** function -- defined but not named.  
 
-In purrr, you can also create anonymous functions using [`~ .x`](https://purrr.tidyverse.org/articles/other-langs.html) syntax to save a few keystrokes.  I mostly prefer to be explicit, because it makes it easier to debug.
+&lt;!-- In purrr, you can also create anonymous functions using [`~ .x`](https://purrr.tidyverse.org/articles/other-langs.html) syntax to save a few keystrokes.  I mostly prefer to be explicit, because it makes it easier to debug. --&gt;
 
 ---
 
-### apply
+### apply - for matricies and arrays
 
 
 ```r
@@ -875,13 +993,6 @@ We will construct a test with `test_that()` and, within it, we put one or more *
 
 ```r
 library(testthat)
-```
-
-```
-## Warning: package 'testthat' was built under R version 4.1.3
-```
-
-```r
 test_that('invalid args are detected', {
   expect_error(qdiff6("eggplants are purple"))
   expect_error(qdiff6(iris))

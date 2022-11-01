@@ -3,7 +3,7 @@
   <head>
     <title>BST430 Lecture 13</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Andrew McDavid" />
+    <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
@@ -17,11 +17,21 @@
     <textarea id="source">
 class: ur-title, center, middle, title-slide
 
+.title[
 # BST430 Lecture 13
+]
+.subtitle[
 ## Functions (ii) and Iteration
-### Andrew McDavid
+]
+.author[
+### Tanzy Love, based on the course by Andrew McDavid
+]
+.institute[
 ### U of Rochester
-### 2021-10-23 (updated: 2021-10-27)
+]
+.date[
+### 2021-10-23 (updated: 2022-11-01 by TL)
+]
 
 ---
 
@@ -32,291 +42,6 @@ class: ur-title, center, middle, title-slide
 
 
 
-## Where were we? Where are we going?
-
-*  Wrote an R function to compute the difference between the max and min of a numeric vector. 
-*  Validated the function's only argument
-*  Informally, we verified that it worked OK.
-
-Now, we generalize this function, learn more technical details about R functions, and set default values for some arguments.
-
----
-
-## Recall our function:
-
-
-```r
-max_minus_min = function(x) {
-  if(!is.numeric(x)) {
-    stop('I am so sorry, but this function only works for numeric input!\n',
-         'You have provided an object of class: ', class(x)[1])
-  }
-  max(x) - min(x)
-}
-```
-
----
-
-## Generalize our function to other quantiles
-
-The max and the min are special cases of a __quantile__. Here are other special cases you may have heard of:
-
-* median = 0.5 quantile
-* 1st quartile = 0.25 quantile
-* 3rd quartile = 0.75 quantile
-
-In [box plots][wiki-boxplot], the rectangle typically runs from the 1st--3rd quartile, with a line at the median.
-
-If `\(q\)` is the `\(p\)`-th quantile of a set of `\(n\)` observations, approximately `\(pn\)` of the observations are less than `\(q\)` and `\((1 - p)n\)` are greater than `\(q\)`. Yeah, you need to worry about rounding to an integer and less/greater than or equal to...
-
-Let's generalize our function to take the difference between any two quantiles,  min and max being **quantile 0** and **quantile 1** respectively.
-
----
-
-## Get something that works, again
-
-The eventual inputs to our new function will be the data `x` and two probabilities.
-
-First, play around with the `quantile()` function. Convince yourself you know how to use it, for example, by cross-checking your results with other built-in functions.
-
----
-
-
-```r
-library(gapminder)
-quantile(gapminder$lifeExp)
-```
-
-```
-##      0%     25%     50%     75%    100% 
-## 23.5990 48.1980 60.7125 70.8455 82.6030
-```
-
-```r
-quantile(gapminder$lifeExp, probs = 0.5)
-```
-
-```
-##     50% 
-## 60.7125
-```
-
-```r
-median(gapminder$lifeExp)
-```
-
-```
-## [1] 60.7125
-```
-
-```r
-mean(gapminder$lifeExp &lt; median(gapminder$lifeExp))
-```
-
-```
-## [1] 0.5
-```
-
----
-
-Now write a code snippet that takes the difference between two quantiles.
-
-
----
-
-## Turn the working interactive code into a function, again
-
-I'll use `qdiff` as the base of our function's name. I copy the overall structure from our previous "max minus min" work but replace the guts of the function with the more general code we just developed.
-
-
-```r
-qdiff1 = function(x, probs) {
-  stopifnot(is.numeric(x))
-  the_quantiles = quantile(x = x, probs = probs)
-  max(the_quantiles) - min(the_quantiles)
-}
-```
-
----
-
-
-```r
-qdiff1(gapminder$lifeExp, probs = c(0.25, 0.75))
-```
-
-```
-## [1] 22.6475
-```
-
-```r
-IQR(gapminder$lifeExp) # hey, we've reinvented IQR
-```
-
-```
-## [1] 22.6475
-```
-
-```r
-qdiff1(gapminder$lifeExp, probs = c(0, 1))
-```
-
-```
-## [1] 59.004
-```
-
-```r
-max_minus_min(gapminder$lifeExp)
-```
-
-```
-## [1] 59.004
-```
-
-Again we do some informal tests against familiar results and external implementations.
-
----
-
-## Argument names: freedom and conventions
-
-I want you to understand the importance of argument names.
-
-I can name my arguments almost anything I like. Proof:
-
-
-```r
-qdiff2 = function(zeus, hera) {
-  stopifnot(is.numeric(zeus))
-  the_quantiles = quantile(x = zeus, probs = hera)
-  max(the_quantiles) - min(the_quantiles)
-}
-qdiff2(zeus = gapminder$lifeExp, hera = 0:1)
-```
-
-```
-## [1] 59.004
-```
-
-While I can name my arguments after Greek gods, it's usually a bad idea. Take all opportunities to make things more self-explanatory via meaningful names.
-
----
-
-## Argument names: freedom and conventions
-
-*  If you are going to pass along the arguments of your function to another built-in function, consider copying the argument names. 
-*  Unless you have a good reason to do your own thing (some argument names are bad!)
-*  The similarity or equivalence of the formal names of the function arguments  __accomplishes nothing__ as far as R is concerned; it is solely for the benefit of humans reading, writing, and using the code. 
-*  Which is very important!
-
----
-
-## What a function returns
-
-By default, a function returns the result of the last line of the body. I am just letting that happen with the line `max(the_quantiles) - min(the_quantiles)`. However, there is an explicit function for this: `return()`. I could just as easily make this the last line of my function's body:
-
-
-```r
-return(max(the_quantiles) - min(the_quantiles))
-```
-
-You absolutely must use `return()` if you want to return early based on some condition, i.e. before execution gets to the last line of the body. Otherwise, you can decide your own conventions about when you use `return()` and when you don't -- I find it less bug-prone to explicitly return, and this is the course style guide.
-
----
-
-## Default values: freedom to NOT specify the arguments
-
-What happens if we call our function but neglect to specify the probabilities?
-
-
-```r
-qdiff1(gapminder$lifeExp)
-```
-
-```
-## Error in quantile(x = x, probs = probs): argument "probs" is missing, with no default
-```
-
-Oops! At the moment, this causes a fatal error. It can be nice to provide some reasonable default values for certain arguments. In our case, it would be crazy to specify a default value for the primary input `x`, but very kind to specify a default for `probs`.
-
----
-
-## Default values: freedom to NOT specify the arguments
-
-We started by focusing on the max and the min, so I think those make reasonable defaults. Here's how to specify that in a function definition.
-
-
-```r
-qdiff3 = function(x, probs = c(0, 1)) {
-  stopifnot(is.numeric(x))
-  the_quantiles = quantile(x, probs)
-  max(the_quantiles) - min(the_quantiles)
-}
-```
-
----
-
-Again we check how the function works, in old examples and new, specifying the `probs` argument and not.
-
-
-```r
-qdiff3(gapminder$lifeExp)
-```
-
-```
-## [1] 59.004
-```
-
-```r
-max_minus_min(gapminder$lifeExp)
-```
-
-```
-## [1] 59.004
-```
-
-```r
-qdiff3(gapminder$lifeExp, c(0.1, 0.9))
-```
-
-```
-## [1] 33.5862
-```
-
----
-
-## Check the validity of arguments, again
-
-__Exercise:__ upgrade our argument validity checks in light of the new argument `probs`.
-
-Application exercise -- browse [rstudio cloud](https://rstudio.cloud/spaces/162296/project/3099211) and complete part II.
-
----
-
-## Wrap-up and what's next?
-
-Here's the function we've written so far:
-
-
-```r
-qdiff3
-```
-
-```
-## function(x, probs = c(0, 1)) {
-##   stopifnot(is.numeric(x))
-##   the_quantiles = quantile(x, probs)
-##   max(the_quantiles) - min(the_quantiles)
-## }
-## &lt;bytecode: 0x7fb41446c618&gt;
-```
-
----
-
-What we've accomplished:
-
-* We've generalized our first function to take a difference between arbitrary quantiles.
-* We've specified default values for the probabilities that set the quantiles.
-
----
 
 &lt;!--Original content: https://stat545.com/block011_write-your-own-function-03.html--&gt;
 
@@ -334,6 +59,8 @@ qdiff3 = function(x, probs = c(0, 1)) {
   max(the_quantiles) - min(the_quantiles)
 }
 ```
+
+Here's the [R code in this lecture](l12/l13-functions-ii.R)
 
 ---
 class: code70
@@ -453,10 +180,37 @@ quantile(z, type = 4)
 ## -2.345698 -1.048552 -0.564452  0.353277  1.084441
 ```
 
-???
+---
 
-TLDR: If a quantile is not unambiguously equal to an observed data point, you must somehow average two data points. You can weight this average different ways, depending on the rest of the data, and `type =` controls this.
+If a quantile is not unambiguously equal to an observed data point, you must somehow average two data points. You can weight this average different ways, depending on the rest of the data, and `type =` controls this.
 
+
+```r
+sort(z)
+```
+
+```
+##  [1] -2.3456977 -1.2070657 -0.8900378 -0.5747400 -0.5644520
+##  [6] -0.5466319  0.2774292  0.4291247  0.5060559  1.0844412
+```
+
+```r
+quantile(z, type = 1)
+```
+
+```
+##         0%        25%        50%        75%       100% 
+## -2.3456977 -0.8900378 -0.5644520  0.4291247  1.0844412
+```
+
+```r
+quantile(z, type = 4)
+```
+
+```
+##        0%       25%       50%       75%      100% 
+## -2.345698 -1.048552 -0.564452  0.353277  1.084441
+```
 ---
 
 ## The useful but mysterious `...` argument
@@ -559,11 +313,29 @@ print(a)
 ```
 
 
+```r
+a = 3
+my_function(a, 2)
+```
+
+```
+## [1] 10
+```
+
+```r
+print(a)
+```
+
+```
+## [1] 3
+```
+
 ---
 
 ### Unbound variables are searched for in the enclosing environments
 
-However, R uses something known as **lexical scope** to resolve conflicting variable names, and functions define what is technically called an enclosure.&lt;sup&gt;1&lt;/sup&gt;
+However, R uses something known as **lexical scope** to resolve conflicting variable names, and functions define what is technically called an enclosure.
+&lt;!-- &lt;sup&gt;1&lt;/sup&gt; --&gt;
 
 
 ```r
@@ -581,7 +353,7 @@ my_function2(2)
 
 R looks at the enclosing environments of a function (what was being executed when it was defined) to resolve a binding. 
 
-.footnote[[1] Here, and its S3 object orientation system, R often seems rather bizarre.  It will make more sense if you consume your preferred toxicant, and read up about LISP in the 1980s. Perhaps.]
+&lt;!-- .footnote[[1] Here, and its S3 object orientation system, R often seems rather bizarre.  It will make more sense if you consume your preferred toxicant, and read up about LISP in the 1980s. Perhaps.] --&gt;
 
 ---
 
@@ -600,7 +372,7 @@ process_data = function(dta){
 }
 ```
 
-I have lost an entire days to this.
+You may lose an entire day to this.
 
 ---
 
@@ -654,14 +426,19 @@ body(quartic_eq)
 ```
 
 ```r
-formals(quartic_eq)
+formals(quartic_eq); args(quartic_eq)
 ```
 
 ```
 ## $x
 ```
 
-Can also display a function's source by typing its name into the Console, or hovering over it and hitting F2.
+```
+## function (x) 
+## NULL
+```
+
+You can display a function's source by typing its name into the Console (without parentheses or arguments).
 ---
 
 
@@ -669,7 +446,7 @@ Can also display a function's source by typing its name into the Console, or hov
 curve(quartic_eq, from = -5, to = 5)
 ```
 
-&lt;img src="l13-functions-ii_files/figure-html/unnamed-chunk-26-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l13-functions-ii_files/figure-html/unnamed-chunk-19-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ```r
 optimize(quartic_eq, interval = c(-5, 5))
@@ -728,14 +505,14 @@ for( &lt;COUNTER&gt; in &lt;VECTOR&gt; ){
   &lt;BODY&gt;
 }
 ```
-where `&lt;BODY&gt;` contains a sequence of R expressions, as well as the keywords `break` or `continue`.
+where `&lt;BODY&gt;` contains a sequence of R expressions, as well as the keywords `break` or `next`.
 
 ---
 
 
 ```r
 n = 5
-log.vec = 0
+log.vec = NA
 for (i in seq_len(n)) {
   log.vec[i] = log(i)
 }
@@ -750,7 +527,7 @@ Here `i` is the counter and the vector we are iterating over is `1:n`. The body 
 
 ---
 
-### `1:n` considered harmful
+### `1:n` is my own personal devil
 
 Note that rather than using `1:n`, which when `n = 0` equals `1 0`  we use `seq_len`, which protects us when the index isn't guaranteed to be positive:
 
@@ -805,7 +582,7 @@ We can **break** out of a `for()` loop early (before the counter has been iterat
 
 ```r
 n = 5
-log.vec = 0
+log.vec = NA
 for (i in 1:n) {
   if (log(i) &gt; 1) {
     cat("I'm outta here. I don't like numbers bigger than 1\n")
@@ -827,7 +604,72 @@ log.vec
 ## [1] 0.0000000 0.6931472
 ```
 
-`continue` skips the remainder of the body of a `for()` loop, returning to the top of the body and incrementing the counter. 
+---
+class: code70
+
+### miss some loops
+
+`next` skips the remainder of the body of a `for()` loop, returning to the top of the body and incrementing the counter. 
+
+
+```r
+n = 5
+log.vec = NULL
+for (i in 1:n) {
+  if (log(i) &gt; 1 &amp; log(i) &lt;= 1.5) {
+    cat("I want to skip iteration",i,"\n")
+    next
+  }
+  log.vec[i] = log(i)
+}
+```
+
+```
+## I want to skip iteration 3 
+## I want to skip iteration 4
+```
+
+```r
+log.vec
+```
+
+```
+## [1] 0.0000000 0.6931472        NA        NA 1.6094379
+```
+
+---
+class: code70
+
+### don't add some loops
+
+when `next` skips the counter still grows, but not necessarily the results. 
+
+
+```r
+n = 5
+log.vec = NULL
+for (i in 1:n) {
+  if (log(i) &gt; 1 &amp; log(i) &lt;= 1.5) {
+    cat("I want to skip iteration",i,"\n")
+    next
+  }
+  log.vec = c(log.vec, log(i) )
+}
+```
+
+```
+## I want to skip iteration 3 
+## I want to skip iteration 4
+```
+
+```r
+log.vec
+```
+
+```
+## [1] 0.0000000 0.6931472 1.6094379
+```
+
 ---
 
 ### Variations on standard `for()` loops
@@ -840,19 +682,21 @@ Many different variations on standard `for()` are possible. Two common ones:
 
 ```r
 for (str in c("Tatoosh", "Infimum", "McGrindleCat")) {
-  cat(glue::glue("Free (OBO): {str}, one gently used cat."))
+  print(glue::glue("Free (OBO): {str}, one gently used cat."))
 }
 ```
 
 ```
-## Free (OBO): Tatoosh, one gently used cat.Free (OBO): Infimum, one gently used cat.Free (OBO): McGrindleCat, one gently used cat.
+## Free (OBO): Tatoosh, one gently used cat.
+## Free (OBO): Infimum, one gently used cat.
+## Free (OBO): McGrindleCat, one gently used cat.
 ```
 
-.footnote[[1] Just kidding, Tatoosh, we love you.]
+&lt;!-- .footnote[[1] Just kidding, Tatoosh, we love you.] --&gt;
 
 ---
 
-### Nested `for()` loops -- I guess we're working with pairs
+### Nested `for()` loops --  working with pairs
 
 
 ```r
@@ -883,7 +727,8 @@ A `while()` loop repeatedly runs a code block, again called the **body**, until 
 
 
 ```r
-X = model.matrix(~ scale(mass), data = dplyr::starwars)
+X = filter(starwars, !is.na(height) &amp; !is.na(mass)) %&gt;% pull(mass) %&gt;% scale
+X = cbind(1, X)
 y = filter(starwars, !is.na(height) &amp; !is.na(mass)) %&gt;% pull(height)
 beta = matrix(0, nrow = ncol(X))
 beta_new = matrix(1, nrow = ncol(X))
@@ -1019,11 +864,11 @@ purrr::map_dfr(weird_list, function(x){
 
 This uses an **anonymous** function -- defined but not named.  
 
-In purrr, you can also create anonymous functions using [`~ .x`](https://purrr.tidyverse.org/articles/other-langs.html) syntax to save a few keystrokes.  I mostly prefer to be explicit, because it makes it easier to debug.
+&lt;!-- In purrr, you can also create anonymous functions using [`~ .x`](https://purrr.tidyverse.org/articles/other-langs.html) syntax to save a few keystrokes.  I mostly prefer to be explicit, because it makes it easier to debug. --&gt;
 
 ---
 
-### apply
+### apply - for matricies and arrays
 
 
 ```r
@@ -1155,7 +1000,7 @@ test_that('invalid args are detected', {
 ```
 
 ```
-## Test passed 😸
+## Test passed
 ```
 
 ```r
@@ -1166,7 +1011,7 @@ test_that('NA handling works', {
 ```
 
 ```
-## Test passed 🌈
+## Test passed
 ```
 
 No news is good news!
@@ -1187,12 +1032,17 @@ test_that('NA handling works', {
 ```
 
 ```
-## ── Error (&lt;text&gt;:6:3): NA handling works ───────────────────────────────────────
-## Error: missing values and NaN's not allowed if 'na.rm' is FALSE
+## -- Error (&lt;text&gt;:6:3): NA handling works ---------------------------------------
+## Error in `quantile.default(x = x, probs = probs)`: missing values and NaN's not allowed if 'na.rm' is FALSE
 ## Backtrace:
 ##  1. testthat::expect_that(qdiff_no_NA(c(1:5, NA)), equals(4))
-##  6. global::qdiff_no_NA(c(1:5, NA))
+##  6. global qdiff_no_NA(c(1:5, NA))
 ##  8. stats:::quantile.default(x = x, probs = probs)
+```
+
+```
+## Error in `reporter$stop_if_needed()`:
+## ! Test failed
 ```
 
 ---
@@ -1616,6 +1466,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

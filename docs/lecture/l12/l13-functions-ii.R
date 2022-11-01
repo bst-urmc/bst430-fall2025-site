@@ -125,12 +125,6 @@ quantile(z, type = 4)
 
 
 ## --------------------------------------------------
-sort(z)
-quantile(z, type = 1)
-quantile(z, type = 4)
-
-
-## --------------------------------------------------
 qdiff6 = function(x, probs = c(0, 1), na.rm = TRUE, ...) {
   the_quantiles = quantile(x = x, probs = probs, na.rm = na.rm, ...)
   max(the_quantiles) - min(the_quantiles)
@@ -156,12 +150,6 @@ print(a)
 
 
 ## --------------------------------------------------
-my_function(a, 2)
-print(a)
-
-
-## --------------------------------------------------
-a = 3
 my_function(a, 2)
 print(a)
 
@@ -202,7 +190,7 @@ print(a)
 quartic_eq = function(x) 3*x^4 - 10*x^3 - 20*x^2 + 10*x - 5
 class(quartic_eq)
 body(quartic_eq)
-formals(quartic_eq); args(quartic_eq)
+formals(quartic_eq)
 
 
 ## --------------------------------------------------
@@ -212,7 +200,7 @@ optimize(quartic_eq, interval = c(-5, 5))
 
 ## --------------------------------------------------
 n = 5
-log.vec = NA
+log.vec = 0
 for (i in seq_len(n)) {
   log.vec[i] = log(i)
 }
@@ -239,7 +227,7 @@ cat("Exited loop.")
 
 ## --------------------------------------------------
 n = 5
-log.vec = NA
+log.vec = 0
 for (i in 1:n) {
   if (log(i) > 1) {
     cat("I'm outta here. I don't like numbers bigger than 1\n")
@@ -251,34 +239,8 @@ log.vec
 
 
 ## --------------------------------------------------
-n = 5
-log.vec = NULL
-for (i in 1:n) {
-  if (log(i) > 1 & log(i) <= 1.5) {
-    cat("I want to skip iteration",i,"\n")
-    next
-  }
-  log.vec[i] = log(i)
-}
-log.vec
-
-
-## --------------------------------------------------
-n = 5
-log.vec = NULL
-for (i in 1:n) {
-  if (log(i) > 1 & log(i) <= 1.5) {
-    cat("I want to skip iteration",i,"\n")
-    next
-  }
-  log.vec = c(log.vec, log(i) )
-}
-log.vec
-
-
-## --------------------------------------------------
 for (str in c("Tatoosh", "Infimum", "McGrindleCat")) {
-  print(glue::glue("Free (OBO): {str}, one gently used cat."))
+  cat(glue::glue("Free (OBO): {str}, one gently used cat."))
 }
 
 
@@ -292,8 +254,7 @@ for (i in seq_len(4)) {
 
 
 ## --------------------------------------------------
-X = filter(starwars, !is.na(height) & !is.na(mass)) %>% pull(mass) %>% scale
-X = cbind(1, X)
+X = model.matrix(~ scale(mass), data = dplyr::starwars)
 y = filter(starwars, !is.na(height) & !is.na(mass)) %>% pull(height)
 beta = matrix(0, nrow = ncol(X))
 beta_new = matrix(1, nrow = ncol(X))
@@ -358,7 +319,7 @@ collatz(101)
 collatz(837799)
 
 
-## ----eval = TRUE, warning = FALSE, error = TRUE----
+## ----eval = TRUE, error = TRUE---------------------
 library(testthat)
 test_that('invalid args are detected', {
   expect_error(qdiff6("eggplants are purple"))

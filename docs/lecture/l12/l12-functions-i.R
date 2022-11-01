@@ -1,6 +1,6 @@
-## ----child = "setup.Rmd"-------------------
+## ----child = "setup.Rmd"---------------------------
 
-## ----setup, include=FALSE------------------
+## ----setup, include=FALSE--------------------------
 # R options
 options(
   htmltools.dir.version = FALSE, # for blogdown
@@ -76,24 +76,24 @@ knitr::knit_hooks$set(output = function(x, options) {
 
 
 
-## ----links, child="l12/links.md"-----------
+## ----links, child="l12/links.md"-------------------
 
 
 
 
-## ---- include=FALSE------------------------
+## ---- include=FALSE--------------------------------
 library(tidyverse)
 library(rvest)
 library(lubridate)
 theme_set(theme_minimal())
 
 
-## ----start_func1---------------------------
+## ----start_func1-----------------------------------
 library(gapminder)
 glimpse(gapminder)
 
 
-## ------------------------------------------
+## --------------------------------------------------
 ggplot(gapminder, aes(x = year, y = lifeExp, color = continent))  + 
   geom_line(aes(group = country), alpha = .5) + scale_color_brewer(type = 'qual') + 
   geom_boxplot(data = filter(gapminder, year %in% seq(from=1952, to = 2002, by = 20)), 
@@ -101,13 +101,13 @@ ggplot(gapminder, aes(x = year, y = lifeExp, color = continent))  +
                width = 8, outlier.shape = NA, position = 'dodge') 
 
 
-## ------------------------------------------
+## --------------------------------------------------
 min(gapminder$lifeExp)
 max(gapminder$lifeExp)
 range(gapminder$lifeExp)
 
 
-## ------------------------------------------
+## --------------------------------------------------
 max(gapminder$lifeExp) - min(gapminder$lifeExp)
 range(gapminder$lifeExp)[2] - range(gapminder$lifeExp)[1]
 range(gapminder[['lifeExp']])[2] - range(gapminder[['lifeExp']])[1]
@@ -118,35 +118,35 @@ diff(range(gapminder$lifeExp))
 knitr::include_graphics("l12/img/spotify-howtobuildmvp.jpg")
 
 
-## ------------------------------------------
+## --------------------------------------------------
 max_minus_min = function(x){
   max(x) - min(x)
 }
 max_minus_min(gapminder$lifeExp)
 
 
-## ------------------------------------------
+## --------------------------------------------------
 max_minus_min(1:10)
 max_minus_min(runif(1000))
 
 
-## ------------------------------------------
+## --------------------------------------------------
 max_minus_min(gapminder$gdpPercap)
 max_minus_min(gapminder$pop)
 
 
-## ----error = TRUE--------------------------
+## ----error = TRUE----------------------------------
 max_minus_min(gapminder) ## hey sometimes things "just work" on data.frames!
 max_minus_min(gapminder$country) ## factors are kind of like integer vectors, no?
 max_minus_min("eggplants are purple") ## i have no excuse for this one
 
 
-## ------------------------------------------
+## --------------------------------------------------
 max_minus_min(gapminder[c('lifeExp', 'gdpPercap', 'pop')])
 max_minus_min(c(TRUE, TRUE, FALSE, TRUE, TRUE))
 
 
-## ----error = TRUE--------------------------
+## ----error = TRUE----------------------------------
 max_minus_min = function(x) {
   stopifnot(is.numeric(x))
   max(x) - min(x)
@@ -156,12 +156,12 @@ max_minus_min(gapminder$country)
 max_minus_min("eggplants are purple")
 
 
-## ----error = TRUE--------------------------
+## ----error = TRUE----------------------------------
 max_minus_min(gapminder[c('lifeExp', 'gdpPercap', 'pop')])
 max_minus_min(c(TRUE, TRUE, FALSE, TRUE, TRUE))
 
 
-## ----error = TRUE--------------------------
+## ----error = TRUE----------------------------------
 max_minus_min = function(x) {
   if(!is.numeric(x)) {
     stop('I am so sorry, but this function only works for numeric input!\n',
@@ -172,7 +172,7 @@ max_minus_min = function(x) {
 max_minus_min(gapminder)
 
 
-## ------------------------------------------
+## --------------------------------------------------
 work_without_question = function(condition){
   print(str_c("Good capitalistic worker bee ", emo::ji("honey_pot")))
 }
@@ -182,7 +182,7 @@ life_crisis = function(condition){
 }
 
 
-## ------------------------------------------
+## --------------------------------------------------
 life = function(condition) {
   good_things = c("skiing", "cats", "health",
                   "wilderness", "coffee")
@@ -194,55 +194,55 @@ life = function(condition) {
 }
 
 
-## ------------------------------------------
+## --------------------------------------------------
 life(c("cats", "health"))
 life(c("cats", "skiing", "health"))
 
 
-## ----eval=FALSE----------------------------
-## url = "https://www.gov.scot/publications/coronavirus-covid-19-update-first-ministers-speech-23-october/"
-## speech_page = read_html(url)
-
-
-## ----include=FALSE-------------------------
+## ----eval=TRUE-------------------------------------
 url = "https://www.gov.scot/publications/coronavirus-covid-19-update-first-ministers-speech-23-october/"
-speech_page = read_html("l12/data/oct-23.html")
+speech_page = read_html(url)
 
 
-## ------------------------------------------
+## ----include=FALSE, eval=FALSE---------------------
+## url = "https://www.gov.scot/publications/coronavirus-covid-19-update-first-ministers-speech-23-october/"
+## speech_page = read_html("l12/data/oct-23.html")
+
+
+## --------------------------------------------------
 speech_page
 
 
-## ------------------------------------------
+## --------------------------------------------------
 title = speech_page %>%
-  html_node(".article-header__title") %>%
+  html_node("title") %>%
   html_text()
 
-date = speech_page %>%
-  html_node(".content-data__list:nth-child(1) strong") %>%
-  html_text() %>%
-  dmy()
-
-location = speech_page %>%
-  html_node(".content-data__list+ .content-data__list strong") %>%
-  html_text()
-
-abstract = speech_page %>%
-  html_node(".leader--first-para p") %>%
-  html_text()
-
+# date = speech_page %>%
+#   html_node(".content-data__list:nth-child(1) strong") %>%
+#   html_text() %>%
+#   dmy()
+# 
+# location = speech_page %>%
+#   html_node(".content-data__list+ .content-data__list strong") %>%
+#   html_text()
+# 
+# abstract = speech_page %>%
+#   html_node(".leader--first-para p") %>%
+#   html_text()
+# 
 text = speech_page %>%
   html_nodes("#preamble p") %>%
   html_text() %>%
   list()
 
 
-## ------------------------------------------
+## --------------------------------------------------
 oct_23_speech = tibble(
   title    = title,
-  date     = date,
-  location = location,
-  abstract = abstract,
+  # date     = date,
+  # location = location,
+  # abstract = abstract,
   text     = text,
   url      = url
 )
@@ -250,15 +250,15 @@ oct_23_speech = tibble(
 oct_23_speech
 
 
-## ----echo=FALSE, out.width="75%"-----------
+## ----echo=FALSE, out.width="75%"-------------------
 knitr::include_graphics("l12/img/fm-speech-oct-23.png")
 
 
-## ----echo=FALSE, out.width="100%"----------
+## ----echo=FALSE, out.width="100%"------------------
 knitr::include_graphics("l12/img/funct-all-things.png")
 
 
-## ----eval=FALSE----------------------------
+## ----eval=FALSE------------------------------------
 ## scrape_speech =
 ## 
 ## 
@@ -268,7 +268,7 @@ knitr::include_graphics("l12/img/funct-all-things.png")
 ## 
 
 
-## ----eval=FALSE----------------------------
+## ----eval=FALSE------------------------------------
 ## scrape_speech = function(x){
 ## 
 ## 
@@ -278,7 +278,7 @@ knitr::include_graphics("l12/img/funct-all-things.png")
 ## }
 
 
-## ----eval=FALSE----------------------------
+## ----eval=FALSE------------------------------------
 ## scrape_speech = function(url){
 ## 
 ##   # code we developed earlier to scrape info
@@ -287,7 +287,7 @@ knitr::include_graphics("l12/img/funct-all-things.png")
 ## }
 
 
-## ------------------------------------------
+## --------------------------------------------------
 scrape_speech = function(url) {
   
   speech_page = read_html(url)
@@ -321,13 +321,13 @@ scrape_speech = function(url) {
 }
 
 
-## ----eval=FALSE----------------------------
+## ----eval=FALSE------------------------------------
 ## function([inputs separated by commas]){
 ##   # what to do with those inputs
 ## }
 
 
-## ----eval=FALSE----------------------------
+## ----eval=FALSE------------------------------------
 ## scrape_page = function(x){
 ##   # do bunch of stuff with the input...
 ## 
@@ -336,21 +336,96 @@ scrape_speech = function(url) {
 ## }
 
 
-## ------------------------------------------
+## --------------------------------------------------
 add_2 = function(x){
   x + 2
   1000
 }
 
 
-## ------------------------------------------
+## --------------------------------------------------
 add_2(3)
 add_2(10)
 
 
-## ----eval=FALSE----------------------------
+## ----eval=FALSE------------------------------------
 ## # JUST DON'T
 ## mean = function(x){
 ##   x * 3
 ##   }
+
+
+## --------------------------------------------------
+max_minus_min = function(x) {
+  if(!is.numeric(x)) {
+    stop('I am so sorry, but this function only works for numeric input!\n',
+         'You have provided an object of class: ', class(x)[1])
+  }
+  max(x) - min(x)
+}
+
+
+## --------------------------------------------------
+library(gapminder)
+quantile(gapminder$lifeExp)
+quantile(gapminder$lifeExp, probs = 0.5)
+median(gapminder$lifeExp)
+mean(gapminder$lifeExp < median(gapminder$lifeExp))
+
+
+## --------------------------------------------------
+probs=c(0.25,0.75)
+the_quantiles = quantile(x = gapminder$lifeExp, probs = probs)
+max(the_quantiles) - min(the_quantiles)
+the_quantiles[2] - the_quantiles[1]
+
+
+## --------------------------------------------------
+qdiff1 = function(x, probs) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x = x, probs = probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+
+
+## --------------------------------------------------
+qdiff1(gapminder$lifeExp, probs = c(0.25, 0.75))
+IQR(gapminder$lifeExp) # hey, we've reinvented IQR
+qdiff1(gapminder$lifeExp, probs = c(0, 1))
+max_minus_min(gapminder$lifeExp)
+
+
+## --------------------------------------------------
+qdiff2 = function(zeus, hera) {
+  stopifnot(is.numeric(zeus))
+  the_quantiles = quantile(x = zeus, probs = hera)
+  max(the_quantiles) - min(the_quantiles)
+}
+qdiff2(zeus = gapminder$lifeExp, hera = 0:1)
+
+
+## ----eval = FALSE----------------------------------
+## return(max(the_quantiles) - min(the_quantiles))
+
+
+## ----error = TRUE----------------------------------
+qdiff1(gapminder$lifeExp)
+
+
+## --------------------------------------------------
+qdiff3 = function(x, probs = c(0, 1)) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x, probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+
+
+## --------------------------------------------------
+qdiff3(gapminder$lifeExp)
+max_minus_min(gapminder$lifeExp)
+qdiff3(gapminder$lifeExp, c(0.1, 0.9))
+
+
+## ----end_func2-------------------------------------
+qdiff3
 
