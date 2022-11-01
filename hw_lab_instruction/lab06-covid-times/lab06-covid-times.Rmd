@@ -1,5 +1,5 @@
 ---
-title: "Lab 06 - Covid time series - one"
+title: "Lab 06 - Covid time series "
 output: 
   tufte::tufte_html:
     css: ../lab.css
@@ -33,7 +33,7 @@ If anything is missing, commit and push again.
 ## Packages
 
 We'll use the **tidyverse**, as well as (likely) **lubridate**, **pheatmap**, and possibly **reshape2**.
-These packages are already installed for you.
+Install them if you don't already have them.
 You can load them by running the following in your Console:
 
 ```{r eval = TRUE, message = FALSE}

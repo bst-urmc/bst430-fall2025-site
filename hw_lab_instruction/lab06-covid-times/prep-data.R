@@ -1,6 +1,6 @@
 #via https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv
 #
-counties = read_csv("~/Downloads/us-counties.csv")  %>% 
+counties = read_csv("C:/Users/Tanzy/Downloads/us-counties.csv")  %>% 
   filter(date > as.Date("2020-03-01"), state %in% c("Alabama", "Arizona", 'California', 'Florida', 'New York', 'Texas')) 
 
 states = counties %>% 
