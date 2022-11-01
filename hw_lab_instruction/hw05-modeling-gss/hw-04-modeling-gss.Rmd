@@ -1,5 +1,5 @@
 ---
-title: "HW 05 - Modeling the GSS"
+title: "HW 04 - Modeling the GSS"
 output: 
   tufte::tufte_html:
     css: ../hw.css
@@ -39,10 +39,11 @@ We'll use the **tidyverse** package for much of the data wrangling and visualisa
 These packages are already installed for you.
 You can load them by running the following in your Console:
 
-```{r load-packages, message = FALSE, eval = TRUE}
+```{r load-packages, warning = FALSE, message = FALSE, eval = TRUE}
 library(tidyverse)
 library(tidymodels)
-library(dsbox)
+#library(dsbox) #has the gss16 data 
+gss16 = read.table("data/gss16.txt", header=TRUE)
 ```
 
 ## Data
@@ -79,7 +80,7 @@ You can do this in various ways. One option is to use the `str_detect()` functio
 
 ```{r eval=FALSE}
 set.seed(___)
-gss16_split = initial_split(gss16_advfront)
+gss16_split = gss16 %>% initial_split(strata = advfront)
 gss16_train = training(gss16_split)
 gss16_test  = testing(gss16_split)
 ```
@@ -201,3 +202,13 @@ many_fits %>%
 
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
+
+# Rubric 
+
+<!-- 26 points -->
+
+<!-- *  16 points correct and adequately explained answers (8 x 2 pts) -->
+<!-- *  5 points good coding style as defined in class -->
+<!-- *  5 points commit -->
+
+

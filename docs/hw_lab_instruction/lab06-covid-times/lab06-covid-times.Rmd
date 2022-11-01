@@ -118,8 +118,8 @@ Once a team leader for the week pushes their final changes, others should *pull*
 
 # Rubric 
 
-31 points
+26 points
 
 *  16 points correct and adequately explained answers (8 x 2 pts)
-*  10 points 0-2 lint, -.5 for every lint past 3
+*  5 points good coding style as defined in class
 *  5 points commit
