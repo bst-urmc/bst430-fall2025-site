@@ -1,5 +1,5 @@
 ---
-title: "Lab 06 - Covid time series - one"
+title: "Lab 06 - Covid time series - two"
 output: 
   tufte::tufte_html:
     css: ../lab.css
