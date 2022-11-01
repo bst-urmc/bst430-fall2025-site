@@ -78,6 +78,7 @@ knitr::knit_hooks$set(output = function(x, options) {
 
 ## ---- include = FALSE------------------------------
 library(tidyverse)
+library(gapminder)
 
 
 ## --------------------------------------------------

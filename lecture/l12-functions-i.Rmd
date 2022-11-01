@@ -364,6 +364,12 @@ speech_page = read_html("l12/data/oct-23.html")
 speech_page
 ```
 
+
+```{r echo=FALSE, out.width="75%"}
+knitr::include_graphics("l12/img/fm-speech-oct-23.png")
+```
+
+
 ---
 
 ## Extract components of 23 Oct speech
@@ -396,7 +402,6 @@ text = speech_page %>%
 
 ## Put it all in a data frame
 
-.pull-left[
 ```{r}
 oct_23_speech = tibble(
   title    = title,
@@ -409,13 +414,6 @@ oct_23_speech = tibble(
 
 oct_23_speech
 ```
-]
-.pull-right[
-```{r echo=FALSE, out.width="75%"}
-knitr::include_graphics("l12/img/fm-speech-oct-23.png")
-```
-]
-
 
 ---
 

@@ -25,6 +25,7 @@ output:
 
 ```{r, include = FALSE}
 library(tidyverse)
+library(gapminder)
 ```
 
 
@@ -44,7 +45,7 @@ qdiff3 = function(x, probs = c(0, 1)) {
 }
 ```
 
-Here's the [R code in this lecture](l13/l13-functions-ii.R)
+Here's the [R code in this lecture](l12/l13-functions-ii.R)
 
 ---
 class: code70
