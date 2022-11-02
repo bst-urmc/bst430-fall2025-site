@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 14"
 subtitle: "Functions (iii), testing and debugging"
-author: "Andrew McDavid"
+author: "Don Harrington, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-10-13 (updated: `r Sys.Date()`)"
+date: "2021-10-13 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -34,10 +34,10 @@ output:
 
 #  Functions and generics
 
-Have you ever wondered how does R know to display a data.frame specially compared to a list?  (The `typeof` both is `list`, but a `data.frame` has a different class...)
+Have you ever wondered how does R knows to display a data.frame specially compared to a list?  (The `typeof` both is `list`, but a `data.frame` has a different class...)
 Consider:
 1.  When you input an object to the Console and hit "enter", R calls `print(object)`
-```{r}
+```{r warning = FALSE}
 library(tidyverse)
 my_list = list(A = 1:4, B = rnorm(4), C = stringr::fruit[1:4])
 my_list
@@ -473,18 +473,18 @@ debug(<FUNCTION>)
 
 As with `browser()` these cannot be run by knitting a chunk or a document.
 
----
+<!-- --- -->
 
-# Some recent bug-hunting
+<!-- # Some recent bug-hunting -->
 
-*  checkout buggy version of fibroblast (do this before class)
-*  run script with rmarkdown
-*  run error portion
-*  options(error = recover)
-*  guess at solution
-*  browse to github repo
-*  find issue
-*  decide to fix upstream...
+<!-- *  checkout buggy version of fibroblast (do this before class) -->
+<!-- *  run script with rmarkdown -->
+<!-- *  run error portion -->
+<!-- *  options(error = recover) -->
+<!-- *  guess at solution -->
+<!-- *  browse to github repo -->
+<!-- *  find issue -->
+<!-- *  decide to fix upstream... -->
 
 ---
 

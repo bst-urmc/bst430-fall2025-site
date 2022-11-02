@@ -11,6 +11,7 @@ output:
 ```{r include = FALSE}
 knitr::opts_chunk$set(
   eval = FALSE,
+  warning = FALSE,
   out.width = "80%",
   fig.asp = 0.618,
   fig.width = 10,
@@ -39,7 +40,7 @@ We'll use the **tidyverse** package for much of the data wrangling and visualisa
 These packages are already installed for you.
 You can load them by running the following in your Console:
 
-```{r load-packages, warning = FALSE, message = FALSE, eval = TRUE}
+```{r load-packages, message = FALSE, eval = FALSE}
 library(tidyverse)
 library(tidymodels)
 #library(dsbox) #has the gss16 data 

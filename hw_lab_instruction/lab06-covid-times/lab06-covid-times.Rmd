@@ -71,7 +71,7 @@ plt = ggplot(sub_county_long, aes(x = date, y = value, color = stat)) +
 plt
 ```
 
-2.  Repeat your previous plot, zooming in on the previous 2 months.  What are some high-frequency periodic patterns you observe in the reporting of cases?
+2.  Repeat your previous plot, zooming in on the final 2 months of data.  What are some high-frequency periodic patterns you observe in the reporting of cases?
 
 
 3.   Make a plot that helps determine if the phase of the pattern conserved across states, and if it conserved across time (say, restricting attention to just the last 3 months).
