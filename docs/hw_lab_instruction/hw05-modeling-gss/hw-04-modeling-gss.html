@@ -400,8 +400,9 @@ md files. If anything is missing, commit and push again.</p>
 <p>We’ll use the <strong>tidyverse</strong> package for much of the data
 wrangling and visualisation, the <strong>tidymodels</strong> package for
 modeling and inference, and the data lives in the <strong>dsbox</strong>
-package. These packages are already installed for you. You can load them
-by running the following in your Console:</p>
+package. You don’t need the <strong>dsbox</strong> package because the
+data is also in the repo. You can load them by running the following in
+your Console:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#library(dsbox) #has the gss16 data </span></span>
@@ -410,12 +411,11 @@ by running the following in your Console:</p>
 <div id="data" class="section level2">
 <h2>Data</h2>
 <p>The data can be found in the <strong>dsbox</strong> package, and it’s
-called <code>gss16</code>. Since the dataset is distributed with the
-package, we don’t need to load it separately; it becomes available to us
-when we load the package. You can find out more about the dataset by
-inspecting its documentation, which you can access by running
-<code>?gss16</code> in the Console or using the Help menu in RStudio to
-search for <code>gss16</code>. You can also find this information <a href="https://rstudio-education.github.io/dsbox/reference/gss16.html">here</a>.</p>
+called <code>gss16</code>. If you have the dsbox library, you can find
+out more about the dataset by inspecting its documentation, which you
+can access by running <code>?gss16</code> in the Console or using the
+Help menu in RStudio to search for <code>gss16</code>. Anyone/everyone
+can also find this information on the web <a href="https://rstudio-education.github.io/dsbox/reference/gss16.html">here</a>.</p>
 </div>
 </div>
 <div id="exercises" class="section level1">
