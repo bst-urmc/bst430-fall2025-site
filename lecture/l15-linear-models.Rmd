@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 15"
 subtitle: "Linear Models"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-10-28 (updated: `r Sys.Date()`)"
+date: "2021-10-28 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -34,6 +34,8 @@ knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
 
 
 # What is a model?
+
+Here's the [R code in this lecture](l15/l15-linear-models.R)
 
 ---
 
