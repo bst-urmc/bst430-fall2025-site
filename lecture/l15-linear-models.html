@@ -139,7 +139,7 @@ Two paintings very rich in composition, of a beautiful execution, and whose meri
 &lt;img src="l15/img/painting1.png" width="60%" style="display: block; margin: auto;" /&gt;&lt;img src="l15/img/painting2.png" width="60%" style="display: block; margin: auto;" /&gt;&lt;img src="l15/img/painting3.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
-class: code50
+class: code40
 
 
 ```r
@@ -281,7 +281,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 ---
 
-## ... without the measure of uncertainty
+## ... without showing uncertainty
 
 .panelset[
 .panel[.panel-name[Plot]
@@ -410,7 +410,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 &lt;img src="l15-linear-models_files/figure-html/unnamed-chunk-18-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 ]
 .panel[.panel-name[Code]
-.code40[
+.code60[
 
 ```r
 ht_wt_fit = linear_reg() %&gt;%
@@ -445,7 +445,7 @@ ggplot(data = ht_wt_fit_aug) +
 The plot below displays the relationship between height and width of paintings. The only difference from the previous plots is that it uses a smaller alpha value, making the points somewhat transparent. What feature is apparent in this plot that was not (as) apparent in the previous plots? What might be the reason for this feature?
 ]
 
-&lt;img src="l15-linear-models_files/figure-html/height-width-plot-alpha-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l15-linear-models_files/figure-html/height-width-plot-alpha-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -648,7 +648,7 @@ linear_reg() %&gt;%
 ##      3.6214       0.7808
 ```
 
-.large[
+.huge[
 `$$\widehat{height}_{i} = 3.6214 + 0.7808 \times width_{i}$$`
 ]
 
@@ -677,6 +677,30 @@ linear_reg() %&gt;%
 ]
 
 [More classes to tidy](https://broom.tidymodels.org/reference/index.html)
+
+---
+
+## A glance at model summaries
+
+
+```r
+linear_reg() %&gt;%
+  set_engine("lm") %&gt;%
+  fit(Height_in ~ Width_in, data = pp) %&gt;%
+  glance()
+```
+
+```
+## # A tibble: 1 x 12
+##   r.squared adj.r.sq~1 sigma stati~2 p.value    df  logLik    AIC
+##       &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+## 1     0.683      0.683  8.30   6749.       0     1 -11083. 22173.
+## # ... with 4 more variables: BIC &lt;dbl&gt;, deviance &lt;dbl&gt;,
+## #   df.residual &lt;int&gt;, nobs &lt;int&gt;, and abbreviated variable
+## #   names 1: adj.r.squared, 2: statistic
+```
+
+More of this in one week
 
 ---
 
@@ -1026,6 +1050,7 @@ IMO, it's important to have a feel for the underpinnings of base R models, becau
 *  `predict(fit, newdata = ..., type = ...)` get predictions.  If `newdata` is set, it must be a data frame containing the same variable names as `data`. `type = "response"` vs `type = "link"` is important for glm's.
 
 *  `broom::tidy` is still very very useful!
+
 ---
 
 # Acknowledgments

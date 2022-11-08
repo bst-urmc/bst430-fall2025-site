@@ -156,7 +156,7 @@ knitr::include_graphics("l15/img/painting3.png")
 ```
 
 ---
-class: code50
+class: code40
 
 ```{r results="hide"}
 pp %>%
@@ -239,7 +239,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 
 ---
 
-## ... without the measure of uncertainty
+## ... without showing uncertainty
 
 .panelset[
 .panel[.panel-name[Plot]
@@ -369,7 +369,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 ```
 ]
 .panel[.panel-name[Code]
-.code40[
+.code60[
 ```{r height-width-plot-residuals, fig.show="hide", warning=FALSE}
 ht_wt_fit = linear_reg() %>%
   set_engine("lm") %>%
@@ -403,7 +403,7 @@ ggplot(data = ht_wt_fit_aug) +
 The plot below displays the relationship between height and width of paintings. The only difference from the previous plots is that it uses a smaller alpha value, making the points somewhat transparent. What feature is apparent in this plot that was not (as) apparent in the previous plots? What might be the reason for this feature?
 ]
 
-```{r height-width-plot-alpha, warning = FALSE, echo=FALSE, out.width="55%"}
+```{r height-width-plot-alpha, warning = FALSE, echo=FALSE, out.width="60%"}
 ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
   geom_point(alpha = 0.2) +
   labs(
@@ -589,7 +589,7 @@ linear_reg() %>%
 ```{r ref.label="fit-model", echo=FALSE}
 ```
 
-.large[
+.huge[
 $$\widehat{height}_{i} = 3.6214 + 0.7808 \times width_{i}$$
 ]
 
@@ -609,6 +609,19 @@ $$\widehat{height}_{i} = 3.62 + 0.781 \times width_{i}$$
 ]
 
 [More classes to tidy](https://broom.tidymodels.org/reference/index.html)
+
+---
+
+## A glance at model summaries
+
+```{r}
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(Height_in ~ Width_in, data = pp) %>%
+  glance()
+```
+
+More of this in one week
 
 ---
 
@@ -842,6 +855,7 @@ IMO, it's important to have a feel for the underpinnings of base R models, becau
 *  `predict(fit, newdata = ..., type = ...)` get predictions.  If `newdata` is set, it must be a data frame containing the same variable names as `data`. `type = "response"` vs `type = "link"` is important for glm's.
 
 *  `broom::tidy` is still very very useful!
+
 ---
 
 # Acknowledgments
