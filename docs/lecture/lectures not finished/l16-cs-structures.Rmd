@@ -1,0 +1,68 @@
+---
+title: "BST430  Lecture XXX"
+subtitle: "CS Data structures"
+author: "Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-XX-XX (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+  
+```{r child = "setup.Rmd"}
+```
+
+  
+# Overview
+
+*  Computer memory is a linear array of bytes
+*  1-D (vectors) and 2-D Arrays
+*  Pass by reference vs pass by value
+*  Example of pass by reference
+*  
+
+# Linked lists
+
+* Insert node
+* Delete node
+* Traverse
+
+```{r}
+
+make_ll_node = function(data = NULL, parent = NULL){
+  node = new.env()
+  node[['parent']] = parent
+  node[['data']] = data
+  node
+  structure(node, class = 'LinkedList')
+}
+
+make_dll_node = function(data = NULL, parent = NULL, child = NULL ){
+  node = new.env()
+  node[['parent']] = parent
+  node$parent$child = node
+  node[['data']] = data
+  node
+  structure(node, class = "DoublyLinkedList")
+  }
+
+print.LinkedList = function(node){
+  
+}
+
+p = make_dll_node(1)
+c1 = make_dll_node(2, parent = p)
+c2 = make_dll_node(3, parent = c1)
+
+```

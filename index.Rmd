@@ -83,9 +83,10 @@ Due 5pm, Sept 28.
     *   [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned, any groups as you like.
     [Invitation here](https://classroom.github.com/a/6GAvWurq). Due 5pm, Nov 16.
 17.  [Knitr tricks and debugging](lecture/l14-debugging.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=e11a5405-d128-459f-9ef5-af42010fdc8a)
-   * HW 4 assigned.  [instructions](hw_lab_instruction/hw05-modeling-gss/hw-04-modeling-gss.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/rNXgxZex)).  Due 5pm EDT, Nov 18 (but feel free to finish it before the final exam).
+    *  HW 4 assigned.  [instructions](hw_lab_instruction/hw05-modeling-gss/hw-04-modeling-gss.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/rNXgxZex)).  Due 5pm EDT, Nov 18.
     * Work on Lab 6
-<!-- 19.  [Linear models](lecture/l15-linear-models.html) -->
+18.  [Linear models](lecture/l15-linear-models.html)
+    * Work on Lab 6
 <!-- 20.  [Multivariate linear models](lecture/l16-multivariate-lm.html) -->
 <!-- 21.  [Prediction and logistic regression](lecture/l17-prediction-logistic.html) -->
 <!--22.  Resampling and hypothesis testing-->
