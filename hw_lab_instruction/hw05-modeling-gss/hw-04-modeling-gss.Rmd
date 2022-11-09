@@ -80,30 +80,30 @@ You can do this in various ways. One option is to use the `str_detect()` functio
 
 ```{r eval=FALSE}
 set.seed(___)
-gss16_split = gss16 %>% initial_split(strata = advfront)
+gss16_split = gss16_advfront %>% initial_split(strata = advfront)
 gss16_train = training(gss16_split)
 gss16_test  = testing(gss16_split)
 ```
 
 5.  Create a recipe with the following steps for predicting `advfront` from `polviews`, `wrkstat`, and `educ`.
-    Name this recipe `gss16_rec_1`.
-    (We'll create one more recipe later, that's why we're naming this recipe `_1`.) Sample code is provided below.
+    Name this recipe `gss16_rec`.
+  Sample code is provided below.
 
     -   `step_other()` to pool values that occur less than 10% of the time (`threshold = 0.10`) in the `wrkstat` variable into `"Other"`.
 
     -   `step_dummy()` to create dummy variables for `all_nominal()` variables that are predictors, i.e. `all_predictors()`
 
 ```{r eval=FALSE}
-gss16_rec_1 = recipe(___ ~ ___, data = ___) %>%
+gss16_rec = recipe(___ ~ ___, data = ___) %>%
   step_other(wrkstat, threshold = ___, other = "Other") %>%
   step_dummy(all_nominal(), -all_outcomes())
 ```
 
-6.  Specify a logistic regression model using `"glm"` as the engine. Name this specification `gss16_spec`. Sample code is provided below.
+6.  Specify a logistic regression model using `"glm"` as the engine. Name this specification `gss16_spec`. Sample code is provided below. (You don't need to change anything, but you need this piece below.)
 
 ```{r eval=FALSE}
-gss16_spec = ___() %>%
-  set_engine("___")
+gss16_spec = logistic_reg() %>%
+  set_engine("glm")
 ```
 
 7.  Build a workflow that uses the recipe you defined (`gss16_rec`) and the model you specified (`gss16_spec`). Name this workflow `gss16_wflow_1`. Sample code is provided below.
@@ -136,79 +136,16 @@ collect_metrics(___, summarize = FALSE)
 collect_metrics(___)
 ```
 
-9.  Now, try a different, simpler model: predict `advfront` from only `polviews` and `educ`.
-    Specifically,
-
-    -   update the recipe to reflect this simpler model specification (and name it `gss16_rec_2`),
-    -   redefine the workflow with the new recipe (and name this new workflow `gss16_wflow_2`),
-    -   perform cross validation, and
-    -   report the average area under the ROC curve and the accuracy for all cross validation folds `collect_metrics()`.
-
-10. Comment on which model performs better (one including `wrkstat`, model 1, or the one excluding `wrkstat`, model 2) on the training data based on area under the ROC curve.
-
-11. Fit both models to the testing data, plot the ROC curves for the predictions for both models, and calculate the areas under the ROC curve.
-    Does your answer to the previous exercise hold for the testing data as well?
-    Explain your reasoning.
-    Note: If you haven't yet done so, you'll need to first train your workflows on the training data with the following, and then use these fit objects to calculate predictions for the test data.
-
-
-## Extra credit
-
-12. (**Extra credit**) Refit your model and recipe from Ex5-Ex8 using [glmnet](https://parsnip.tidymodels.org/reference/logistic_reg.html).  Select the `penalty` and `mixture` tuning parameters by [cross-validation over the training data](https://www.tidymodels.org/start/tuning/).
-
-13. (**Extra credit**) Generate a plot comparing the test-data ROC from your model in Ex 12, the results from Ex 11.
-
-```{r eval=FALSE}
-gss16_fit_1 = gss16_wflow_1 %>%
-  fit(gss16_train)
-
-gss16_fit_2 = gss16_wflow_2 %>%
-  fit(gss16_train)
-```
-
-🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
-
-## Part ii: (many linear models)
-
-14.  Using `gapminder`, fit a linear model over all countries on `log(pop)` vs (years-1990), so that the intercept reflects the log-population in 1990.  Interpet the slope and intercept in terms of the unlogged variables.
-
-```{r}
-library(gapminder)
-```
-
-15.  Now, completing the code below, and following the example from [lecture 16](https://urmc-bst.github.io/bst430-fall2021-site/lecture/l16-multivariate-lm.html#54), fit this model per country.  In a table, report the top 3 and bottom 3 countries in terms of the population growth rates, and their 95\% confidence intervals.
-
-```{r, error = TRUE}
-fit_pop = function(){
-  ##Fill in this function
-}
-
-many_fits = gapminder %>% 
-  group_by(country) %>%
-  summarize(fit = fit_pop(across()))  %>%
-  ungroup()
-
-filter(many_fits, country == 'India')$fit[[1]]
-filter(many_fits, country == 'Italy')$fit[[1]]
-```
-
-
-```{r, error = TRUE}
-many_fits %>% 
-  rowwise() %>%
-  mutate(tidy_out = list(tidy(___))) %>%
-  unnest(___)
-```
 
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
 
 # Rubric 
 
-<!-- 26 points -->
+34 points
 
-<!-- *  16 points correct and adequately explained answers (8 x 2 pts) -->
-<!-- *  5 points good coding style as defined in class -->
-<!-- *  5 points commit -->
+*  24 points correct and adequately explained answers (8 x 3 pts)
+*  5 points good coding style as defined in class
+*  5 points commit
 
 

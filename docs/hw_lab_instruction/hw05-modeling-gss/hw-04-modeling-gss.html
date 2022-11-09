@@ -472,15 +472,14 @@ specific names to make it easier to follow the rest of the
 instructions.</p></li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(___)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>gss16_split <span class="ot">=</span> gss16 <span class="sc">%&gt;%</span> <span class="fu">initial_split</span>(<span class="at">strata =</span> advfront)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>gss16_split <span class="ot">=</span> gss16_advfront <span class="sc">%&gt;%</span> <span class="fu">initial_split</span>(<span class="at">strata =</span> advfront)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>gss16_train <span class="ot">=</span> <span class="fu">training</span>(gss16_split)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>gss16_test  <span class="ot">=</span> <span class="fu">testing</span>(gss16_split)</span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li><p>Create a recipe with the following steps for predicting
 <code>advfront</code> from <code>polviews</code>, <code>wrkstat</code>,
-and <code>educ</code>. Name this recipe <code>gss16_rec_1</code>. (We’ll
-create one more recipe later, that’s why we’re naming this recipe
-<code>_1</code>.) Sample code is provided below.</p>
+and <code>educ</code>. Name this recipe <code>gss16_rec</code>. Sample
+code is provided below.</p>
 <ul>
 <li><p><code>step_other()</code> to pool values that occur less than 10%
 of the time (<code>threshold = 0.10</code>) in the <code>wrkstat</code>
@@ -490,16 +489,17 @@ variable into <code>&quot;Other&quot;</code>.</p></li>
 i.e. <code>all_predictors()</code></p></li>
 </ul></li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gss16_rec_1 <span class="ot">=</span> <span class="fu">recipe</span>(___ <span class="sc">~</span> ___, <span class="at">data =</span> ___) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gss16_rec <span class="ot">=</span> <span class="fu">recipe</span>(___ <span class="sc">~</span> ___, <span class="at">data =</span> ___) <span class="sc">%&gt;%</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_other</span>(wrkstat, <span class="at">threshold =</span> ___, <span class="at">other =</span> <span class="st">&quot;Other&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal</span>(), <span class="sc">-</span><span class="fu">all_outcomes</span>())</span></code></pre></div>
 <ol start="6" style="list-style-type: decimal">
 <li>Specify a logistic regression model using <code>&quot;glm&quot;</code> as the
 engine. Name this specification <code>gss16_spec</code>. Sample code is
-provided below.</li>
+provided below. (You don’t need to change anything, but you need this
+piece below.)</li>
 </ol>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gss16_spec <span class="ot">=</span> <span class="fu">___</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;___&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gss16_spec <span class="ot">=</span> <span class="fu">logistic_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">&quot;glm&quot;</span>)</span></code></pre></div>
 <ol start="7" style="list-style-type: decimal">
 <li>Build a workflow that uses the recipe you defined
 (<code>gss16_rec</code>) and the model you specified
@@ -532,82 +532,6 @@ all cross validation folds <code>collect_metrics()</code></p></li>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">collect_metrics</span>(___, <span class="at">summarize =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">collect_metrics</span>(___)</span></code></pre></div>
-<ol start="9" style="list-style-type: decimal">
-<li><p>Now, try a different, simpler model: predict
-<code>advfront</code> from only <code>polviews</code> and
-<code>educ</code>. Specifically,</p>
-<ul>
-<li>update the recipe to reflect this simpler model specification (and
-name it <code>gss16_rec_2</code>),</li>
-<li>redefine the workflow with the new recipe (and name this new
-workflow <code>gss16_wflow_2</code>),</li>
-<li>perform cross validation, and</li>
-<li>report the average area under the ROC curve and the accuracy for all
-cross validation folds <code>collect_metrics()</code>.</li>
-</ul></li>
-<li><p>Comment on which model performs better (one including
-<code>wrkstat</code>, model 1, or the one excluding
-<code>wrkstat</code>, model 2) on the training data based on area under
-the ROC curve.</p></li>
-<li><p>Fit both models to the testing data, plot the ROC curves for the
-predictions for both models, and calculate the areas under the ROC
-curve. Does your answer to the previous exercise hold for the testing
-data as well? Explain your reasoning. Note: If you haven’t yet done so,
-you’ll need to first train your workflows on the training data with the
-following, and then use these fit objects to calculate predictions for
-the test data.</p></li>
-</ol>
-</div>
-<div id="extra-credit" class="section level2">
-<h2>Extra credit</h2>
-<ol start="12" style="list-style-type: decimal">
-<li><p>(<strong>Extra credit</strong>) Refit your model and recipe from
-Ex5-Ex8 using <a href="https://parsnip.tidymodels.org/reference/logistic_reg.html">glmnet</a>.
-Select the <code>penalty</code> and <code>mixture</code> tuning
-parameters by <a href="https://www.tidymodels.org/start/tuning/">cross-validation over
-the training data</a>.</p></li>
-<li><p>(<strong>Extra credit</strong>) Generate a plot comparing the
-test-data ROC from your model in Ex 12, the results from Ex 11.</p></li>
-</ol>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gss16_fit_1 <span class="ot">=</span> gss16_wflow_1 <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(gss16_train)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>gss16_fit_2 <span class="ot">=</span> gss16_wflow_2 <span class="sc">%&gt;%</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(gss16_train)</span></code></pre></div>
-<p>🧶 ✅ ⬆️ Knit, <em>commit, and push your changes to GitHub with an
-appropriate commit message. Make sure to commit and push all changed
-files so that your Git pane is cleared up afterwards.</em></p>
-</div>
-<div id="part-ii-many-linear-models" class="section level2">
-<h2>Part ii: (many linear models)</h2>
-<ol start="14" style="list-style-type: decimal">
-<li>Using <code>gapminder</code>, fit a linear model over all countries
-on <code>log(pop)</code> vs (years-1990), so that the intercept reflects
-the log-population in 1990. Interpet the slope and intercept in terms of
-the unlogged variables.</li>
-</ol>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gapminder)</span></code></pre></div>
-<ol start="15" style="list-style-type: decimal">
-<li>Now, completing the code below, and following the example from <a href="https://urmc-bst.github.io/bst430-fall2021-site/lecture/l16-multivariate-lm.html#54">lecture
-16</a>, fit this model per country. In a table, report the top 3 and
-bottom 3 countries in terms of the population growth rates, and their
-95% confidence intervals.</li>
-</ol>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fit_pop <span class="ot">=</span> <span class="cf">function</span>(){</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="do">##Fill in this function</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>many_fits <span class="ot">=</span> gapminder <span class="sc">%&gt;%</span> </span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country) <span class="sc">%&gt;%</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">fit =</span> <span class="fu">fit_pop</span>(<span class="fu">across</span>()))  <span class="sc">%&gt;%</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(many_fits, country <span class="sc">==</span> <span class="st">&#39;India&#39;</span>)<span class="sc">$</span>fit[[<span class="dv">1</span>]]</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(many_fits, country <span class="sc">==</span> <span class="st">&#39;Italy&#39;</span>)<span class="sc">$</span>fit[[<span class="dv">1</span>]]</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>many_fits <span class="sc">%&gt;%</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tidy_out =</span> <span class="fu">list</span>(<span class="fu">tidy</span>(___))) <span class="sc">%&gt;%</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(___)</span></code></pre></div>
 <p>🧶 ✅ ⬆️ Knit, <em>commit, and push your changes to GitHub with an
 appropriate commit message. Make sure to commit and push all changed
 files so that your Git pane is cleared up afterwards and review the md
@@ -617,10 +541,12 @@ your work.</em></p>
 </div>
 <div id="rubric" class="section level1">
 <h1>Rubric</h1>
-<!-- 26 points -->
-<!-- *  16 points correct and adequately explained answers (8 x 2 pts) -->
-<!-- *  5 points good coding style as defined in class -->
-<!-- *  5 points commit -->
+<p>34 points</p>
+<ul>
+<li>24 points correct and adequately explained answers (8 x 3 pts)</li>
+<li>5 points good coding style as defined in class</li>
+<li>5 points commit</li>
+</ul>
 </div>
 
 

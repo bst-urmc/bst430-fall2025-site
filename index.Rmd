@@ -58,37 +58,33 @@ Due 5pm, Sept 28.
     * HW 2 [solutions](hw_lab_instruction/hw02-accidents/hw02.html)
 8.  Effective data visualization [(i)](lecture/03a2-tips-for-effective-dataviz.pdf) [(ii)](lecture/03b-tips-for-effective-dataviz.pdf) [video](https://youtu.be/ZrifrBvFWgg)
     * Turn in lab 3 by tomorrow.
-<!-- 9.  Effective data visualization [video](https://youtu.be/ZrifrBvFWgg) and [slides](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d14-effective-dataviz/u2-d14-effective-dataviz.html#1),  [rstudio.cloud project](https://rstudio.cloud/spaces/162296/project/2929636) and [quiz](https://docs.google.com/forms/d/e/1FAIpQLSdHAZGSFmErFF0FnZNRgbrxOPfcjFAQsjNA2Xlj-SdsOnWyqw/viewform?usp=sf_link). -->
-<!--     * Continue working on lab 4. -->
 9. [Data from files](lecture/l09-data-from-files.html)
 *   Repository for lecture 9 [here](https://classroom.github.com/a/vAS3mGej) will not be graded, but gets you everything you need at once.
     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! At least one new teammate for each person.
     [Invitation here](https://classroom.github.com/a/566Cy7tL). Due 5pm, Oct 12.
     * Lab 4 [solutions](hw_lab_instruction/lab04-laquinta-dos/lab04.html)
-10. Finish vizualization slides
+10. Finish visualization slides
     * [styleguide](lecture/l06-style.html)
 * Finish lab 4.
 11. [Text processing](lecture/l10-text.html)   [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=961dbd5b-ccf6-4fb9-a2ee-af2d012702fe)
     * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/6sqI7bjg)).  Due 5pm EDT, Oct 28.
 12. [Text analysis](lecture/l10-text-ii.html)    [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3482b784-14f4-4ff0-8634-af3201202cb5)
-    *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; take turns and then you won't have so many GitHub problems.
-    [Invitation here](https://classroom.github.com/a/sFi-IjD6). Due 5pm, Oct 25.
+    *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; take turns and then you won't have so many GitHub problems. [Invitation here](https://classroom.github.com/a/sFi-IjD6). Due 5pm, Oct 25.
     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html)
-<!--     *  Discuss lab 5.   -->
-<!-- 13. Finish text processing slides. -->
-13-14. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html)
+13. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html)
     * Finish Lab 5
 15. [Functions i](lecture/l12-functions-i.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=a9d6dc03-9d01-4f87-ad9b-af3c004e8055)
 16. [Functions ii and iteration](lecture/l13-functions-ii.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=7c471b05-4bf6-419c-8b43-af410109b4f7)
-    *   [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned, any groups as you like.
-    [Invitation here](https://classroom.github.com/a/6GAvWurq). Due 5pm, Nov 16.
+    *   [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned, any groups as you like. [Invitation here](https://classroom.github.com/a/6GAvWurq). Due 5pm, Nov 16.
 17.  [Knitr tricks and debugging](lecture/l14-debugging.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=e11a5405-d128-459f-9ef5-af42010fdc8a)
-    *  HW 4 assigned.  [instructions](hw_lab_instruction/hw05-modeling-gss/hw-04-modeling-gss.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/rNXgxZex)).  Due 5pm EDT, Nov 18.
-    * Work on Lab 6
+*  HW 4 assigned (revised to shorten it!!).  [instructions](hw_lab_instruction/hw05-modeling-gss/hw-04-modeling-gss.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/rNXgxZex)).  Due 5pm EDT, Nov 25.
+* Work on Lab 6
 18.  [Linear models](lecture/l15-linear-models.html)
-    * Work on Lab 6
+* Work on Lab 6
+19.   No class 11/10, work on your final exam.
+* Final Exam. Remember I will be looking at the `.md` for results and the `.Rmd` for your code. [instructions](hw_lab_instruction/final-modeling.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/eebbYmkV)).  Due 5pm EDT, Nov 10.
+20.   Multivariate linear models and Prediction
+* Work on Lab 6
+
 <!-- 20.  [Multivariate linear models](lecture/l16-multivariate-lm.html) -->
 <!-- 21.  [Prediction and logistic regression](lecture/l17-prediction-logistic.html) -->
-<!--22.  Resampling and hypothesis testing-->
-<!--      * [HW5](hw_lab_instruction/hw05-modeling-gss/hw-05-modeling-gss.html) due 24 Nov. -->
-<!-- [Lab 07](hw_lab_instruction/lab07-generative-art/lab07-generative-art.html) due 5PM Nov 12.  [Lab 07 notes](lecture/lab07-art-notes.html). -->
