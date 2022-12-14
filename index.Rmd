@@ -71,6 +71,7 @@ Due 5pm, Sept 28.
     * HW 3 [solutions](hw_lab_instruction/hw03-fatal-geography/hw03.html)
 12. [Text analysis](lecture/l10-text-ii.html)    [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3482b784-14f4-4ff0-8634-af3201202cb5)
     *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; take turns and then you won't have so many GitHub problems. [Invitation here](https://classroom.github.com/a/sFi-IjD6). Due 5pm, Oct 25.
+    * Lab 5 [solutions](hw_lab_instruction/lab05-sadplots/lab05.html)
     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html)
 13. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html)
     * Finish Lab 5
