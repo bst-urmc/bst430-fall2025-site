@@ -81,7 +81,7 @@ Due 5pm, Sept 28.
     * Lab 6 [solutions](hw_lab_instruction/lab06-covid-times/lab06.html)
 17.  [Knitr tricks and debugging](lecture/l14-debugging.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=e11a5405-d128-459f-9ef5-af42010fdc8a)
 *  HW 4 assigned (revised to shorten it!!).  [instructions](hw_lab_instruction/hw05-modeling-gss/hw-04-modeling-gss.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/rNXgxZex)).  Due 5pm EDT, Nov 25.
-    * HW 4 [solutions](hw_lab_instruction/hw05-modeling-gss/hw04.html)
+    * HW 4 [solutions](hw_lab_instruction/hw05-modeling-gss/hw-04.html)
 * Work on Lab 6
 18.  [Linear models](lecture/l15-linear-models.html)
 * Work on Lab 6
