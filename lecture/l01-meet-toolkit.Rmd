@@ -401,7 +401,7 @@ Can you answer these questions?
 ---
 
 ## Before next class
-By next Thursday Sep 8:
+By next Wednesday Sep 4:
 - Read r4ds chapters 3.1-3.5, r4ds chapter 4
 - Install/update RStudio and R or access rstudio cloud
 - Make sure you can access the github classroom (Blackboard)

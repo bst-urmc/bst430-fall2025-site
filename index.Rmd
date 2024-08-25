@@ -1,6 +1,6 @@
 ---
 title: "BST430 - Introduction to Statistical Computing"
-description: "University of Rochester, Fall 2022"
+description: "University of Rochester, Fall 2024"
 site: distill::distill_website
 ---
 
@@ -17,13 +17,13 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # Administrivia
 
-TTh 11:00-12:40, SRB 1404 (but sometimes 1402)
+TTh 11:00-12:40, SRB 1402
 <br>
 **Instructor**: Tanzy Love
 <br>
-**Website**: https://bst-urmc.github.io/bst430-fall2022-site/
+**Website**: https://bst-urmc.github.io/bst430-fall2024-site/
 <br>
-[**Syllabus**](static/syllabus430-2022.pdf)
+[**Syllabus**](static/syllabus430-2024.pdf)
 
 # Content
 
