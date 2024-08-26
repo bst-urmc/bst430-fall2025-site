@@ -30,13 +30,13 @@ TTh 11:00-12:40, SRB 1402
 0. [Introduction](lecture/l00-intro.html)
 1. [Meet the toolkit](lecture/l01-meet-toolkit.html)
     * Invites to GitHub class room are on [blackboard](https://learn.rochester.edu)
-    * Req readings: r4ds 3.1-3.5, 4. 
+    * Req readings: [r4ds](https://r4ds.hadley.nz/) 3.1-3.5, 4. 
     * Optional readings: https://happygitwithr.com/
 * Resources: 
     1. [install GIT](https://happygitwithr.com/install-git.html)
     2. [install *base* R](https://cran.r-project.org/)
     3. [install RStudio](https://www.rstudio.com/products/rstudio/download/#download)
-    <!-- * Lab 0 [instructions](hw_lab_instruction/lab00-hello-class.html) and repo (accept GH classroom invite in Blackboard). -->
+    * Lab 0 [instructions](hw_lab_instruction/lab00-hello-class.html) and repo (accept GH classroom invite in Blackboard).
 <!-- 2. [ggplot(i)](lecture/l02-ggplot2-i.html) -->
 <!--     * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/Zqu2rV6v)). Due 5pm, Sept 16. -->
 <!--     * Lab 1 [solutions](hw_lab_instruction/lab01-hello-r/lab01-hello-r.html) -->
