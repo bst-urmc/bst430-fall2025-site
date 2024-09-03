@@ -38,7 +38,7 @@ MW 11:00-12:40, SRB 1402
     3. [install RStudio](https://www.rstudio.com/products/rstudio/download/#download)
     * Lab 0 [instructions](hw_lab_instruction/lab00-hello-class.html) and repo (accept GH classroom invite in Blackboard).
 2. [ggplot(i)](lecture/l02-ggplot2-i.html)
-    * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/UEppUR2E)). Due 5pm, Sept 11.
+    * Lab 1 [instructions](hw_lab_instruction/lab01-hello-r.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/VJwscJG1)). Due 5pm, Sept 11.
 <!--     * Lab 1 [solutions](hw_lab_instruction/lab01-hello-r/lab01-hello-r.html) -->
 <!-- 3.  [dplyr(i)](lecture/l03-transform-dplyr-i.html) -->
 <!--     * Continue working on Lab 1 -->
