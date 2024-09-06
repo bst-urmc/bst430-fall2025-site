@@ -1,0 +1,16 @@
+---
+title: "Available Cheatsheets"
+description: |
+  All suggested cheatsheets in one place
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+[You can always search at the source](https://www.rstudio.com/resources/cheatsheets/)
+
+
+# My suggestions, in order of when we discussed these topics
+
+- [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf).

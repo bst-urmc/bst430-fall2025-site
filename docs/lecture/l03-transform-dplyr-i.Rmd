@@ -67,8 +67,9 @@ dev.off <- function(){
 
 ## Announcements
 
-- Revision: lab 1 due Friday 5pm.
-- Josh and Christian will have their office hour tomorrow 9-10, in the TA office.
+- HW1 assigned, due next Monday 5pm.
+- Reminder: lab 1 due Wednesday 5pm. 
+- TJ will have office hours Friday, in the TA office.
 - Send me an email if you need help.
 
 ---
@@ -165,11 +166,10 @@ library(nycflights13)
 
 This data frame contains all `r format(nrow(nycflights13::flights), big.mark = ",")` flights that departed from New York City in 2013. The data comes from the US [Bureau of Transportation Statistics](http://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0), and is documented in `?flights`.
 
+---
+# Want to follow along?
+
 Here's the [R code in this lecture](l03/l03-transform-dplyr-i.R)
-
-<!-- --- -->
-
-<!-- # Want to follow along? -->
 
 <!-- Go to RStudio Cloud and make a copy of "Lecture 3 - dplyr" -->
 

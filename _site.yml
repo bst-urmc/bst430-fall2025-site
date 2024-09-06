@@ -10,7 +10,8 @@ navbar:
     # - text: "About"
     #   href: about.html
     - text: "Cheatsheets"
-      href: https://www.rstudio.com/resources/cheatsheets/
+      href: cheatsheetlist.html
+      # href: https://www.rstudio.com/resources/cheatsheets/
     - text: "Course style guide"
       href: https://urmc-bst.github.io/style/index.html
 output: distill::distill_article
