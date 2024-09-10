@@ -13,4 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # My suggestions, in order of when we discussed these topics
 
-- [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf).
+- [Visualization : ggplot](https://rstudio.github.io/cheatsheets/data-visualization.pdf).
+- [Data Transformation : dplyr](https://rstudio.github.io/cheatsheets/data-transformation.pdf).
+<!-- - [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf). -->
