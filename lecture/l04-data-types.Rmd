@@ -807,7 +807,7 @@ typeof(df$y)
 How many respondents have below average number of cats?
 ]
 
-```{r}
+```{r, warning=FALSE}
 mean_cats = cat_lovers %>%
   summarise(mean_cats = mean(number_of_cats))
 
@@ -854,6 +854,27 @@ cat_lovers %>%
 mean_cats
 class(mean_cats)
 ```
+
+---
+
+## How does tidyverse *want* you to do that code?
+
+```{r}
+ cat_lovers %>%
+     filter(number_of_cats < mean(number_of_cats)) %>%
+     nrow()
+```
+
+This will work if the number that you need to calculate comes from **the same** dataset as the one you are filtering
+
+Note: since 2022, someone has added a warning that displays when you run the code as it appears in the notes.
+I don't think it's useful for identifying the problem here, but at least it might make you look at the results and see if they are correct.
+
+> Warning: Using one column matrices in `filter()` was deprecated in dplyr 1.1.0.
+> ℹ Please use one dimensional logical vectors instead.
+<!-- > This warning is displayed once every 8 hours. -->
+<!-- > Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated. -->
+
 
 ---
 
@@ -913,14 +934,16 @@ ggplot(cat_lovers, mapping = aes(x = handedness)) +
 
 ---
 
-## Come for the functionality
+## .pull-left[
+Come for the functionality
+]
 
-.pull-left[
-... stay for the logo
-]
 .pull-right[
-![](l04/img/05b/hex-forcats.png)
+<img src = "l04/img/forcats.png" width = "30%">
+<!-- ![](l04/img/forcats.png) -->
 ]
+
+... stay for the logo
 
 - R uses factors to handle categorical variables, variables that have a fixed and known set of possible values. For historical reasons many base R functions automatically convert character vectors to factors, and have been heartily cursed by generations of R programmers for this default behavior.
 
