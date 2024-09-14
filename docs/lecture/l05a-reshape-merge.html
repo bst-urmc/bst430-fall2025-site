@@ -6,8 +6,8 @@
     <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/panelset/panelset.css" rel="stylesheet" />
     <script src="libs/panelset/panelset.js"></script>
     <link rel="stylesheet" href="css/lexis.css" type="text/css" />
@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-09-06 (updated: 2022-09-27 by TL)
+### 2021-09-06 (updated: 2024-09-13 by TL)
 ]
 
 ---
@@ -69,10 +69,6 @@ Here's the [customers](l05a/data/sales/customers.csv),
  [dates](l05a/data/scientists/dates.csv),
  [works](l05a/data/scientists/works.csv),
  [enrollment](l05a/data/students/enrolment.csv),
- [survey](l05a/data/students/survey.csv),
- 
- [works](l05a/data/scientists/works.csv),
- [enrollment](l05a/data/students/enrolment.csv),
  [survey](l05a/data/students/survey.csv)
 
 
@@ -84,7 +80,7 @@ Here's the [customers](l05a/data/sales/customers.csv),
 .code50[
 
 ```
-## # A tibble: 2 x 4
+## # A tibble: 2 × 4
 ##   cust_id item_1 item_2       item_3
 ##     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt; 
 ## 1       1 bread  milk         banana
@@ -97,7 +93,7 @@ Here's the [customers](l05a/data/sales/customers.csv),
 ### .pink[We want...]
 
 ```
-## # A tibble: 6 x 3
+## # A tibble: 6 × 3
 ##   cust_id item_no item        
 ##     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;       
 ## 1       1 item_1  bread       
@@ -154,7 +150,7 @@ class: middle
 more columns
 
 ```
-## # A tibble: 2 x 4
+## # A tibble: 2 × 4
 ##   cust_id item_1 item_2       item_3
 ##     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt; 
 ## 1       1 bread  milk         banana
@@ -168,7 +164,7 @@ more columns
 more rows
 
 ```
-## # A tibble: 6 x 3
+## # A tibble: 6 × 3
 ##   cust_id item_no item        
 ##     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;       
 ## 1       1 item_1  bread       
@@ -189,7 +185,7 @@ more rows
 ]
 .pull-right[
 
-```r
+``` r
 pivot_longer(
 * data,
   cols, 
@@ -209,7 +205,7 @@ pivot_longer(
 ]
 .pull-right[
 
-```r
+``` r
 pivot_longer(
   data, 
 * cols,
@@ -230,7 +226,7 @@ pivot_longer(
 ]
 .pull-right[
 
-```r
+``` r
 pivot_longer(
   data, 
   cols, 
@@ -252,7 +248,7 @@ pivot_longer(
 ]
 .pull-right[
 
-```r
+``` r
 pivot_longer(
   data, 
   cols, 
@@ -267,7 +263,7 @@ pivot_longer(
 ## Customers `\(\rightarrow\)` purchases
 
 
-```r
+``` r
 purchases = customers %&gt;%
 * pivot_longer(
 *   cols = item_1:item_3,  # variables item_1 to item_3
@@ -279,7 +275,7 @@ purchases
 ```
 
 ```
-## # A tibble: 6 x 3
+## # A tibble: 6 × 3
 ##   cust_id item_no item        
 ##     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;       
 ## 1       1 item_1  bread       
@@ -301,12 +297,12 @@ Most likely, because the next step of your analysis needs it
 
 .pull-left[
 
-```r
+``` r
 prices
 ```
 
 ```
-## # A tibble: 5 x 2
+## # A tibble: 5 × 2
 ##   item         price
 ##   &lt;chr&gt;        &lt;dbl&gt;
 ## 1 avocado       0.5 
@@ -318,13 +314,13 @@ prices
 ]
 .pull-right[
 
-```r
+``` r
 purchases %&gt;%
 * left_join(prices)
 ```
 
 ```
-## # A tibble: 6 x 4
+## # A tibble: 6 × 4
 ##   cust_id item_no item         price
 ##     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;        &lt;dbl&gt;
 ## 1       1 item_1  bread         1   
@@ -349,7 +345,7 @@ purchases %&gt;%
 ]
 .pull-right-wide[
 
-```r
+``` r
 purchases %&gt;%
 * pivot_wider(
 *   names_from = item_no,
@@ -358,7 +354,7 @@ purchases %&gt;%
 ```
 
 ```
-## # A tibble: 2 x 4
+## # A tibble: 2 × 4
 ##   cust_id item_1 item_2       item_3
 ##     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt; 
 ## 1       1 bread  milk         banana
@@ -387,22 +383,22 @@ Source: [FiveThirtyEight](https://projects.fivethirtyeight.com/biden-approval-ra
 
 
 
-```r
+``` r
 biden
 ```
 
 ```
-## # A tibble: 835 x 4
+## # A tibble: 835 × 4
 ##   subgroup date       approval disapproval
 ##   &lt;chr&gt;    &lt;date&gt;        &lt;dbl&gt;       &lt;dbl&gt;
 ## 1 Adults   2021-01-22     49.5        30.3
 ## 2 Adults   2021-01-21     53.6        32.1
 ## 3 Adults   2021-01-21     46.3        27.6
 ## 4 Adults   2021-01-23     50.5        31.3
-## # ... with 831 more rows
+## # ℹ 831 more rows
 ```
 
-```r
+``` r
 summary(biden)
 ```
 
@@ -446,7 +442,7 @@ summary(biden)
 ## Pivot
 
 
-```r
+``` r
 biden_longer = biden %&gt;%
   pivot_longer(
     cols = c(approval, disapproval),
@@ -458,14 +454,14 @@ biden_longer
 ```
 
 ```
-## # A tibble: 1,670 x 4
+## # A tibble: 1,670 × 4
 ##   subgroup date       rating_type rating_value
 ##   &lt;chr&gt;    &lt;date&gt;     &lt;chr&gt;              &lt;dbl&gt;
 ## 1 Adults   2021-01-22 approval            49.5
 ## 2 Adults   2021-01-22 disapproval         30.3
 ## 3 Adults   2021-01-21 approval            53.6
 ## 4 Adults   2021-01-21 disapproval         32.1
-## # ... with 1,666 more rows
+## # ℹ 1,666 more rows
 ```
 
 ---
@@ -473,7 +469,7 @@ biden_longer
 ## Plot
 
 
-```r
+``` r
 ggplot(biden_longer, 
        aes(x = date, y = rating_value, color = rating_type, group = rating_type)) +
   geom_line() +
@@ -488,7 +484,7 @@ ggplot(biden_longer,
 
 .panel[.panel-name[Code]
 
-```r
+``` r
 ggplot(biden_longer, 
        aes(x = date, y = rating_value, 
            color = rating_type, group = rating_type)) +
@@ -517,7 +513,7 @@ ggplot(biden_longer,
 
 .panel[.panel-name[Code]
 
-```r
+``` r
 ggplot(biden_longer, 
        aes(x = date, y = rating_value, 
            color = rating_type, group = rating_type)) +
@@ -548,31 +544,31 @@ class: font120, code50
 
 1. Suppose you have data (available with `library(tidyr)`) on TB incidence as follows:
 
-```r
+``` r
 table2
 ```
 
 ```
-## # A tibble: 12 x 4
+## # A tibble: 12 × 4
 ##   country      year type          count
-##   &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;         &lt;int&gt;
+##   &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;
 ## 1 Afghanistan  1999 cases           745
 ## 2 Afghanistan  1999 population 19987071
 ## 3 Afghanistan  2000 cases          2666
 ## 4 Afghanistan  2000 population 20595360
-## # ... with 8 more rows
+## # ℹ 8 more rows
 ```
 Reshape this so that for each year and country, cases and population appear in separate columns.
 2. Consider this table containing cases by year:
 
-```r
+``` r
 table4a
 ```
 
 ```
-## # A tibble: 3 x 3
+## # A tibble: 3 × 3
 ##   country     `1999` `2000`
-## * &lt;chr&gt;        &lt;int&gt;  &lt;int&gt;
+##   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;
 ## 1 Afghanistan    745   2666
 ## 2 Brazil       37737  80488
 ## 3 China       212258 213766
@@ -596,12 +592,12 @@ Reshape this so that you can plot the year vs the case count with ggplot.
 
 .pull-left[
 
-```r
+``` r
 sales
 ```
 
 ```
-## # A tibble: 16 x 3
+## # A tibble: 16 × 3
 ##    quarter  year sales
 ##    &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
 ##  1 Q1       2000 66013
@@ -616,17 +612,17 @@ sales
 ## 10 Q2         NA 41668
 ## 11 Q3         NA 30144
 ## 12 Q4         NA 52897
-## # ... with 4 more rows
+## # ℹ 4 more rows
 ```
 ]
 .pull-right[
 
-```r
+``` r
 sales %&gt;% fill(year)
 ```
 
 ```
-## # A tibble: 16 x 3
+## # A tibble: 16 × 3
 ##    quarter  year sales
 ##    &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
 ##  1 Q1       2000 66013
@@ -641,7 +637,7 @@ sales %&gt;% fill(year)
 ## 10 Q2       2002 41668
 ## 11 Q3       2002 30144
 ## 12 Q4       2002 52897
-## # ... with 4 more rows
+## # ℹ 4 more rows
 ```
 ]
 
@@ -652,12 +648,12 @@ sales %&gt;% fill(year)
 
 .pull-left[
 
-```r
+``` r
 df
 ```
 
 ```
-## # A tibble: 3 x 3
+## # A tibble: 3 × 3
 ##   group item_id value
 ##   &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;
 ## 1     1       1     1
@@ -667,12 +663,12 @@ df
 ]
 .pull-right[
 
-```r
+``` r
 df %&gt;% complete(group,item_id)
 ```
 
 ```
-## # A tibble: 4 x 3
+## # A tibble: 4 × 3
 ##   group item_id value
 ##   &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;
 ## 1     1       1     1
@@ -689,12 +685,12 @@ df %&gt;% complete(group,item_id)
 
 .pull-left[
 
-```r
+``` r
 df
 ```
 
 ```
-## # A tibble: 3 x 3
+## # A tibble: 3 × 3
 ##       x y     z    
 ##   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;
 ## 1     1 a     1    
@@ -704,12 +700,12 @@ df
 ]
 .pull-right[
 
-```r
+``` r
 separate_rows(df, y, z, convert = TRUE)
 ```
 
 ```
-## # A tibble: 6 x 3
+## # A tibble: 6 × 3
 ##       x y         z
 ##   &lt;int&gt; &lt;chr&gt; &lt;int&gt;
 ## 1     1 a         1
@@ -728,12 +724,12 @@ class: code70
 
 .pull-left[
 
-```r
+``` r
 df
 ```
 
 ```
-## # A tibble: 3 x 3
+## # A tibble: 3 × 3
 ##       x y     z    
 ##   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;
 ## 1     1 a     1    
@@ -744,17 +740,17 @@ df
 
 .pull-right[
 
-```r
+``` r
 separate(df, y, c('y1', 'y2', 'y3'))
 ```
 
 ```
-## Warning: Expected 3 pieces. Missing pieces filled with `NA` in 2
-## rows [1, 3].
+## Warning: Expected 3 pieces. Missing pieces filled with `NA` in 2 rows [1,
+## 3].
 ```
 
 ```
-## # A tibble: 3 x 5
+## # A tibble: 3 × 5
 ##       x y1    y2    y3    z    
 ##   &lt;int&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
 ## 1     1 a     &lt;NA&gt;  &lt;NA&gt;  1    
@@ -816,12 +812,12 @@ Source: [Discover Magazine](https://www.discovermagazine.com/the-sciences/meet-1
 
 .panel[.panel-name[professions]
 
-```r
+``` r
 professions
 ```
 
 ```
-## # A tibble: 10 x 2
+## # A tibble: 10 × 2
 ##    name               profession                        
 ##    &lt;chr&gt;              &lt;chr&gt;                             
 ##  1 Ada Lovelace       Mathematician                     
@@ -839,12 +835,12 @@ professions
 
 .panel[.panel-name[dates]
 
-```r
+``` r
 dates
 ```
 
 ```
-## # A tibble: 8 x 3
+## # A tibble: 8 × 3
 ##   name               birth_year death_year
 ##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;
 ## 1 Janaki Ammal             1897       1984
@@ -860,23 +856,23 @@ dates
 
 .panel[.panel-name[works]
 
-```r
+``` r
 works
 ```
 
 ```
-## # A tibble: 9 x 2
+## # A tibble: 9 × 2
 ##   name               known_for                                   
 ##   &lt;chr&gt;              &lt;chr&gt;                                       
 ## 1 Ada Lovelace       first computer algorithm                    
-## 2 Marie Curie        theory of radioactivity,  discovery of elem~
+## 2 Marie Curie        theory of radioactivity,  discovery of elem…
 ## 3 Janaki Ammal       hybrid species, biodiversity protection     
-## 4 Chien-Shiung Wu    confim and refine theory of radioactive bet~
-## 5 Katherine Johnson  calculations of orbital mechanics critical ~
+## 4 Chien-Shiung Wu    confim and refine theory of radioactive bet…
+## 5 Katherine Johnson  calculations of orbital mechanics critical …
 ## 6 Vera Rubin         existence of dark matter                    
-## 7 Gladys West        mathematical modeling of the shape of the E~
-## 8 Flossie Wong-Staal first scientist to clone HIV and create a m~
-## 9 Jennifer Doudna    one of the primary developers of CRISPR, a ~
+## 7 Gladys West        mathematical modeling of the shape of the E…
+## 8 Flossie Wong-Staal first scientist to clone HIV and create a m…
+## 9 Jennifer Doudna    one of the primary developers of CRISPR, a …
 ```
 ]
 
@@ -888,19 +884,19 @@ works
 
 
 ```
-## # A tibble: 10 x 5
+## # A tibble: 10 × 5
 ##    name               profession  birth_year death_year known_for
 ##    &lt;chr&gt;              &lt;chr&gt;            &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;    
-##  1 Ada Lovelace       Mathematic~         NA         NA first co~
-##  2 Marie Curie        Physicist ~         NA         NA theory o~
-##  3 Janaki Ammal       Botanist          1897       1984 hybrid s~
-##  4 Chien-Shiung Wu    Physicist         1912       1997 confim a~
-##  5 Katherine Johnson  Mathematic~       1918       2020 calculat~
+##  1 Ada Lovelace       Mathematic…         NA         NA first co…
+##  2 Marie Curie        Physicist …         NA         NA theory o…
+##  3 Janaki Ammal       Botanist          1897       1984 hybrid s…
+##  4 Chien-Shiung Wu    Physicist         1912       1997 confim a…
+##  5 Katherine Johnson  Mathematic…       1918       2020 calculat…
 ##  6 Rosalind Franklin  Chemist           1920       1958 &lt;NA&gt;     
-##  7 Vera Rubin         Astronomer        1928       2016 existenc~
-##  8 Gladys West        Mathematic~       1930         NA mathemat~
-##  9 Flossie Wong-Staal Virologist~       1947         NA first sc~
-## 10 Jennifer Doudna    Biochemist        1964         NA one of t~
+##  7 Vera Rubin         Astronomer        1928       2016 existenc…
+##  8 Gladys West        Mathematic…       1930         NA mathemat…
+##  9 Flossie Wong-Staal Virologist…       1947         NA first sc…
+## 10 Jennifer Doudna    Biochemist        1964         NA one of t…
 ```
 
 ---
@@ -909,7 +905,7 @@ works
 
 .pull-left[
 
-```r
+``` r
 names(professions)
 ```
 
@@ -917,7 +913,7 @@ names(professions)
 ## [1] "name"       "profession"
 ```
 
-```r
+``` r
 names(dates)
 ```
 
@@ -925,7 +921,7 @@ names(dates)
 ## [1] "name"       "birth_year" "death_year"
 ```
 
-```r
+``` r
 names(works)
 ```
 
@@ -935,7 +931,7 @@ names(works)
 ]
 .pull-right[
 
-```r
+``` r
 nrow(professions)
 ```
 
@@ -943,7 +939,7 @@ nrow(professions)
 ## [1] 10
 ```
 
-```r
+``` r
 nrow(dates)
 ```
 
@@ -951,7 +947,7 @@ nrow(dates)
 ## [1] 8
 ```
 
-```r
+``` r
 nrow(works)
 ```
 
@@ -971,7 +967,7 @@ class: middle
 ## Joining data frames
 
 
-```r
+``` r
 something_join(x, y)
 ```
 
@@ -993,12 +989,12 @@ For the next few slides...
 .pull-left[
 
 
-```r
+``` r
 x
 ```
 
 ```
-## # A tibble: 3 x 2
+## # A tibble: 3 × 2
 ##      id value_x
 ##   &lt;dbl&gt; &lt;chr&gt;  
 ## 1     1 x1     
@@ -1009,12 +1005,12 @@ x
 .pull-right[
 
 
-```r
+``` r
 y
 ```
 
 ```
-## # A tibble: 3 x 2
+## # A tibble: 3 × 2
 ##      id value_y
 ##   &lt;dbl&gt; &lt;chr&gt;  
 ## 1     1 y1     
@@ -1032,12 +1028,12 @@ y
 ]
 .pull-right[
 
-```r
+``` r
 left_join(x, y)
 ```
 
 ```
-## # A tibble: 3 x 3
+## # A tibble: 3 × 3
 ##      id value_x value_y
 ##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
 ## 1     1 x1      y1     
@@ -1051,13 +1047,13 @@ left_join(x, y)
 ## `left_join()`
 
 
-```r
+``` r
 professions %&gt;%
 * left_join(dates)
 ```
 
 ```
-## # A tibble: 10 x 4
+## # A tibble: 10 × 4
 ##    name               profession            birth_year death_year
 ##    &lt;chr&gt;              &lt;chr&gt;                      &lt;dbl&gt;      &lt;dbl&gt;
 ##  1 Ada Lovelace       Mathematician                 NA         NA
@@ -1068,7 +1064,7 @@ professions %&gt;%
 ##  6 Rosalind Franklin  Chemist                     1920       1958
 ##  7 Vera Rubin         Astronomer                  1928       2016
 ##  8 Gladys West        Mathematician               1930         NA
-##  9 Flossie Wong-Staal Virologist and Molec~       1947         NA
+##  9 Flossie Wong-Staal Virologist and Molec…       1947         NA
 ## 10 Jennifer Doudna    Biochemist                  1964         NA
 ```
 
@@ -1081,12 +1077,12 @@ professions %&gt;%
 ]
 .pull-right[
 
-```r
+``` r
 right_join(x, y)
 ```
 
 ```
-## # A tibble: 3 x 3
+## # A tibble: 3 × 3
 ##      id value_x value_y
 ##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
 ## 1     1 x1      y1     
@@ -1101,13 +1097,13 @@ right_join(x, y)
 
 
 
-```r
+``` r
 professions %&gt;%
 * right_join(dates)
 ```
 
 ```
-## # A tibble: 8 x 4
+## # A tibble: 8 × 4
 ##   name               profession             birth_year death_year
 ##   &lt;chr&gt;              &lt;chr&gt;                       &lt;dbl&gt;      &lt;dbl&gt;
 ## 1 Janaki Ammal       Botanist                     1897       1984
@@ -1116,7 +1112,7 @@ professions %&gt;%
 ## 4 Rosalind Franklin  Chemist                      1920       1958
 ## 5 Vera Rubin         Astronomer                   1928       2016
 ## 6 Gladys West        Mathematician                1930         NA
-## 7 Flossie Wong-Staal Virologist and Molecu~       1947         NA
+## 7 Flossie Wong-Staal Virologist and Molecu…       1947         NA
 ## 8 Jennifer Doudna    Biochemist                   1964         NA
 ```
 
@@ -1129,12 +1125,12 @@ professions %&gt;%
 ]
 .pull-right[
 
-```r
+``` r
 full_join(x, y)
 ```
 
 ```
-## # A tibble: 4 x 3
+## # A tibble: 4 × 3
 ##      id value_x value_y
 ##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
 ## 1     1 x1      y1     
@@ -1149,25 +1145,25 @@ full_join(x, y)
 ## `full_join()`
 
 
-```r
+``` r
 dates %&gt;%
 * full_join(works)
 ```
 
 ```
-## # A tibble: 10 x 4
+## # A tibble: 10 × 4
 ##    name               birth_year death_year known_for            
 ##    &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;                
-##  1 Janaki Ammal             1897       1984 hybrid species, biod~
-##  2 Chien-Shiung Wu          1912       1997 confim and refine th~
-##  3 Katherine Johnson        1918       2020 calculations of orbi~
+##  1 Janaki Ammal             1897       1984 hybrid species, biod…
+##  2 Chien-Shiung Wu          1912       1997 confim and refine th…
+##  3 Katherine Johnson        1918       2020 calculations of orbi…
 ##  4 Rosalind Franklin        1920       1958 &lt;NA&gt;                 
-##  5 Vera Rubin               1928       2016 existence of dark ma~
-##  6 Gladys West              1930         NA mathematical modelin~
-##  7 Flossie Wong-Staal       1947         NA first scientist to c~
-##  8 Jennifer Doudna          1964         NA one of the primary d~
-##  9 Ada Lovelace               NA         NA first computer algor~
-## 10 Marie Curie                NA         NA theory of radioactiv~
+##  5 Vera Rubin               1928       2016 existence of dark ma…
+##  6 Gladys West              1930         NA mathematical modelin…
+##  7 Flossie Wong-Staal       1947         NA first scientist to c…
+##  8 Jennifer Doudna          1964         NA one of the primary d…
+##  9 Ada Lovelace               NA         NA first computer algor…
+## 10 Marie Curie                NA         NA theory of radioactiv…
 ```
 
 ---
@@ -1179,12 +1175,12 @@ dates %&gt;%
 ]
 .pull-right[
 
-```r
+``` r
 inner_join(x, y)
 ```
 
 ```
-## # A tibble: 2 x 3
+## # A tibble: 2 × 3
 ##      id value_x value_y
 ##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
 ## 1     1 x1      y1     
@@ -1197,22 +1193,22 @@ inner_join(x, y)
 ## `inner_join()`
 
 
-```r
+``` r
 dates %&gt;%
 * inner_join(works)
 ```
 
 ```
-## # A tibble: 7 x 4
+## # A tibble: 7 × 4
 ##   name               birth_year death_year known_for             
 ##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;                 
-## 1 Janaki Ammal             1897       1984 hybrid species, biodi~
-## 2 Chien-Shiung Wu          1912       1997 confim and refine the~
-## 3 Katherine Johnson        1918       2020 calculations of orbit~
-## 4 Vera Rubin               1928       2016 existence of dark mat~
-## 5 Gladys West              1930         NA mathematical modeling~
-## 6 Flossie Wong-Staal       1947         NA first scientist to cl~
-## 7 Jennifer Doudna          1964         NA one of the primary de~
+## 1 Janaki Ammal             1897       1984 hybrid species, biodi…
+## 2 Chien-Shiung Wu          1912       1997 confim and refine the…
+## 3 Katherine Johnson        1918       2020 calculations of orbit…
+## 4 Vera Rubin               1928       2016 existence of dark mat…
+## 5 Gladys West              1930         NA mathematical modeling…
+## 6 Flossie Wong-Staal       1947         NA first scientist to cl…
+## 7 Jennifer Doudna          1964         NA one of the primary de…
 ```
 
 ---
@@ -1224,12 +1220,12 @@ dates %&gt;%
 ]
 .pull-right[
 
-```r
+``` r
 semi_join(x, y)
 ```
 
 ```
-## # A tibble: 2 x 2
+## # A tibble: 2 × 2
 ##      id value_x
 ##   &lt;dbl&gt; &lt;chr&gt;  
 ## 1     1 x1     
@@ -1242,13 +1238,13 @@ semi_join(x, y)
 ## `semi_join()`
 
 
-```r
+``` r
 dates %&gt;%
 * semi_join(works)
 ```
 
 ```
-## # A tibble: 7 x 3
+## # A tibble: 7 × 3
 ##   name               birth_year death_year
 ##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;
 ## 1 Janaki Ammal             1897       1984
@@ -1269,12 +1265,12 @@ dates %&gt;%
 ]
 .pull-right[
 
-```r
+``` r
 anti_join(x, y)
 ```
 
 ```
-## # A tibble: 1 x 2
+## # A tibble: 1 × 2
 ##      id value_x
 ##   &lt;dbl&gt; &lt;chr&gt;  
 ## 1     3 x3
@@ -1286,13 +1282,13 @@ anti_join(x, y)
 ## `anti_join()`
 
 
-```r
+``` r
 dates %&gt;%
 * anti_join(works)
 ```
 
 ```
-## # A tibble: 1 x 3
+## # A tibble: 1 × 3
 ##   name              birth_year death_year
 ##   &lt;chr&gt;                  &lt;dbl&gt;      &lt;dbl&gt;
 ## 1 Rosalind Franklin       1920       1958
@@ -1303,26 +1299,26 @@ dates %&gt;%
 ## Putting it altogether
 
 
-```r
+``` r
 professions %&gt;%
   left_join(dates) %&gt;%
   left_join(works)
 ```
 
 ```
-## # A tibble: 10 x 5
+## # A tibble: 10 × 5
 ##    name               profession  birth_year death_year known_for
 ##    &lt;chr&gt;              &lt;chr&gt;            &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;    
-##  1 Ada Lovelace       Mathematic~         NA         NA first co~
-##  2 Marie Curie        Physicist ~         NA         NA theory o~
-##  3 Janaki Ammal       Botanist          1897       1984 hybrid s~
-##  4 Chien-Shiung Wu    Physicist         1912       1997 confim a~
-##  5 Katherine Johnson  Mathematic~       1918       2020 calculat~
+##  1 Ada Lovelace       Mathematic…         NA         NA first co…
+##  2 Marie Curie        Physicist …         NA         NA theory o…
+##  3 Janaki Ammal       Botanist          1897       1984 hybrid s…
+##  4 Chien-Shiung Wu    Physicist         1912       1997 confim a…
+##  5 Katherine Johnson  Mathematic…       1918       2020 calculat…
 ##  6 Rosalind Franklin  Chemist           1920       1958 &lt;NA&gt;     
-##  7 Vera Rubin         Astronomer        1928       2016 existenc~
-##  8 Gladys West        Mathematic~       1930         NA mathemat~
-##  9 Flossie Wong-Staal Virologist~       1947         NA first sc~
-## 10 Jennifer Doudna    Biochemist        1964         NA one of t~
+##  7 Vera Rubin         Astronomer        1928       2016 existenc…
+##  8 Gladys West        Mathematic…       1930         NA mathemat…
+##  9 Flossie Wong-Staal Virologist…       1947         NA first sc…
+## 10 Jennifer Doudna    Biochemist        1964         NA one of t…
 ```
 
 ---
@@ -1346,12 +1342,12 @@ class: middle
 
 .pull-left[
 
-```r
+``` r
 enrollment
 ```
 
 ```
-## # A tibble: 3 x 2
+## # A tibble: 3 × 2
 ##      id name           
 ##   &lt;dbl&gt; &lt;chr&gt;          
 ## 1     1 Dave Friday    
@@ -1361,12 +1357,12 @@ enrollment
 ]
 .pull-right[
 
-```r
+``` r
 survey
 ```
 
 ```
-## # A tibble: 4 x 3
+## # A tibble: 4 × 3
 ##      id name    username            
 ##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;               
 ## 1     2 Hermine bakealongwithhermine
@@ -1384,13 +1380,13 @@ survey
 
 .panel[.panel-name[In class]
 
-```r
+``` r
 enrollment %&gt;% 
 * left_join(survey, by = "id")
 ```
 
 ```
-## # A tibble: 3 x 4
+## # A tibble: 3 × 4
 ##      id name.x          name.y  username            
 ##   &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;               
 ## 1     1 Dave Friday     &lt;NA&gt;    &lt;NA&gt;                
@@ -1401,13 +1397,13 @@ enrollment %&gt;%
 
 .panel[.panel-name[Survey missing]
 
-```r
+``` r
 enrollment %&gt;% 
 * anti_join(survey, by = "id")
 ```
 
 ```
-## # A tibble: 1 x 2
+## # A tibble: 1 × 2
 ##      id name       
 ##   &lt;dbl&gt; &lt;chr&gt;      
 ## 1     1 Dave Friday
@@ -1416,13 +1412,13 @@ enrollment %&gt;%
 
 .panel[.panel-name[Dropped]
 
-```r
+``` r
 survey %&gt;% 
 * anti_join(enrollment, by = "id")
 ```
 
 ```
-## # A tibble: 2 x 3
+## # A tibble: 2 × 3
 ##      id name  username       
 ##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          
 ## 1     4 Peter peter_bakes    
@@ -1439,16 +1435,16 @@ class: code50
 
 .pull-left[
 
-```r
+``` r
 left_join(enrollment, survey)
 ```
 
 ```
-## Joining, by = c("id", "name")
+## Joining with `by = join_by(id, name)`
 ```
 
 ```
-## # A tibble: 3 x 3
+## # A tibble: 3 × 3
 ##      id name            username            
 ##   &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;               
 ## 1     1 Dave Friday     &lt;NA&gt;                
@@ -1462,12 +1458,12 @@ left_join(enrollment, survey)
 
 .pull-right[
 
-```r
+``` r
 left_join(enrollment, survey, by = 'id')
 ```
 
 ```
-## # A tibble: 3 x 4
+## # A tibble: 3 × 4
 ##      id name.x          name.y  username            
 ##   &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;               
 ## 1     1 Dave Friday     &lt;NA&gt;    &lt;NA&gt;                
@@ -1486,13 +1482,13 @@ something_join(x, y, c(xkey1 = 'ykey1', xkey2 = 'ykey2'))
 ```
 
 
-```r
+``` r
 survey_rn = survey %&gt;% rename(survey_id = id, first_name = name)
 survey_rn
 ```
 
 ```
-## # A tibble: 4 x 3
+## # A tibble: 4 × 3
 ##   survey_id first_name username            
 ##       &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;               
 ## 1         2 Hermine    bakealongwithhermine
@@ -1509,12 +1505,12 @@ class: code50
 .pull-left[
 Enrollment on left, `left_join`
 
-```r
+``` r
 left_join(enrollment, survey_rn, by = c(id = "survey_id"))
 ```
 
 ```
-## # A tibble: 3 x 4
+## # A tibble: 3 × 4
 ##      id name            first_name username            
 ##   &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;      &lt;chr&gt;               
 ## 1     1 Dave Friday     &lt;NA&gt;       &lt;NA&gt;                
@@ -1526,12 +1522,12 @@ left_join(enrollment, survey_rn, by = c(id = "survey_id"))
 .pull-right[
 Enrollment on right, `right_join`
 
-```r
+``` r
 right_join(survey_rn, enrollment, by = c(survey_id = "id"))
 ```
 
 ```
-## # A tibble: 3 x 4
+## # A tibble: 3 × 4
 ##   survey_id first_name username             name           
 ##       &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;                &lt;chr&gt;          
 ## 1         2 Hermine    bakealongwithhermine Hermine        
@@ -1566,12 +1562,12 @@ class: code70
 
 .pull-left[
 
-```r
+``` r
 purchases
 ```
 
 ```
-## # A tibble: 5 x 2
+## # A tibble: 5 × 2
 ##   customer_id item        
 ##         &lt;dbl&gt; &lt;chr&gt;       
 ## 1           1 bread       
@@ -1583,12 +1579,12 @@ purchases
 ]
 .pull-right[
 
-```r
+``` r
 prices
 ```
 
 ```
-## # A tibble: 5 x 2
+## # A tibble: 5 × 2
 ##   item         price
 ##   &lt;chr&gt;        &lt;dbl&gt;
 ## 1 avocado       0.5 
@@ -1609,13 +1605,13 @@ class: code70
 .panel[.panel-name[Total revenue]
 .pull-left[
 
-```r
+``` r
 purchases %&gt;% 
 * left_join(prices)
 ```
 
 ```
-## # A tibble: 5 x 3
+## # A tibble: 5 × 3
 ##   customer_id item         price
 ##         &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;
 ## 1           1 bread         1   
@@ -1627,14 +1623,14 @@ purchases %&gt;%
 ]
 .pull-right[
 
-```r
+``` r
 purchases %&gt;% 
   left_join(prices) %&gt;%
 * summarise(total_revenue = sum(price))
 ```
 
 ```
-## # A tibble: 1 x 1
+## # A tibble: 1 × 1
 ##   total_revenue
 ##           &lt;dbl&gt;
 ## 1          5.75
@@ -1646,13 +1642,13 @@ purchases %&gt;%
 
 .pull-left[
 
-```r
+``` r
 purchases %&gt;% 
   left_join(prices)
 ```
 
 ```
-## # A tibble: 5 x 3
+## # A tibble: 5 × 3
 ##   customer_id item         price
 ##         &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;
 ## 1           1 bread         1   
@@ -1664,7 +1660,7 @@ purchases %&gt;%
 ]
 .pull-right[
 
-```r
+``` r
 purchases %&gt;% 
   left_join(prices) %&gt;%
 * group_by(customer_id) %&gt;%
@@ -1672,7 +1668,7 @@ purchases %&gt;%
 ```
 
 ```
-## # A tibble: 2 x 2
+## # A tibble: 2 × 2
 ##   customer_id total_revenue
 ##         &lt;dbl&gt;         &lt;dbl&gt;
 ## 1           1          1.95
@@ -1693,12 +1689,12 @@ purchases %&gt;%
 .panel[.panel-name[airlines]
 Full carrier name from abbreviation
 
-```r
+``` r
 airlines
 ```
 
 ```
-## # A tibble: 16 x 2
+## # A tibble: 16 × 2
 ##   carrier name                    
 ##   &lt;chr&gt;   &lt;chr&gt;                   
 ## 1 9E      Endeavor Air Inc.       
@@ -1707,58 +1703,59 @@ airlines
 ## 4 B6      JetBlue Airways         
 ## 5 DL      Delta Air Lines Inc.    
 ## 6 EV      ExpressJet Airlines Inc.
-## # ... with 10 more rows
+## # ℹ 10 more rows
 ```
 ]
 .panel[.panel-name[airports]
 Information about each airport, identified by `faa` code:
 
-```r
+``` r
 airports
 ```
 
 ```
-## # A tibble: 1,458 x 8
+## # A tibble: 1,458 × 8
 ##   faa   name                    lat   lon   alt    tz dst   tzone
 ##   &lt;chr&gt; &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
-## 1 04G   Lansdowne Airport      41.1 -80.6  1044    -5 A     Amer~
-## 2 06A   Moton Field Municipa~  32.5 -85.7   264    -6 A     Amer~
-## 3 06C   Schaumburg Regional    42.0 -88.1   801    -6 A     Amer~
-## 4 06N   Randall Airport        41.4 -74.4   523    -5 A     Amer~
-## 5 09J   Jekyll Island Airport  31.1 -81.4    11    -5 A     Amer~
-## 6 0A9   Elizabethton Municip~  36.4 -82.2  1593    -5 A     Amer~
-## # ... with 1,452 more rows
+## 1 04G   Lansdowne Airport      41.1 -80.6  1044    -5 A     Amer…
+## 2 06A   Moton Field Municipa…  32.5 -85.7   264    -6 A     Amer…
+## 3 06C   Schaumburg Regional    42.0 -88.1   801    -6 A     Amer…
+## 4 06N   Randall Airport        41.4 -74.4   523    -5 A     Amer…
+## 5 09J   Jekyll Island Airport  31.1 -81.4    11    -5 A     Amer…
+## 6 0A9   Elizabethton Municip…  36.4 -82.2  1593    -5 A     Amer…
+## # ℹ 1,452 more rows
 ```
 ]
 .panel[.panel-name[planes]
 information about each plane, identified by its `tailnum`:
 
-```r
+``` r
 planes
 ```
 
 ```
-## # A tibble: 3,322 x 9
+## # A tibble: 3,322 × 9
 ##   tailnum  year type       manufacturer model engines seats speed
 ##   &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;
-## 1 N10156   2004 Fixed win~ EMBRAER      EMB-~       2    55    NA
-## 2 N102UW   1998 Fixed win~ AIRBUS INDU~ A320~       2   182    NA
-## 3 N103US   1999 Fixed win~ AIRBUS INDU~ A320~       2   182    NA
-## 4 N104UW   1999 Fixed win~ AIRBUS INDU~ A320~       2   182    NA
-## 5 N10575   2002 Fixed win~ EMBRAER      EMB-~       2    55    NA
-## 6 N105UW   1999 Fixed win~ AIRBUS INDU~ A320~       2   182    NA
-## # ... with 3,316 more rows, and 1 more variable: engine &lt;chr&gt;
+## 1 N10156   2004 Fixed win… EMBRAER      EMB-…       2    55    NA
+## 2 N102UW   1998 Fixed win… AIRBUS INDU… A320…       2   182    NA
+## 3 N103US   1999 Fixed win… AIRBUS INDU… A320…       2   182    NA
+## 4 N104UW   1999 Fixed win… AIRBUS INDU… A320…       2   182    NA
+## 5 N10575   2002 Fixed win… EMBRAER      EMB-…       2    55    NA
+## 6 N105UW   1999 Fixed win… AIRBUS INDU… A320…       2   182    NA
+## # ℹ 3,316 more rows
+## # ℹ 1 more variable: engine &lt;chr&gt;
 ```
 ]
 .panel[.panel-name[weather]
 Weather at each NYC airport for each hour:
 
-```r
+``` r
 weather
 ```
 
 ```
-## # A tibble: 26,115 x 15
+## # A tibble: 26,115 × 15
 ##   origin  year month   day  hour  temp  dewp humid wind_dir
 ##   &lt;chr&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
 ## 1 EWR     2013     1     1     1  39.0  26.1  59.4      270
@@ -1767,9 +1764,9 @@ weather
 ## 4 EWR     2013     1     1     4  39.9  28.0  62.2      250
 ## 5 EWR     2013     1     1     5  39.0  28.0  64.4      260
 ## 6 EWR     2013     1     1     6  37.9  28.0  67.2      240
-## # ... with 26,109 more rows, and 6 more variables:
-## #   wind_speed &lt;dbl&gt;, wind_gust &lt;dbl&gt;, precip &lt;dbl&gt;,
-## #   pressure &lt;dbl&gt;, visib &lt;dbl&gt;, time_hour &lt;dttm&gt;
+## # ℹ 26,109 more rows
+## # ℹ 6 more variables: wind_speed &lt;dbl&gt;, wind_gust &lt;dbl&gt;,
+## #   precip &lt;dbl&gt;, pressure &lt;dbl&gt;, visib &lt;dbl&gt;, …
 ```
 ]
 ]
@@ -1828,25 +1825,25 @@ class: code70
 The uniqueness of the keys is an invariant.  Let's test it: 
 
 
-```r
+``` r
 planes %&gt;% 
   count(tailnum) %&gt;% 
   filter(n &gt; 1)
 ```
 
 ```
-## # A tibble: 0 x 2
-## # ... with 2 variables: tailnum &lt;chr&gt;, n &lt;int&gt;
+## # A tibble: 0 × 2
+## # ℹ 2 variables: tailnum &lt;chr&gt;, n &lt;int&gt;
 ```
 
-```r
+``` r
 weather %&gt;% 
   count(year, month, day, hour, origin) %&gt;% 
   filter(n &gt; 1)
 ```
 
 ```
-## # A tibble: 3 x 6
+## # A tibble: 3 × 6
 ##    year month   day  hour origin     n
 ##   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;  &lt;int&gt;
 ## 1  2013    11     3     1 EWR        2
@@ -1862,14 +1859,14 @@ class: code70
 .pull-left[
 Is he in the flight number?
 
-```r
+``` r
 flights %&gt;% 
   count(year, month, day, flight) %&gt;% 
   filter(n &gt; 1)
 ```
 
 ```
-## # A tibble: 29,768 x 5
+## # A tibble: 29,768 × 5
 ##    year month   day flight     n
 ##   &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt; &lt;int&gt;
 ## 1  2013     1     1      1     2
@@ -1878,21 +1875,21 @@ flights %&gt;%
 ## 4  2013     1     1     11     3
 ## 5  2013     1     1     15     2
 ## 6  2013     1     1     21     2
-## # ... with 29,762 more rows
+## # ℹ 29,762 more rows
 ```
 Nope.
 ]
 .pull-right[
 Is he hiding in the plane tailnum?
 
-```r
+``` r
 flights %&gt;% 
   count(year, month, day, tailnum) %&gt;% 
   filter(n &gt; 1)
 ```
 
 ```
-## # A tibble: 64,928 x 5
+## # A tibble: 64,928 × 5
 ##    year month   day tailnum     n
 ##   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;int&gt;
 ## 1  2013     1     1 N0EGMQ      2
@@ -1901,7 +1898,7 @@ flights %&gt;%
 ## 4  2013     1     1 N11544      3
 ## 5  2013     1     1 N11551      2
 ## 6  2013     1     1 N12540      2
-## # ... with 64,922 more rows
+## # ℹ 64,922 more rows
 ```
 Not here either.
 ]
@@ -1911,15 +1908,15 @@ Not here either.
 ## There he is!
 
 
-```r
+``` r
 flights %&gt;% 
   count(year, month, day, flight, origin, carrier) %&gt;% 
   filter(n &gt; 1)
 ```
 
 ```
-## # A tibble: 0 x 7
-## # ... with 7 variables: year &lt;int&gt;, month &lt;int&gt;, day &lt;int&gt;,
+## # A tibble: 0 × 7
+## # ℹ 7 variables: year &lt;int&gt;, month &lt;int&gt;, day &lt;int&gt;,
 ## #   flight &lt;int&gt;, origin &lt;chr&gt;, carrier &lt;chr&gt;, n &lt;int&gt;
 ```
 
