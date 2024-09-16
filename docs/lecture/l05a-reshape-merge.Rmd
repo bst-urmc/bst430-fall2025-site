@@ -1197,17 +1197,17 @@ It always pays to ask (but verify!)
 If a table lacks a primary key, it's often useful to add one with `mutate()` and `row_number()`. That makes it easier to match observations if you've done some filtering and want to check back in with the original data. This is called a __surrogate key__.
 
 
----
+<!-- --- -->
 
-## A tiny bit of database theory
+<!-- ## A tiny bit of database theory -->
 
-Tidy data sets will obey [various .alert[normal forms]](https://en.wikipedia.org/wiki/Database_normalization).  The most basic is that there exists a .alert[primary keys] obeying a uniqueness and existence constraint.
+<!-- Tidy data sets will obey [various .alert[normal forms]](https://en.wikipedia.org/wiki/Database_normalization).  The most basic is that there exists a .alert[primary keys] obeying a uniqueness and existence constraint. -->
 
-Highly normalized data sets also obey redundancy constraints that entail factoring (dividing) a data set into multiple tables. Unless you are a database engineer,  complete normalization is often just a stumbling block to analyze data.  
+<!-- Highly normalized data sets also obey redundancy constraints that entail factoring (dividing) a data set into multiple tables. Unless you are a database engineer,  complete normalization is often just a stumbling block to analyze data.   -->
 
-However, it can be very helpful to think about dividing data into a primary table of **facts**, and auxiliary tables of **dimensions**.  The facts represent frequently-updated observations and the dimensions are covariates that can be shared across observations and should change slowly, if at all.<sup>1</sup>
+<!-- However, it can be very helpful to think about dividing data into a primary table of **facts**, and auxiliary tables of **dimensions**.  The facts represent frequently-updated observations and the dimensions are covariates that can be shared across observations and should change slowly, if at all.<sup>1</sup> -->
 
-.footnote[[1] See Kimball and Ross. *The Data Warehouse Toolkit* for details.  It's surprisingly interesting and relevant.]
+<!-- .footnote[[1] See Kimball and Ross. *The Data Warehouse Toolkit* for details.  It's surprisingly interesting and relevant.] -->
 
 
 ---
