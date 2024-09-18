@@ -43,7 +43,7 @@ MW 11:00-12:40, SRB 1402
 3.  [dplyr(i)](lecture/l03-transform-dplyr-i.html)
     * Continue working on Lab 1
     * HW 1 assigned.  [instructions](hw_lab_instruction/hw-01-airbnb/hw-01-airbnb.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/DSGIBgl4)).  Due 5pm EDT, Sept 16.
-<!--     * HW 1 [solutions](hw_lab_instruction/hw-01-airbnb/hw-01.html) -->
+    * HW 1 [solutions](hw_lab_instruction/hw-01-airbnb/hw-01.html)
 4.  [Data types in R](lecture/l04-data-types.html).
     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept the [invitation](https://classroom.github.com/a/d0eW0EO8).
 Due 5pm, Sept 18.

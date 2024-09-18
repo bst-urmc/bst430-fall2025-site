@@ -87,9 +87,9 @@ Be aware that this only returns the combinations of var_1, var_2, ... that exist
 1.  Convert `var1`, `var2`, ... to factors with `factor`.<sup>1</sup>
 2.  Set  `group_by(..., .drop = FALSE)`.
 
-.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail next week.
+.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail next week.]
 
-<!-- [2] If you are a masochist.] -->
+<!-- [2] If you are a masochist. -->
 
 ---
 
@@ -262,7 +262,8 @@ We'll discuss the `fct_reorder` business in greater detail next week.
 
 ---
 
-## `select()` 201
+## `select()` 
+<!-- 201 -->
 
 `select()`, `pivot_wider()`, `pivot_longer()`, and friends use [tidy-select](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html), which is a meta-language to select columns from a data frame. There are several helper functions you can use within `select()`:
 

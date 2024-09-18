@@ -6,8 +6,8 @@
     <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/panelset/panelset.css" rel="stylesheet" />
     <script src="libs/panelset/panelset.js"></script>
     <link rel="stylesheet" href="css/lexis.css" type="text/css" />
@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-09-12 (updated: 2022-09-27 by TL)
+### 2021-09-12 (updated: 2024-09-18 by TL)
 ]
 
 ---
@@ -66,7 +66,7 @@ As we saw in lecture 3 by adding `group_by()` to a pipeline, we stratify by a ca
 .pull-left[
 **Grand margin**
 
-```r
+``` r
 library(nycflights13)
 ontime = flights %&gt;% 
   mutate(ontime = arr_delay &lt;= 0)  
@@ -75,7 +75,7 @@ ontime %&gt;%
 ```
 
 ```
-## # A tibble: 1 x 1
+## # A tibble: 1 × 1
 ##   ontime_pct
 ##        &lt;dbl&gt;
 ## 1       59.4
@@ -85,20 +85,20 @@ ontime %&gt;%
 .pull-right[
 **stratified by carrier**
 
-```r
+``` r
 ontime %&gt;% group_by(carrier) %&gt;% 
 * summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100)
 ```
 
 ```
-## # A tibble: 16 x 2
+## # A tibble: 16 × 2
 ##   carrier ontime_pct
 ##   &lt;chr&gt;        &lt;dbl&gt;
 ## 1 9E            61.6
 ## 2 AA            66.5
 ## 3 AS            73.3
 ## 4 B6            56.3
-## # ... with 12 more rows
+## # ℹ 12 more rows
 ```
 ]
 
@@ -122,9 +122,9 @@ Be aware that this only returns the combinations of var_1, var_2, ... that exist
 1.  Convert `var1`, `var2`, ... to factors with `factor`.&lt;sup&gt;1&lt;/sup&gt;
 2.  Set  `group_by(..., .drop = FALSE)`.
 
-.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail next week.
+.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail next week.]
 
-&lt;!-- [2] If you are a masochist.] --&gt;
+&lt;!-- [2] If you are a masochist. --&gt;
 
 ---
 
@@ -134,7 +134,7 @@ Be aware that this only returns the combinations of var_1, var_2, ... that exist
 
 .panel[.panel-name[Code]
 
-```r
+``` r
 departures = flights %&gt;% group_by(carrier, hour) %&gt;% summarize(n_departures = n())
 ggplot(departures, aes(x = hour, y = n_departures)) + 
   geom_line() + 
@@ -155,7 +155,7 @@ ggplot(departures, aes(x = hour, y = n_departures)) +
 
 .panel[.panel-name[Code]
 
-```r
+``` r
 departures2 = flights %&gt;% 
 * mutate(carrier = factor(carrier), hour = factor(hour)) %&gt;%
 * group_by(carrier, hour, .drop = FALSE) %&gt;%
@@ -180,7 +180,7 @@ plt
 
 .panel[.panel-name[Code]
 
-```r
+``` r
 departures3 = flights %&gt;% 
   mutate(carrier = factor(carrier), hourf = factor(hour)) %&gt;%
   group_by(carrier, hourf, .drop = FALSE) %&gt;%
@@ -193,7 +193,7 @@ departures3 = flights %&gt;%
 ## using the `.groups` argument.
 ```
 
-```r
+``` r
 *(plt %+% departures3) + aes(x = hour)
 ```
 ]
@@ -215,7 +215,7 @@ This is telling us that by default, the output will be grouped if we use it in a
 
 To save screen real estate, I'm going to turn off this message going forward:
 
-```r
+``` r
 options(dplyr.summarise.inform = FALSE)
 ```
 
@@ -228,33 +228,33 @@ In general you should set `.groups` explicitly.
 .pull-left[
 Default
 
-```r
+``` r
 ontime_drop = ontime %&gt;% group_by(carrier, dest) %&gt;% summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100)
 ontime_drop %&gt;% summarize(n_dest = n_distinct(dest))
 ```
 
 ```
-## # A tibble: 16 x 2
+## # A tibble: 16 × 2
 ##   carrier n_dest
 ##   &lt;chr&gt;    &lt;int&gt;
 ## 1 9E          49
 ## 2 AA          19
 ## 3 AS           1
 ## 4 B6          42
-## # ... with 12 more rows
+## # ℹ 12 more rows
 ```
 ]
 
 .pull-right[
 ungrouped
 
-```r
+``` r
 *ontime_drop %&gt;% ungroup() %&gt;%
   summarize(n_dest = n_distinct(dest))
 ```
 
 ```
-## # A tibble: 1 x 1
+## # A tibble: 1 × 1
 ##   n_dest
 ##    &lt;int&gt;
 ## 1    105
@@ -267,7 +267,7 @@ ungrouped
 We can combine group_by with filter, mutate or arrange to evaluate these verbs on each group.
 
 
-```r
+``` r
 ontime_1500 = ontime %&gt;% group_by(dest) %&gt;% filter(n() &gt; 1500) %&gt;%
   mutate(n_flights_dest = n(), .after = 1)
 
@@ -275,7 +275,7 @@ ontime_1500 %&gt;% arrange(n_flights_dest)
 ```
 
 ```
-## # A tibble: 314,599 x 21
+## # A tibble: 314,599 × 21
 ## # Groups:   dest [53]
 ##    year n_flights_dest month   day dep_time sched_dep_time
 ##   &lt;int&gt;          &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;
@@ -283,9 +283,9 @@ ontime_1500 %&gt;% arrange(n_flights_dest)
 ## 2  2013           1525     1     1     1732           1630
 ## 3  2013           1525     1     2      834            823
 ## 4  2013           1525     1     2     1228           1229
-## # ... with 314,595 more rows, and 15 more variables:
-## #   dep_delay &lt;dbl&gt;, arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;,
-## #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, ...
+## # ℹ 314,595 more rows
+## # ℹ 15 more variables: dep_delay &lt;dbl&gt;, arr_time &lt;int&gt;,
+## #   sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, …
 ```
 
 ---
@@ -293,7 +293,7 @@ ontime_1500 %&gt;% arrange(n_flights_dest)
 ## Carrier performance by destination
 
 
-```r
+``` r
 ontime_drop = ontime_1500 %&gt;% group_by(dest, carrier) %&gt;%  
   summarize(ontime_pct = mean(ontime, na.rm  = TRUE)*100)
 ggplot(ontime_drop, aes(y = ontime_pct, x = dest)) + geom_point() + coord_flip() + theme_minimal(base_size = 8)
@@ -308,7 +308,7 @@ ggplot(ontime_drop, aes(y = ontime_pct, x = dest)) + geom_point() + coord_flip()
 ## The "law" of small numbers
 
 
-```r
+``` r
 ontime_drop = ontime_1500 %&gt;% group_by(dest, carrier) %&gt;%  
   summarize(ontime_pct = mean(ontime, na.rm  = TRUE)*100,
             n_departed = sum(!is.na(ontime)))
@@ -324,7 +324,7 @@ ggplot(ontime_drop, aes(y = ontime_pct, x = dest, color = n_departed&lt;10)) + g
 ## Without small numbers
 
 
-```r
+``` r
 ontime_drop_10 = filter(ontime_drop, n_departed &gt;= 10)
 ggplot(ontime_drop_10, aes(y = ontime_pct, x = dest)) + geom_boxplot() + 
   coord_flip()  + theme_minimal(base_size = 8)
@@ -339,7 +339,7 @@ Better...but it's hard to see the rank order of routes.
 ## A sensible plot order
 
 
-```r
+``` r
  ontime_drop_10 = ontime_drop_10 %&gt;% ungroup() %&gt;% 
 * mutate(dest = forcats::fct_reorder(dest, ontime_pct))
 ggplot(ontime_drop_10, aes(x = dest, y = ontime_pct)) + geom_boxplot() + 
@@ -352,7 +352,8 @@ We'll discuss the `fct_reorder` business in greater detail next week.
 
 ---
 
-## `select()` 201
+## `select()` 
+&lt;!-- 201 --&gt;
 
 `select()`, `pivot_wider()`, `pivot_longer()`, and friends use [tidy-select](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html), which is a meta-language to select columns from a data frame. There are several helper functions you can use within `select()`:
 
@@ -369,59 +370,59 @@ We'll discuss the `fct_reorder` business in greater detail next week.
 ## select delay columns
 
 
-```r
+``` r
 flights %&gt;% select(ends_with('delay'))
 ```
 
 ```
-## # A tibble: 336,776 x 2
+## # A tibble: 336,776 × 2
 ##   dep_delay arr_delay
 ##       &lt;dbl&gt;     &lt;dbl&gt;
 ## 1         2        11
 ## 2         4        20
 ## 3         2        33
 ## 4        -1       -18
-## # ... with 336,772 more rows
+## # ℹ 336,772 more rows
 ```
 ---
 
 ## everything except columns containing "time"
 
 
-```r
+``` r
 flights %&gt;% select(!contains('time'))
 ```
 
 ```
-## # A tibble: 336,776 x 13
+## # A tibble: 336,776 × 13
 ##    year month   day dep_delay arr_delay carrier flight tailnum
 ##   &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;  
 ## 1  2013     1     1         2        11 UA        1545 N14228 
 ## 2  2013     1     1         4        20 UA        1714 N24211 
 ## 3  2013     1     1         2        33 AA        1141 N619AA 
 ## 4  2013     1     1        -1       -18 B6         725 N804JB 
-## # ... with 336,772 more rows, and 5 more variables:
-## #   origin &lt;chr&gt;, dest &lt;chr&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
-## #   minute &lt;dbl&gt;
+## # ℹ 336,772 more rows
+## # ℹ 5 more variables: origin &lt;chr&gt;, dest &lt;chr&gt;, distance &lt;dbl&gt;,
+## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;
 ```
 ---
 
 ## character columns
 
 
-```r
+``` r
 flights %&gt;% select(where(is.character))
 ```
 
 ```
-## # A tibble: 336,776 x 4
+## # A tibble: 336,776 × 4
 ##   carrier tailnum origin dest 
 ##   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;
 ## 1 UA      N14228  EWR    IAH  
 ## 2 UA      N24211  LGA    IAH  
 ## 3 AA      N619AA  JFK    MIA  
 ## 4 B6      N804JB  JFK    BQN  
-## # ... with 336,772 more rows
+## # ℹ 336,772 more rows
 ```
 
 ---
@@ -429,21 +430,21 @@ flights %&gt;% select(where(is.character))
 ## Columns with no missing values
 
 
-```r
+``` r
 flights %&gt;% select(where(~!any(is.na(.x))))
 ```
 
 ```
-## # A tibble: 336,776 x 13
+## # A tibble: 336,776 × 13
 ##    year month   day sched_dep_time sched_arr_time carrier flight
 ##   &lt;int&gt; &lt;int&gt; &lt;int&gt;          &lt;int&gt;          &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
 ## 1  2013     1     1            515            819 UA        1545
 ## 2  2013     1     1            529            830 UA        1714
 ## 3  2013     1     1            540            850 AA        1141
 ## 4  2013     1     1            545           1022 B6         725
-## # ... with 336,772 more rows, and 6 more variables:
-## #   origin &lt;chr&gt;, dest &lt;chr&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
-## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+## # ℹ 336,772 more rows
+## # ℹ 6 more variables: origin &lt;chr&gt;, dest &lt;chr&gt;, distance &lt;dbl&gt;,
+## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
 ```
 The above uses a tidyverse way to define an **anonymous function** and is equivalent to 
 ```
@@ -475,21 +476,21 @@ where `verb` is `summarize`,  `mutate`, and a few others where unquoted columns 
 
 
 
-```r
+``` r
 nycbnb
 ```
 
 ```
-## # A tibble: 12,773 x 16
+## # A tibble: 12,773 × 16
 ##      id name    host_id price neighborhood accommodates room_type
 ##   &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;    
-## 1  2595 Skylit~    2845   150 Midtown                 1 Entire h~
-## 2  3831 Whole ~    4869    75 Bedford-Stu~            3 Entire h~
-## 3  5121 BlissA~    7356    60 Bedford-Stu~            2 Private ~
-## 4  5136 Spacio~    7378   275 Sunset Park             4 Entire h~
-## # ... with 12,769 more rows, and 9 more variables:
-## #   borough &lt;chr&gt;, minimum_nights &lt;dbl&gt;, maximum_nights &lt;dbl&gt;,
-## #   availability_90 &lt;dbl&gt;, beds &lt;dbl&gt;, ...
+## 1  2595 Skylit…    2845   150 Midtown                 1 Entire h…
+## 2  3831 Whole …    4869    75 Bedford-Stu…            3 Entire h…
+## 3  5121 BlissA…    7356    60 Bedford-Stu…            2 Private …
+## 4  5136 Spacio…    7378   275 Sunset Park             4 Entire h…
+## # ℹ 12,769 more rows
+## # ℹ 9 more variables: borough &lt;chr&gt;, minimum_nights &lt;dbl&gt;,
+## #   maximum_nights &lt;dbl&gt;, availability_90 &lt;dbl&gt;, beds &lt;dbl&gt;, …
 ```
 
 ---
@@ -500,7 +501,7 @@ nycbnb
 
 .panel[.panel-name[Code]
 
-```r
+``` r
 availability = nycbnb %&gt;% group_by(neighborhood) %&gt;% 
 * summarize(across(c(maximum_nights, minimum_nights, availability_90), median))
 ggplot(availability, 
@@ -523,7 +524,7 @@ ggplot(availability,
 
 This can be very powerful:
 
-```r
+``` r
 median_mad = nycbnb %&gt;% group_by(neighborhood) %&gt;% 
 * summarise(across(where(is.numeric),
 *                  list(median = median, mad = mad)))
@@ -533,29 +534,29 @@ glimpse(median_mad)
 ```
 ## Rows: 41
 ## Columns: 23
-## $ neighborhood                 &lt;chr&gt; "Astoria", "Bedford-Stuyve~
-## $ id_median                    &lt;dbl&gt; 26455688, 29970716, 337258~
-## $ id_mad                       &lt;dbl&gt; 22196285, 22187834, 188431~
-## $ host_id_median               &lt;dbl&gt; 48372942, 39365483, 502829~
-## $ host_id_mad                  &lt;dbl&gt; 66969215, 56397777, 705862~
-## $ price_median                 &lt;dbl&gt; 75.0, 100.0, 75.0, 98.0, 2~
-## $ price_mad                    &lt;dbl&gt; 35.5824, 66.7170, 44.4780,~
-## $ accommodates_median          &lt;dbl&gt; 2.0, 2.0, 2.0, 3.0, 2.0, 3~
-## $ accommodates_mad             &lt;dbl&gt; 1.4826, 1.4826, 1.4826, 1.~
-## $ minimum_nights_median        &lt;dbl&gt; 14.0, 5.0, 5.0, 2.0, 5.0, ~
-## $ minimum_nights_mad           &lt;dbl&gt; 19.2738, 5.9304, 5.9304, 1~
-## $ maximum_nights_median        &lt;dbl&gt; 1125, 365, 365, 365, 365, ~
-## $ maximum_nights_mad           &lt;dbl&gt; 0.0000, 526.3230, 526.3230~
-## $ availability_90_median       &lt;dbl&gt; 50.0, 38.0, 47.0, 70.0, 25~
-## $ availability_90_mad          &lt;dbl&gt; 41.5128, 40.0302, 40.0302,~
-## $ beds_median                  &lt;dbl&gt; NA, NA, NA, NA, NA, 1, NA,~
-## $ beds_mad                     &lt;dbl&gt; NA, NA, NA, NA, NA, 1.4826~
-## $ review_scores_rating_median  &lt;dbl&gt; 4.830, 4.800, 4.800, 4.810~
-## $ review_scores_rating_mad     &lt;dbl&gt; 0.252042, 0.266868, 0.2965~
-## $ number_of_reviews_median     &lt;dbl&gt; 17.0, 20.0, 13.0, 17.0, 13~
-## $ number_of_reviews_mad        &lt;dbl&gt; 22.2390, 26.6868, 17.7912,~
-## $ number_of_reviews_ltm_median &lt;dbl&gt; 2.0, 2.0, 2.0, 4.0, 3.0, 3~
-## $ number_of_reviews_ltm_mad    &lt;dbl&gt; 2.9652, 2.9652, 2.9652, 5.~
+## $ neighborhood                 &lt;chr&gt; "Astoria", "Bedford-Stuyve…
+## $ id_median                    &lt;dbl&gt; 26455688, 29970716, 337258…
+## $ id_mad                       &lt;dbl&gt; 22196285, 22187834, 188431…
+## $ host_id_median               &lt;dbl&gt; 48372942, 39365483, 502829…
+## $ host_id_mad                  &lt;dbl&gt; 66969215, 56397777, 705862…
+## $ price_median                 &lt;dbl&gt; 75.0, 100.0, 75.0, 98.0, 2…
+## $ price_mad                    &lt;dbl&gt; 35.5824, 66.7170, 44.4780,…
+## $ accommodates_median          &lt;dbl&gt; 2.0, 2.0, 2.0, 3.0, 2.0, 3…
+## $ accommodates_mad             &lt;dbl&gt; 1.4826, 1.4826, 1.4826, 1.…
+## $ minimum_nights_median        &lt;dbl&gt; 14.0, 5.0, 5.0, 2.0, 5.0, …
+## $ minimum_nights_mad           &lt;dbl&gt; 19.2738, 5.9304, 5.9304, 1…
+## $ maximum_nights_median        &lt;dbl&gt; 1125, 365, 365, 365, 365, …
+## $ maximum_nights_mad           &lt;dbl&gt; 0.0000, 526.3230, 526.3230…
+## $ availability_90_median       &lt;dbl&gt; 50.0, 38.0, 47.0, 70.0, 25…
+## $ availability_90_mad          &lt;dbl&gt; 41.5128, 40.0302, 40.0302,…
+## $ beds_median                  &lt;dbl&gt; NA, NA, NA, NA, NA, 1, NA,…
+## $ beds_mad                     &lt;dbl&gt; NA, NA, NA, NA, NA, 1.4826…
+## $ review_scores_rating_median  &lt;dbl&gt; 4.830, 4.800, 4.800, 4.810…
+## $ review_scores_rating_mad     &lt;dbl&gt; 0.252042, 0.266868, 0.2965…
+## $ number_of_reviews_median     &lt;dbl&gt; 17.0, 20.0, 13.0, 17.0, 13…
+## $ number_of_reviews_mad        &lt;dbl&gt; 22.2390, 26.6868, 17.7912,…
+## $ number_of_reviews_ltm_median &lt;dbl&gt; 2.0, 2.0, 2.0, 4.0, 3.0, 3…
+## $ number_of_reviews_ltm_mad    &lt;dbl&gt; 2.9652, 2.9652, 2.9652, 5.…
 ```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
