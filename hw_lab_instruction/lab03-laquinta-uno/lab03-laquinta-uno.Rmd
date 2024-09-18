@@ -58,7 +58,9 @@ Look at the final .md file. **That** is what will be graded.
 We'll use the **tidyverse** package for much of the data wrangling and visualisation and the data lives in the **dsbox** package.
 Install these packages if they are not already there.
 ```
-install.packages("dsbox")
+#install.packages("dsbox")                    #I don't think this currently works
+#install.packages("devtools")                 #if the next line doesn't work, try to install this package first
+devtools::install_github("rstudio-education/dsbox")
 ```
 You can load them by running the following. If you're also running code in real time, you need to load them in your Console:
 
