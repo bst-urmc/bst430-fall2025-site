@@ -14,5 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 # My suggestions, in order of when we discussed these topics
 
 - [Visualization : ggplot](https://rstudio.github.io/cheatsheets/data-visualization.pdf).
-- [Data Transformation : dplyr](https://rstudio.github.io/cheatsheets/data-transformation.pdf).
+- [Data Group, Summarize, Join : dplyr](https://rstudio.github.io/cheatsheets/data-transformation.pdf).
+- [Pivot and Separtate : tidyr](https://rstudio.github.io/cheatsheets/tidyr.pdf)
+- [Factors : forcats](https://rstudio.github.io/cheatsheets/factors.pdf)
+- [Dates : lubridate](https://rstudio.github.io/cheatsheets/lubridate.pdf)
 <!-- - [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf). -->

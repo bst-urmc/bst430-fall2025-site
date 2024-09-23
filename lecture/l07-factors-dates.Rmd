@@ -95,7 +95,7 @@ as.integer(x)
 
 ## Dates
 
-```{r}
+```{r warning=FALSE}
 library(lubridate)
 y = ymd("2020-01-01")
 y
@@ -122,7 +122,7 @@ class: middle
 
 ---
 
-```{r include=FALSE}
+```{r include=FALSE, warning=FALSE}
 library(nycflights13)
 flights_sml = flights %>% 
   select(origin:dest, year:dep_time, hour:minute) 
@@ -153,7 +153,7 @@ ggplot(flights10, mapping = aes(x = dest)) +
 
 ## Use forcats to manipulate factors
 
-```{r out.width="55%"}
+```{r out.width="55%", warning=FALSE}
 library(forcats)
 plt = flights10 %>% # assign plot to object #<<
   mutate(dest_fct = fct_infreq(dest)) %>% #<<
@@ -242,7 +242,7 @@ Calculate and visualize the number of departures on any given date.
 ## Step 1. Construct dates
 
 .midi[
-```{r output.lines=7}
+```{r output.lines=7, warning=FALSE}
 library(glue)
 
 flights %>%
@@ -303,7 +303,7 @@ flights %>%
 ## Step 1. *REVISED* Construct dates "as dates"
 
 .midi[
-```{r output.lines=7}
+```{r output.lines=7, warning=FALSE}
 library(lubridate)
 
 flights %>%

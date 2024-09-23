@@ -1,3 +1,6 @@
+library(nycflights13)
+library(glue)
+
 flights_date = flights %>%
   mutate(date = ymd(glue("{year} {month} {day}"))) %>% 
   count(date)
