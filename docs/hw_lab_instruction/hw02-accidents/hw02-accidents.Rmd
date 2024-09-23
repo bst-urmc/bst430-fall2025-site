@@ -49,7 +49,7 @@ We'll use the **tidyverse** package for much of the data wrangling and visualiza
 These packages is already installed for you.
 You can load them by running the following in your Console:
 
-```{r load-packages-data, message = FALSE, eval = TRUE}
+```{r load-packages-data, warning=FALSE, message = FALSE, eval = TRUE}
 library(tidyverse)
 library(lubridate)
 library(vroom)
@@ -63,7 +63,7 @@ crashes = vroom('data/ny_collisions_2018_2019.csv.gz')
 ```
 
 ```{r load-data, eval = FALSE}
-crashes = vroom("https://urmc-bst.github.io/bst430-fall2021-site/hw_lab_instruction/hw02-accidents/data/ny_collisions_2018_2019.csv.gz")
+crashes = vroom("https://urmc-bst.github.io/bst430-fall2024-site/hw_lab_instruction/hw02-accidents/data/ny_collisions_2018_2019.csv.gz")
 ```
 
 You can find out more about the dataset in the NY open data portal:  https://data.ny.gov/Transportation/Motor-Vehicle-Crashes-Case-Information-Three-Year-/e8ky-4vqe .  There's a detailed data dictionary [here](https://data.ny.gov/api/views/e8ky-4vqe/files/991fc5ad-3c1d-4eb1-908a-86343907be58?download=true&filename=NYSDMV_Crashes_CaseInformation_DataDictionary.pdf).
