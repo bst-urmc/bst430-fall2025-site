@@ -6,8 +6,8 @@
     <meta name="author" content="Don Harrington, based on slides by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/panelset/panelset.css" rel="stylesheet" />
     <script src="libs/panelset/panelset.js"></script>
     <link rel="stylesheet" href="css/lexis.css" type="text/css" />
@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-09-24 (updated: 2022-10-06 by TL)
+### 2021-09-24 (updated: 2024-09-25 by TL)
 ]
 
 ---
@@ -84,22 +84,22 @@ class: middle
 ## Reading data
 
 
-```r
+``` r
 nobel = read_csv(file = "l09/data/nobel.csv")
 nobel
 ```
 
 ```
-## # A tibble: 935 x 26
-##      id firstname     surname  year categ~1 affil~2 city  country
-##   &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;  
-## 1     1 Wilhelm Conr~ Röntgen  1901 Physics Munich~ Muni~ Germany
-## 2     2 Hendrik A.    Lorentz  1902 Physics Leiden~ Leid~ Nether~
-## 3     3 Pieter        Zeeman   1902 Physics Amster~ Amst~ Nether~
-## 4     4 Henri         Becque~  1903 Physics École ~ Paris France 
-## # ... with 931 more rows, 18 more variables: born_date &lt;date&gt;,
-## #   died_date &lt;date&gt;, gender &lt;chr&gt;, born_city &lt;chr&gt;,
-## #   born_country &lt;chr&gt;, born_country_code &lt;chr&gt;, ...
+## # A tibble: 935 × 26
+##      id firstname      surname    year category affiliation city 
+##   &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt;
+## 1     1 Wilhelm Conrad Röntgen    1901 Physics  Munich Uni… Muni…
+## 2     2 Hendrik A.     Lorentz    1902 Physics  Leiden Uni… Leid…
+## 3     3 Pieter         Zeeman     1902 Physics  Amsterdam … Amst…
+## 4     4 Henri          Becquerel  1903 Physics  École Poly… Paris
+## # ℹ 931 more rows
+## # ℹ 19 more variables: country &lt;chr&gt;, born_date &lt;date&gt;,
+## #   died_date &lt;date&gt;, gender &lt;chr&gt;, born_city &lt;chr&gt;, …
 ```
 
 ---
@@ -110,7 +110,7 @@ nobel
 - Write a file
 
 
-```r
+``` r
 df = tribble(
   ~x, ~y,
   1,  "a",
@@ -127,12 +127,12 @@ write_csv(df, file = "l09/data/df.csv")
 - Read it back in to inspect
 
 
-```r
+``` r
 read_csv("l09/data/df.csv")
 ```
 
 ```
-## # A tibble: 3 x 2
+## # A tibble: 3 × 2
 ##       x y    
 ##   &lt;dbl&gt; &lt;chr&gt;
 ## 1     1 a    
@@ -168,7 +168,7 @@ class: code70
 ## Data with bad names
 
 
-```r
+``` r
 edibnb_badnames = read_csv("l09/data/edibnb-badnames.csv")
 names(edibnb_badnames)
 ```
@@ -186,7 +186,7 @@ names(edibnb_badnames)
 ... spaces need special treatment&lt;sup&gt;1&lt;/sup&gt; in variable names
 
 
-```r
+``` r
 ggplot(edibnb_badnames, aes(x = Number of bathrooms, y = Price)) +
   geom_point()
 ```
@@ -204,7 +204,7 @@ class: code70
 ## Option 1 - Define column names
 
 
-```r
+``` r
 edibnb_col_names =
   read_csv(
     "l09/data/edibnb-badnames.csv",
@@ -228,7 +228,7 @@ names(edibnb_col_names)
 ## Option 2 - Format text to snake_case
 
 
-```r
+``` r
 edibnb_clean_names = read_csv("l09/data/edibnb-badnames.csv") %&gt;%
   janitor::clean_names()
 
@@ -260,13 +260,13 @@ Which type is `x`? Why?
 ]
 .pull-right[
 
-```r
+``` r
 read_csv("l09/data/df-na.csv")
 ```
 
 
 ```
-## # A tibble: 9 x 3
+## # A tibble: 9 × 3
 ##   x     y              z     
 ##   &lt;chr&gt; &lt;chr&gt;          &lt;chr&gt; 
 ## 1 1     a              hi    
@@ -286,7 +286,7 @@ read_csv("l09/data/df-na.csv")
 ## Option 1. Explicit NAs
 
 
-```r
+``` r
 read_csv("l09/data/df-na.csv", 
          na = c("", "NA", ".", "9999", "Not applicable"))
 ```
@@ -297,7 +297,7 @@ read_csv("l09/data/df-na.csv",
 .pull-right[
 
 ```
-## # A tibble: 9 x 3
+## # A tibble: 9 × 3
 ##       x y     z     
 ##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
 ## 1     1 a     hi    
@@ -317,7 +317,7 @@ read_csv("l09/data/df-na.csv",
 ## Option 2. Specify column types
 
 
-```r
+``` r
 read_csv("l09/data/df-na.csv", col_types = list(col_double(), 
                                             col_character(), 
                                             col_character()))
@@ -325,11 +325,14 @@ read_csv("l09/data/df-na.csv", col_types = list(col_double(),
 
 
 ```
-## Warning: One or more parsing issues, see `problems()` for details
+## Warning: One or more parsing issues, call `problems()` on your data frame
+## for details, e.g.:
+##   dat &lt;- vroom(...)
+##   problems(dat)
 ```
 
 ```
-## # A tibble: 9 x 3
+## # A tibble: 9 × 3
 ##       x y              z     
 ##   &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; 
 ## 1     1 a              hi    
@@ -371,21 +374,21 @@ Wondering where you remember these from?
 ]
 
 
-```r
+``` r
 data = read_csv("l09/data/df-na.csv")
 ```
 
 ```
 ## Rows: 9 Columns: 3
-## -- Column specification -----------------------------------------
+## ── Column specification ─────────────────────────────────────────
 ## Delimiter: ","
 ## chr (3): x, y, z
 ## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
-```r
+``` r
 spec(data)
 ```
 
@@ -412,23 +415,21 @@ class:middle
 --
 
 
-```r
+``` r
 *fav_food = read_excel("l09/data/favourite-food.xlsx")
 
 fav_food
 ```
 
 ```
-## # A tibble: 5 x 6
-##   `Student ID` `Full Name`      favourite.f~1 mealP~2 AGE   SES  
-##          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;         &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;
-## 1            1 Sunil Huffmann   Strawberry y~ Lunch ~ 4     High 
-## 2            2 Barclay Lynn     French fries  Lunch ~ 5     Midd~
-## 3            3 Jayendra Lyne    N/A           Breakf~ 7     Low  
-## 4            4 Leon Rossini     Anchovies     Lunch ~ 99999 Midd~
-## 5            5 Chidiegwu Dunkel Pizza         Breakf~ five  High 
-## # ... with abbreviated variable names 1: favourite.food,
-## #   2: mealPlan
+## # A tibble: 5 × 6
+##   `Student ID` `Full Name`    favourite.food mealPlan AGE   SES  
+##          &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;          &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;
+## 1            1 Sunil Huffmann Strawberry yo… Lunch o… 4     High 
+## 2            2 Barclay Lynn   French fries   Lunch o… 5     Midd…
+## 3            3 Jayendra Lyne  N/A            Breakfa… 7     Low  
+## 4            4 Leon Rossini   Anchovies      Lunch o… 99999 Midd…
+## 5            5 Chidiegwu Dun… Pizza          Breakfa… five  High
 ```
 
 ---
@@ -440,7 +441,7 @@ fav_food
 --
 
 
-```r
+``` r
 fav_food = read_excel("l09/data/favourite-food.xlsx") %&gt;%
 * janitor::clean_names()
 
@@ -448,15 +449,14 @@ fav_food
 ```
 
 ```
-## # A tibble: 5 x 6
-##   student_id full_name        favourite_food  meal_~1 age   ses  
-##        &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;
-## 1          1 Sunil Huffmann   Strawberry yog~ Lunch ~ 4     High 
-## 2          2 Barclay Lynn     French fries    Lunch ~ 5     Midd~
-## 3          3 Jayendra Lyne    N/A             Breakf~ 7     Low  
-## 4          4 Leon Rossini     Anchovies       Lunch ~ 99999 Midd~
-## 5          5 Chidiegwu Dunkel Pizza           Breakf~ five  High 
-## # ... with abbreviated variable name 1: meal_plan
+## # A tibble: 5 × 6
+##   student_id full_name       favourite_food meal_plan age   ses  
+##        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;          &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;
+## 1          1 Sunil Huffmann  Strawberry yo… Lunch on… 4     High 
+## 2          2 Barclay Lynn    French fries   Lunch on… 5     Midd…
+## 3          3 Jayendra Lyne   N/A            Breakfas… 7     Low  
+## 4          4 Leon Rossini    Anchovies      Lunch on… 99999 Midd…
+## 5          5 Chidiegwu Dunk… Pizza          Breakfas… five  High
 ```
 
 ---
@@ -468,7 +468,7 @@ fav_food
 --
 
 
-```r
+``` r
 fav_food = read_excel("l09/data/favourite-food.xlsx",
 *                      na = c("N/A", "99999")) %&gt;%
   janitor::clean_names()
@@ -477,15 +477,14 @@ fav_food
 ```
 
 ```
-## # A tibble: 5 x 6
-##   student_id full_name        favourite_food  meal_~1 age   ses  
-##        &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;
-## 1          1 Sunil Huffmann   Strawberry yog~ Lunch ~ 4     High 
-## 2          2 Barclay Lynn     French fries    Lunch ~ 5     Midd~
-## 3          3 Jayendra Lyne    &lt;NA&gt;            Breakf~ 7     Low  
-## 4          4 Leon Rossini     Anchovies       Lunch ~ &lt;NA&gt;  Midd~
-## 5          5 Chidiegwu Dunkel Pizza           Breakf~ five  High 
-## # ... with abbreviated variable name 1: meal_plan
+## # A tibble: 5 × 6
+##   student_id full_name       favourite_food meal_plan age   ses  
+##        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;          &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;
+## 1          1 Sunil Huffmann  Strawberry yo… Lunch on… 4     High 
+## 2          2 Barclay Lynn    French fries   Lunch on… 5     Midd…
+## 3          3 Jayendra Lyne   &lt;NA&gt;           Breakfas… 7     Low  
+## 4          4 Leon Rossini    Anchovies      Lunch on… &lt;NA&gt;  Midd…
+## 5          5 Chidiegwu Dunk… Pizza          Breakfas… five  High
 ```
 
 ---
@@ -494,7 +493,7 @@ fav_food
 
 .pull-left-wide[
 
-```r
+``` r
 fav_food = fav_food %&gt;%
 * mutate(
 *   age = if_else(age == "five", "5", age),
@@ -508,9 +507,9 @@ glimpse(fav_food)
 ## Rows: 5
 ## Columns: 6
 ## $ student_id     &lt;dbl&gt; 1, 2, 3, 4, 5
-## $ full_name      &lt;chr&gt; "Sunil Huffmann", "Barclay Lynn", "Jayen~
-## $ favourite_food &lt;chr&gt; "Strawberry yoghurt", "French fries", NA~
-## $ meal_plan      &lt;chr&gt; "Lunch only", "Lunch only", "Breakfast a~
+## $ full_name      &lt;chr&gt; "Sunil Huffmann", "Barclay Lynn", "Jayen…
+## $ favourite_food &lt;chr&gt; "Strawberry yoghurt", "French fries", NA…
+## $ meal_plan      &lt;chr&gt; "Lunch only", "Lunch only", "Breakfast a…
 ## $ age            &lt;dbl&gt; 4, 5, 7, NA, 5
 ## $ ses            &lt;chr&gt; "High", "Middle", "Low", "Middle", "High"
 ```
@@ -529,13 +528,13 @@ What order are the levels of `ses` listed in?
 
 .pull-left-wide[
 
-```r
+``` r
 fav_food %&gt;%
   count(ses)
 ```
 
 ```
-## # A tibble: 3 x 2
+## # A tibble: 3 × 2
 ##   ses        n
 ##   &lt;chr&gt;  &lt;int&gt;
 ## 1 High       2
@@ -553,7 +552,7 @@ fav_food %&gt;%
 
 .pull-left-wide[
 
-```r
+``` r
 fav_food = fav_food %&gt;%
 * mutate(ses = fct_relevel(ses, "Low", "Middle", "High"))
 
@@ -562,7 +561,7 @@ fav_food %&gt;%
 ```
 
 ```
-## # A tibble: 3 x 2
+## # A tibble: 3 × 2
 ##   ses        n
 ##   &lt;fct&gt;  &lt;int&gt;
 ## 1 Low        1
@@ -576,7 +575,7 @@ fav_food %&gt;%
 ## Putting it altogether
 
 
-```r
+``` r
 fav_food = read_excel("l09/data/favourite-food.xlsx", na = c("N/A", "99999")) %&gt;%
   janitor::clean_names() %&gt;%
   mutate(
@@ -589,15 +588,14 @@ fav_food
 ```
 
 ```
-## # A tibble: 5 x 6
-##   student_id full_name        favourite_food  meal_~1   age ses  
-##        &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;           &lt;chr&gt;   &lt;dbl&gt; &lt;fct&gt;
-## 1          1 Sunil Huffmann   Strawberry yog~ Lunch ~     4 High 
-## 2          2 Barclay Lynn     French fries    Lunch ~     5 Midd~
-## 3          3 Jayendra Lyne    &lt;NA&gt;            Breakf~     7 Low  
-## 4          4 Leon Rossini     Anchovies       Lunch ~    NA Midd~
-## 5          5 Chidiegwu Dunkel Pizza           Breakf~     5 High 
-## # ... with abbreviated variable name 1: meal_plan
+## # A tibble: 5 × 6
+##   student_id full_name       favourite_food meal_plan   age ses  
+##        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;          &lt;chr&gt;     &lt;dbl&gt; &lt;fct&gt;
+## 1          1 Sunil Huffmann  Strawberry yo… Lunch on…     4 High 
+## 2          2 Barclay Lynn    French fries   Lunch on…     5 Midd…
+## 3          3 Jayendra Lyne   &lt;NA&gt;           Breakfas…     7 Low  
+## 4          4 Leon Rossini    Anchovies      Lunch on…    NA Midd…
+## 5          5 Chidiegwu Dunk… Pizza          Breakfas…     5 High
 ```
 
 ---
@@ -605,7 +603,7 @@ fav_food
 ## Out and back in
 
 
-```r
+``` r
 write_csv(fav_food, file = "l09/data/fav-food-clean.csv")
 
 fav_food_clean = read_csv("l09/data/fav-food-clean.csv")
@@ -618,13 +616,13 @@ What happened to `ses` again?
 ]
 
 
-```r
+``` r
 fav_food_clean %&gt;%
   count(ses)
 ```
 
 ```
-## # A tibble: 3 x 2
+## # A tibble: 3 × 2
 ##   ses        n
 ##   &lt;chr&gt;  &lt;int&gt;
 ## 1 High       2
@@ -640,7 +638,7 @@ fav_food_clean %&gt;%
 - An alternative is RDS files, you can read and write them with `readRDS()` and `saveRDS()`, respectively.
 
 
-```r
+``` r
 readRDS(path)
 saveRDS(x, path)
 ```
@@ -650,7 +648,7 @@ saveRDS(x, path)
 ## Out and back in, take 2
 
 
-```r
+``` r
 saveRDS(fav_food, file = "l09/data/fav-food-clean.rds")
 
 fav_food_clean = readRDS("l09/data/fav-food-clean.rds")
@@ -660,7 +658,7 @@ fav_food_clean %&gt;%
 ```
 
 ```
-## # A tibble: 3 x 2
+## # A tibble: 3 × 2
 ##   ses        n
 ##   &lt;fct&gt;  &lt;int&gt;
 ## 1 Low        1
@@ -697,20 +695,20 @@ class: middle
 .pull-left[
 
 ```
-## # A tibble: 9 x 2
+## # A tibble: 9 × 2
 ##   id      n    
 ##   &lt;chr&gt;   &lt;chr&gt;
 ## 1 Brand 1 n    
 ## 2 1234    8    
 ## 3 8721    2    
 ## 4 1822    3    
-## # ... with 5 more rows
+## # ℹ 5 more rows
 ```
 ]
 .pull-right[
 
 ```
-## # A tibble: 7 x 3
+## # A tibble: 7 × 3
 ##   brand      id     n
 ##   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
 ## 1 Brand 1  1234     8
