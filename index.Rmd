@@ -47,7 +47,7 @@ MW 11:00-12:40, SRB 1402
 4.  [Data types in R](lecture/l04-data-types.html).
     *  [Lab 2](hw_lab_instruction/lab02-merge-conflict/lab02-merge-conflict.html). You will need to accept the [invitation](https://classroom.github.com/a/d0eW0EO8).
 Due 5pm, Sept 18.
-<!--     * Lab 2 [solutions](hw_lab_instruction/lab02-merge-conflict/lab-02.html) -->
+    * Lab 2 [solutions](hw_lab_instruction/lab02-merge-conflict/lab-02.html)
 5.  [Reshaping and combining data frames](lecture/l05a-reshape-merge.html).
 6.  [Advanced dplyr(ii)](lecture/l05b-advanced-dplyr.html)
     *  [Lab 3](hw_lab_instruction/lab03-laquinta-uno/lab03-laquinta-uno.html).  To be completed in same group as lab 2, [invitation here](https://classroom.github.com/a/KvOILDqa). Due 5pm, Sep 25.
@@ -57,9 +57,9 @@ Due 5pm, Sept 18.
     * HW 2 assigned.  [instructions](hw_lab_instruction/hw02-accidents/hw02-accidents.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/bvx0Xooy)).  Due 5pm EDT, Sep 30.
 <!--     * HW 2 [solutions](hw_lab_instruction/hw02-accidents/hw02.html) -->
 8.  Effective data visualization [(i)](lecture/03a2-tips-for-effective-dataviz.pdf) [(ii)](lecture/03b-tips-for-effective-dataviz.pdf) [video](https://youtu.be/ZrifrBvFWgg)
-    * Turn in lab 3 by tomorrow.
+    * Turn in lab 3.
 <!-- 9. [Data from files](lecture/l09-data-from-files.html) -->
-<!-- *   Repository for lecture 9 [here](https://classroom.github.com/a/vAS3mGej) will not be graded, but gets you everything you need at once. -->
+<!-- *   Repository for lecture 9 [here](https://classroom.github.com/a/Dc1MkHq9) will not be graded, but gets you everything you need at once. -->
     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! At least one new teammate for each person.
     [Invitation here](https://classroom.github.com/a/ZG4bwsD8). Due 5pm, Oct 7.
 <!--     * Lab 4 [solutions](hw_lab_instruction/lab04-laquinta-dos/lab04.html) -->
