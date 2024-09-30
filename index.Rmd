@@ -59,7 +59,7 @@ Due 5pm, Sept 18.
 8.  Effective data visualization [(i)](lecture/03a2-tips-for-effective-dataviz.pdf) [(ii)](lecture/03b-tips-for-effective-dataviz.pdf) [video](https://youtu.be/ZrifrBvFWgg)
     * Turn in lab 3.
 9. [Data from files](lecture/l09-data-from-files.html)
-*   Repository for lecture 9 [here](https://classroom.github.com/a/Dc1MkHq9) will not be graded, but gets you everything you need at once.
+    *   Repository for lecture 9 [here](https://classroom.github.com/a/Dc1MkHq9) will not be graded, but gets you everything you need at once.
     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! At least one new teammate for each person.
     [Invitation here](https://classroom.github.com/a/ZG4bwsD8). Due 5pm, Oct 7.
 <!--     * Lab 4 [solutions](hw_lab_instruction/lab04-laquinta-dos/lab04.html) -->
