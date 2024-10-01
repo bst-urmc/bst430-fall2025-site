@@ -63,9 +63,8 @@ Due 5pm, Sept 18.
     *  [Lab 4](hw_lab_instruction/lab04-laquinta-dos/lab04-laquinta-dos.html).  New groups! At least one new teammate for each person.
     [Invitation here](https://classroom.github.com/a/ZG4bwsD8). Due 5pm, Oct 7.
 <!--     * Lab 4 [solutions](hw_lab_instruction/lab04-laquinta-dos/lab04.html) -->
-<!-- 10. Finish visualization slides -->
-<!--     * [styleguide](lecture/l06-style.html) -->
-<!-- * Finish lab 4. -->
+10. [styleguide](lecture/l06-style.html)
+* Finish lab 4.
 <!-- 11. [Text processing](lecture/l10-text.html)   [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=961dbd5b-ccf6-4fb9-a2ee-af2d012702fe) -->
 <!--     * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/6sqI7bjg)).  Due 5pm EDT, Oct 28. -->
 <!--     * HW 3 [solutions](hw_lab_instruction/hw03-fatal-geography/hw03.html) -->

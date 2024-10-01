@@ -87,9 +87,11 @@ Applying a sensible and consistent style:
 ```{r eval = FALSE}
 # Good
 ucb-admit.csv
+make-georgia-plot
 
 # Bad
 UCB Admit.csv
+make Georgia plot
 ```
 
 ---
@@ -224,7 +226,8 @@ volume = 3.14159 * r^3
 area = 4/3 * 3.14159 * r^2
 
 # good
-pi = 3.14159
+# R knows what pi equals!
+#pi = 3.14159
 volume = pi * r^3
 area = 4/3 * pi * r^2
 ```
