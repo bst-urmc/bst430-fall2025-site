@@ -55,7 +55,7 @@ Due 5pm, Sept 18.
 7.  [Factors and dates](lecture/l07-factors-dates.html)
     * Continue working on Lab 3
     * HW 2 assigned.  [instructions](hw_lab_instruction/hw02-accidents/hw02-accidents.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/bvx0Xooy)).  Due 5pm EDT, Sep 30.
-<!--     * HW 2 [solutions](hw_lab_instruction/hw02-accidents/hw02.html) -->
+    * HW 2 [solutions](hw_lab_instruction/hw02-accidents/hw02.html)
 8.  Effective data visualization [(i)](lecture/03a2-tips-for-effective-dataviz.pdf) [(ii)](lecture/03b-tips-for-effective-dataviz.pdf) [video](https://youtu.be/ZrifrBvFWgg)
     * Turn in lab 3.
 9. [Data from files](lecture/l09-data-from-files.html)
@@ -64,9 +64,9 @@ Due 5pm, Sept 18.
     [Invitation here](https://classroom.github.com/a/ZG4bwsD8). Due 5pm, Oct 7.
 <!--     * Lab 4 [solutions](hw_lab_instruction/lab04-laquinta-dos/lab04.html) -->
 10. [styleguide](lecture/l06-style.html)
-* Finish lab 4.
-<!-- 11. [Text processing](lecture/l10-text.html)   [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=961dbd5b-ccf6-4fb9-a2ee-af2d012702fe) -->
-<!--     * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/6sqI7bjg)).  Due 5pm EDT, Oct 28. -->
+    * Finish lab 4.
+11. [Text processing](lecture/l10-text.html)   
+    * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/_NYapbxO)).  Due 5pm EDT, Oct 14.
 <!--     * HW 3 [solutions](hw_lab_instruction/hw03-fatal-geography/hw03.html) -->
 <!-- 12. [Text analysis](lecture/l10-text-ii.html)    [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3482b784-14f4-4ff0-8634-af3201202cb5) -->
 <!--     *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; take turns and then you won't have so many GitHub problems. [Invitation here](https://classroom.github.com/a/sFi-IjD6). Due 5pm, Oct 25. -->
