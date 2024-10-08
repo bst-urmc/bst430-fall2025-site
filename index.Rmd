@@ -69,7 +69,7 @@ Due 5pm, Sept 18.
     * HW 3 assigned.  [instructions](hw_lab_instruction/hw03-fatal-geography/hw03-fatal-geography.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/_NYapbxO)).  Due 5pm EDT, Oct 14.
 <!--     * HW 3 [solutions](hw_lab_instruction/hw03-fatal-geography/hw03.html) -->
 12. [Text analysis](lecture/l10-text-ii.html)   
-    *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; take turns and then you won't have so many GitHub problems. [Invitation here](https://classroom.github.com/a/GrR3CQ2R). Due 5pm, Oct 18.
+    *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; you might want to take turns Pull-Committing because changing figures can cause extra GIT problems. [Invitation here](https://classroom.github.com/a/GrR3CQ2R). Due 5pm, Oct 18.
 <!--     * Lab 5 [solutions](hw_lab_instruction/lab05-sadplots/lab05.html) -->
     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html)
 <!-- 13. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html) -->
