@@ -43,10 +43,8 @@ theme_set(theme_minimal())
 ```{r tabulate-delay}
 delay_stats = flights %>%  
   filter(month %in% c(3, 6)) %>%
-  mutate(day = factor(day), 
-         hour = factor(hour, levels = 0:23), 
-         origin = factor(origin), 
-         month= factor(month)) %>%
+  mutate(day = factor(day),  hour = factor(hour, levels = 0:23), 
+         origin = factor(origin),  month= factor(month)) %>%
   group_by(day, hour, origin, month) %>% 
   mutate(n = n(), pos_delay =  pmax(0, dep_delay)) %>%
   group_by(day, hour, origin, month, .drop = FALSE) %>% 
@@ -101,7 +99,10 @@ First, we'd need to pivot wider.
 
 ```{r}
 delay_wide = delay_june %>% 
-  pivot_wider(id_cols = day:hour, names_from = origin, values_from = residual_total_delay) %>% ungroup()
+  pivot_wider(id_cols = day:hour, 
+              names_from = origin, 
+              values_from = residual_total_delay) %>% 
+  ungroup()
 
 delay_wide %>% slice(10:15)
 ```
@@ -110,7 +111,8 @@ delay_wide %>% slice(10:15)
 
 ```{r}
 airport_delay_plot = ggplot(delay_wide, aes(x = EWR, y = JFK)) + 
-  geom_point(aes(color = as.numeric(hour))) + geom_smooth() + 
+  geom_point(aes(color = as.numeric(hour))) + 
+  geom_smooth() + 
   scale_color_viridis_c() 
 airport_delay_plot + labs(title = "Resid. delay (minutes) on each hour")
 ```

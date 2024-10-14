@@ -6,8 +6,8 @@
     <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/panelset/panelset.css" rel="stylesheet" />
     <script src="libs/panelset/panelset.js"></script>
     <link rel="stylesheet" href="css/lexis.css" type="text/css" />
@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-09-27 (updated: 2022-10-25 by TL)
+### 2021-09-27 (updated: 2024-10-14 by TL)
 ]
 
 ---
@@ -53,13 +53,11 @@ Let's suppose we tabulate the average delay at the NYC airports at every hour du
 
 
 
-```r
+``` r
 delay_stats = flights %&gt;%  
   filter(month %in% c(3, 6)) %&gt;%
-  mutate(day = factor(day), 
-         hour = factor(hour, levels = 0:23), 
-         origin = factor(origin), 
-         month= factor(month)) %&gt;%
+  mutate(day = factor(day),  hour = factor(hour, levels = 0:23), 
+         origin = factor(origin),  month= factor(month)) %&gt;%
   group_by(day, hour, origin, month) %&gt;% 
   mutate(n = n(), pos_delay =  pmax(0, dep_delay)) %&gt;%
   group_by(day, hour, origin, month, .drop = FALSE) %&gt;% 
@@ -83,25 +81,25 @@ delay_june = filter(delay_stats, month == "6") %&gt;%
 We show the largest total delay for each hour/origin that is not empty.  
 
 
-```r
+``` r
 delay_june %&gt;% slice_max(n = 1, order_by = total_delay)
 ```
 
 ```
-## # A tibble: 54 x 5
+## # A tibble: 612 × 5
 ## # Groups:   hour, origin, month [144]
 ##   month day   hour  origin total_delay
 ##   &lt;fct&gt; &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;        &lt;dbl&gt;
-## 1 6     27    5     EWR             56
-## 2 6     15    5     JFK             38
-## 3 6     26    5     LGA             59
-## 4 6     26    6     EWR            617
-## # ... with 50 more rows
+## 1 6     1     0     EWR             NA
+## 2 6     2     0     EWR             NA
+## 3 6     3     0     EWR             NA
+## 4 6     4     0     EWR             NA
+## # ℹ 608 more rows
 ```
 ---
 
 
-```r
+``` r
 dstat = ggplot(delay_june, aes(x = as.numeric(hour), y = total_delay, color = origin)) + 
   geom_point() + geom_smooth() 
 dstat
@@ -116,7 +114,7 @@ We see that flights aren't so delayed early in the day, and peak delays occur in
 ## Detrend
 
 
-```r
+``` r
 delay_june = delay_june %&gt;% 
   group_by(hour, origin, month) %&gt;%
   mutate(residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
@@ -132,15 +130,18 @@ delay_june = delay_june %&gt;%
 First, we'd need to pivot wider.
 
 
-```r
+``` r
 delay_wide = delay_june %&gt;% 
-  pivot_wider(id_cols = day:hour, names_from = origin, values_from = residual_total_delay) %&gt;% ungroup()
+  pivot_wider(id_cols = day:hour, 
+              names_from = origin, 
+              values_from = residual_total_delay) %&gt;% 
+  ungroup()
 
 delay_wide %&gt;% slice(10:15)
 ```
 
 ```
-## # A tibble: 6 x 5
+## # A tibble: 6 × 5
 ##   day   hour     EWR    JFK    LGA
 ##   &lt;fct&gt; &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
 ## 1 1     9     -108.  -146.  -166. 
@@ -154,9 +155,10 @@ delay_wide %&gt;% slice(10:15)
 ---
 
 
-```r
+``` r
 airport_delay_plot = ggplot(delay_wide, aes(x = EWR, y = JFK)) + 
-  geom_point(aes(color = as.numeric(hour))) + geom_smooth() + 
+  geom_point(aes(color = as.numeric(hour))) + 
+  geom_smooth() + 
   scale_color_viridis_c() 
 airport_delay_plot + labs(title = "Resid. delay (minutes) on each hour")
 ```
@@ -170,7 +172,7 @@ airport_delay_plot + labs(title = "Resid. delay (minutes) on each hour")
 
 .panel[.panel-name[Code]
 
-```r
+``` r
 airport_delay_plot_simple = airport_delay_plot + guides(color = 'none')
 cowplot::plot_grid(
   airport_delay_plot_simple + aes(x = JFK, y = dplyr::lag(JFK, n = 1)),
@@ -195,7 +197,7 @@ class: code70
 .pull-left[
 Using `reshape2::acast` (preferred, gives sensible rownames)
 
-```r
+``` r
 library(reshape2)
 delay_matrix = acast(delay_june, day + hour ~ origin, value.var = 'residual_total_delay')
 delay_matrix
@@ -952,7 +954,7 @@ delay_matrix
 .pull-right[
 Or casting with `as.matrix` (simple)
 
-```r
+``` r
 delay_matrix2 = delay_wide %&gt;% select(EWR:LGA) %&gt;% as.matrix
 delay_matrix2
 ```
@@ -1716,7 +1718,7 @@ method = c("pearson", "kendall", "spearman"))
 
 .pull-left[
 
-```r
+``` r
 cor(delay_matrix) 
 ```
 
@@ -1729,7 +1731,7 @@ cor(delay_matrix)
 ]
 .pull-right[
 
-```r
+``` r
 cor(delay_matrix, use = 'complete')
 ```
 
@@ -1747,7 +1749,7 @@ cor(delay_matrix, use = 'complete')
 ## A first taste of matrix indexing
 
 
-```r
+``` r
 delay_matrix$EWR
 ```
 
@@ -1757,7 +1759,7 @@ delay_matrix$EWR
 
 Need to use brackets
 
-```r
+``` r
 delay_matrix[,'EWR'] # or delay_matrix[,1]
 ```
 
@@ -1774,7 +1776,7 @@ class: code70
 ## A second taste 
 
 
-```r
+``` r
 ## 10th row, 9am
 delay_matrix[10,]
 ```
@@ -1784,7 +1786,7 @@ delay_matrix[10,]
 ## -108.3000 -145.5000 -165.8667
 ```
 
-```r
+``` r
 ## row titled "10_14", June 10, 2PM.
 delay_matrix["10_14",]
 ```
@@ -1794,7 +1796,7 @@ delay_matrix["10_14",]
 ##   50.66667 1098.50000  180.93333
 ```
 
-```r
+``` r
 ## exclude first 7 rows
 delay_matrix[-(1:7),]
 ```
@@ -2547,7 +2549,7 @@ delay_matrix[-(1:7),]
 
 1 hour lag
 
-```r
+``` r
 cor(delay_matrix[-nrow(delay_matrix),], 
     delay_matrix[-1,],
     use = 'pairwise')
@@ -2572,7 +2574,7 @@ cor(delay_matrix[-nrow(delay_matrix),],
 ## 2 hour lag
 
 
-```r
+``` r
 cor(delay_matrix[1:(nrow(delay_matrix)-2),],
     delay_matrix[-(1:2),],
     use = 'pairwise')
@@ -2590,7 +2592,7 @@ cor(delay_matrix[1:(nrow(delay_matrix)-2),],
 ## The whole ballgame:auto-correlation function
 
 
-```r
+``` r
 acf_arr = acf(delay_matrix, na.action = na.pass, lag.max = 12, plot = FALSE)
 plot(acf_arr)
 ```
@@ -2619,7 +2621,7 @@ class: middle
 Your garden variety R object is a vector. Square brackets are used for isolating elements of a vector. This is often called __indexing__. Indexing begins at 1 in R, unlike many other languages that index from 0.
 
 
-```r
+``` r
 x = 3 * 4
 x
 ```
@@ -2628,7 +2630,7 @@ x
 ## [1] 12
 ```
 
-```r
+``` r
 length(x)
 ```
 
@@ -2638,7 +2640,7 @@ length(x)
 
 
 
-```r
+``` r
 x[2] = 100
 x
 ```
@@ -2652,7 +2654,7 @@ x
 ## R is very (probably too) forgiving with indexing.
 
 
-```r
+``` r
 x[5] = 3
 x
 ```
@@ -2661,7 +2663,7 @@ x
 ## [1]  12 100  NA  NA   3
 ```
 
-```r
+``` r
 x[11]
 ```
 
@@ -2669,7 +2671,7 @@ x[11]
 ## [1] NA
 ```
 
-```r
+``` r
 x[0]
 ```
 
@@ -2684,7 +2686,7 @@ x[0]
 When reading docs,look for arguments that can be vectors. For example, the mean and standard deviation of random normal variates can be provided as vectors.
 
 
-```r
+``` r
 set.seed(2021)
 rnorm(5, mean = 10^(1:5))
 ```
@@ -2693,7 +2695,7 @@ rnorm(5, mean = 10^(1:5))
 ## [1]      9.88    100.55   1000.35  10000.36 100000.90
 ```
 
-```r
+``` r
 rnorm(5, sd = 10^(1:5))
 ```
 
@@ -2711,7 +2713,7 @@ rnorm(5, sd = 10^(1:5))
 Arithmetic operator apply to vectors in a "componentwise" fashion
 
 
-```r
+``` r
 x = c(7, 8, 10, 20)
 y = c(-7, -8, -10, -20)
 x + y
@@ -2721,7 +2723,7 @@ x + y
 ## [1] 0 0 0 0
 ```
 
-```r
+``` r
 x * y
 ```
 
@@ -2734,7 +2736,7 @@ x * y
 Can do componentwise comparisons with vectors:
 
 
-```r
+``` r
 x &gt; 9
 ```
 
@@ -2745,7 +2747,7 @@ x &gt; 9
 Logical operators also work elementwise:
 
 
-```r
+``` r
 (x &gt; 9) &amp; (x &lt; 20)
 ```
 
@@ -2759,7 +2761,7 @@ To compare whole vectors, best to use `identical()` or `all.equal()`:
 .pull-left[
 `identical()` and `==`
 
-```r
+``` r
 x == -y
 ```
 
@@ -2767,7 +2769,7 @@ x == -y
 ## [1] TRUE TRUE TRUE TRUE
 ```
 
-```r
+``` r
 identical(x, -y)
 ```
 
@@ -2775,7 +2777,7 @@ identical(x, -y)
 ## [1] TRUE
 ```
 
-```r
+``` r
 u = c(0.5-0.3,0.3-0.1)
 v = c(0.3-0.1,0.5-0.3)
 identical(u,v)
@@ -2785,7 +2787,7 @@ identical(u,v)
 ## [1] FALSE
 ```
 
-```r
+``` r
 identical(u,v[2:1])
 ```
 
@@ -2796,7 +2798,7 @@ identical(u,v[2:1])
 .pull-right[
 `all.equal` and `near` allow for machine representation error in floating point values.
 
-```r
+``` r
 all.equal(u, v)
 ```
 
@@ -2804,7 +2806,7 @@ all.equal(u, v)
 ## [1] TRUE
 ```
 
-```r
+``` r
 all.equal(u,v, tolerance = 0)
 ```
 
@@ -2812,7 +2814,7 @@ all.equal(u,v, tolerance = 0)
 ## [1] "Mean relative difference: 1.387779e-16"
 ```
 
-```r
+``` r
 near(u,v)
 ```
 
@@ -2837,7 +2839,7 @@ You will get a warning when the lengths is not an integer multiples of each anot
 ## Recycled with a warning
 
 
-```r
+``` r
 (y = 1:3)
 ```
 
@@ -2845,7 +2847,7 @@ You will get a warning when the lengths is not an integer multiples of each anot
 ## [1] 1 2 3
 ```
 
-```r
+``` r
 (z = 3:7)
 ```
 
@@ -2853,7 +2855,7 @@ You will get a warning when the lengths is not an integer multiples of each anot
 ## [1] 3 4 5 6 7
 ```
 
-```r
+``` r
 y + z
 ```
 
@@ -2873,7 +2875,7 @@ Hint: set `options(warn = 2)` to convert warnings to errors to catch this proble
 
 
 
-```r
+``` r
 (y = 1:10)
 ```
 
@@ -2881,7 +2883,7 @@ Hint: set `options(warn = 2)` to convert warnings to errors to catch this proble
 ##  [1]  1  2  3  4  5  6  7  8  9 10
 ```
 
-```r
+``` r
 (z = 3:7)
 ```
 
@@ -2889,7 +2891,7 @@ Hint: set `options(warn = 2)` to convert warnings to errors to catch this proble
 ## [1] 3 4 5 6 7
 ```
 
-```r
+``` r
 y + z
 ```
 
@@ -2900,7 +2902,7 @@ y + z
 
 `1` is a vector, so this is also a form of recycling!
 
-```r
+``` r
 z + 1
 ```
 
@@ -2916,7 +2918,7 @@ The combine function `c()` is your go-to function for making vectors.
 (OMG, I was taught this was called concatenate.)
 
 
-```r
+``` r
 str(c("hello", "world"))
 ```
 
@@ -2924,7 +2926,7 @@ str(c("hello", "world"))
 ##  chr [1:2] "hello" "world"
 ```
 
-```r
+``` r
 str(c(1:3, 100, 150))
 ```
 
@@ -2937,7 +2939,7 @@ str(c(1:3, 100, 150))
 Let's create some simple vectors for more demos below.
 
 
-```r
+``` r
 n = 8
 set.seed(1)
 (w = round(rnorm(n), 2)) # numeric floating point
@@ -2947,7 +2949,7 @@ set.seed(1)
 ## [1] -0.63  0.18 -0.84  1.60  0.33 -0.82  0.49  0.74
 ```
 
-```r
+``` r
 (x = 1:n) # numeric integer
 ```
 
@@ -2955,7 +2957,7 @@ set.seed(1)
 ## [1] 1 2 3 4 5 6 7 8
 ```
 
-```r
+``` r
 (y = LETTERS[1:n]) # character
 ```
 
@@ -2963,7 +2965,7 @@ set.seed(1)
 ## [1] "A" "B" "C" "D" "E" "F" "G" "H"
 ```
 
-```r
+``` r
 (z = runif(n) &gt; 0.3) # logical
 ```
 
@@ -2990,7 +2992,7 @@ Common ways to index a vector:
 ## Names
 
 
-```r
+``` r
 w
 ```
 
@@ -2998,7 +3000,7 @@ w
 ## [1] -0.63  0.18 -0.84  1.60  0.33 -0.82  0.49  0.74
 ```
 
-```r
+``` r
 names(w) = letters[seq_along(w)]
 w
 ```
@@ -3008,7 +3010,7 @@ w
 ## -0.63  0.18 -0.84  1.60  0.33 -0.82  0.49  0.74
 ```
 
-```r
+``` r
 w[c('a', 'b', 'd')]
 ```
 
@@ -3023,7 +3025,7 @@ w[c('a', 'b', 'd')]
 ## Boolean vectors
 
 
-```r
+``` r
 w &lt; 0
 ```
 
@@ -3032,7 +3034,7 @@ w &lt; 0
 ##  TRUE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE
 ```
 
-```r
+``` r
 which(w &lt; 0)
 ```
 
@@ -3041,7 +3043,7 @@ which(w &lt; 0)
 ## 1 3 6
 ```
 
-```r
+``` r
 w[w &lt; 0]
 ```
 
@@ -3057,7 +3059,7 @@ w[w &lt; 0]
 ## Integer vectors
 
 
-```r
+``` r
 seq(from = 1, to = length(w), by = 2)
 ```
 
@@ -3065,7 +3067,7 @@ seq(from = 1, to = length(w), by = 2)
 ## [1] 1 3 5 7
 ```
 
-```r
+``` r
 w[seq(from = 1, to = length(w), by = 2)]
 ```
 
@@ -3074,7 +3076,7 @@ w[seq(from = 1, to = length(w), by = 2)]
 ## -0.63 -0.84  0.33  0.49
 ```
 
-```r
+``` r
 w[-c(2, 5)]
 ```
 
@@ -3083,7 +3085,7 @@ w[-c(2, 5)]
 ## -0.63 -0.84  1.60 -0.82  0.49  0.74
 ```
 
-```r
+``` r
 w[c('c', 'a', 'f')]
 ```
 
@@ -3113,7 +3115,7 @@ We have seen that lists before: the über-vector in R. It's got length, like a v
 
 Using `list()` instead of `c()` to combine things and you'll notice that the different flavors of the constituent parts are retained this time.
 
-```r
+``` r
 ## earlier: a = c("cabbage", pi, TRUE, 4.3)
 (a = list("cabbage", pi, TRUE, c(4.3,3,2.1,10)))
 ```
@@ -3139,7 +3141,7 @@ Using `list()` instead of `c()` to combine things and you'll notice that the dif
 List components can also have names. You can create or change names after a list already exists or in the initial assignment.
 .pull-left[
 
-```r
+``` r
 names(a)
 ```
 
@@ -3147,7 +3149,7 @@ names(a)
 ## NULL
 ```
 
-```r
+``` r
 names(a) = c("veg", "dessert", "my_aim", "number")
 a
 ```
@@ -3168,7 +3170,7 @@ a
 ]
 .pull-right[
 
-```r
+``` r
 a = list(veg = "cabbage", dessert = pi, my_aim = TRUE, numbers = c(4.3,10))
 a
 ```
@@ -3203,7 +3205,7 @@ The ["pepper shaker photos" in R for Data Science](https://r4ds.had.co.nz/vector
 ## More list indexing
 
 
-```r
+``` r
 (a = list(veg = c("cabbage", "eggplant"),
            t_num = c(pi, exp(1), sqrt(2)),
            my_aim = TRUE,
@@ -3231,7 +3233,7 @@ A slightly more complicated list for demo purposes.
 ## Single, unlisted elements
 
 
-```r
+``` r
 a[[2]] # index with a positive integer
 ```
 
@@ -3239,7 +3241,7 @@ a[[2]] # index with a positive integer
 ## [1] 3.141593 2.718282 1.414214
 ```
 
-```r
+``` r
 a$my_aim # use dollar sign and element name
 ```
 
@@ -3247,7 +3249,7 @@ a$my_aim # use dollar sign and element name
 ## [1] TRUE
 ```
 
-```r
+``` r
 a[["t_num"]] # index with length 1 character vector
 ```
 
@@ -3260,7 +3262,7 @@ a[["t_num"]] # index with length 1 character vector
 ## Single, unlisted elements
 
 
-```r
+``` r
 i_want_this = "joe_num" # indexing with length 1 character object
 a[[i_want_this]] # we get joe_num itself, a length 5 integer vector
 ```
@@ -3276,7 +3278,7 @@ a[[i_want_this]] # we get joe_num itself, a length 5 integer vector
 ## Double bracket only for single elements
 
 
-```r
+``` r
 a[[c("joe_num", "veg")]] 
 ```
 
@@ -3291,7 +3293,7 @@ We get an error if we try to extract more than element with double brackets
 ## More than one element 
 
 
-```r
+``` r
 names(a)
 ```
 
@@ -3299,7 +3301,7 @@ names(a)
 ## [1] "veg"     "t_num"   "my_aim"  "joe_num"
 ```
 
-```r
+``` r
 str(a[c("t_num", "veg")]) # returns list of length 2
 ```
 
@@ -3309,7 +3311,7 @@ str(a[c("t_num", "veg")]) # returns list of length 2
 ##  $ veg  : chr [1:2] "cabbage" "eggplant"
 ```
 
-```r
+``` r
 str(a["veg"])# returns list of length 1
 ```
 
@@ -3318,7 +3320,7 @@ str(a["veg"])# returns list of length 1
 ##  $ veg: chr [1:2] "cabbage" "eggplant"
 ```
 
-```r
+``` r
 length(a["veg"][[1]]) # contrast with length of the veg vector itself
 ```
 
@@ -3333,7 +3335,7 @@ The return value will always be a list, even if you only request 1 element.
 ## A useful list
 
 
-```r
+``` r
 (lmcars = lm(speed~dist, data=cars))
 ```
 
@@ -3347,7 +3349,7 @@ The return value will always be a list, even if you only request 1 element.
 ##      8.2839       0.1656
 ```
 
-```r
+``` r
 lmcars[[1]]
 ```
 
@@ -3356,7 +3358,7 @@ lmcars[[1]]
 ##   8.2839056   0.1655676
 ```
 
-```r
+``` r
 summary(lmcars)$sigma
 ```
 
@@ -3364,7 +3366,7 @@ summary(lmcars)$sigma
 ## [1] 3.155753
 ```
 
-```r
+``` r
 names(summary(lmcars))
 ```
 
@@ -3382,7 +3384,7 @@ names(summary(lmcars))
 In data analysis, we often import data into data.frame via `read_csv()`. But one can also construct a data.frame directly using `tibble()`.
 
 
-```r
+``` r
 n = 8
 (j_dat = tibble(w = rnorm(n),
                 x = 1:n,
@@ -3391,7 +3393,7 @@ n = 8
 ```
 
 ```
-## # A tibble: 8 x 4
+## # A tibble: 8 × 4
 ##         w     x y     z    
 ##     &lt;dbl&gt; &lt;int&gt; &lt;chr&gt; &lt;lgl&gt;
 ## 1 -0.621      1 A     TRUE 
@@ -3409,7 +3411,7 @@ n = 8
 ## data.frames really are lists!
 
 
-```r
+``` r
 is.list(j_dat) # data.frames are lists
 ```
 
@@ -3417,7 +3419,7 @@ is.list(j_dat) # data.frames are lists
 ## [1] TRUE
 ```
 
-```r
+``` r
 j_dat[[4]] # this works but I prefer ...
 ```
 
@@ -3425,7 +3427,7 @@ j_dat[[4]] # this works but I prefer ...
 ## [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE
 ```
 
-```r
+``` r
 j_dat$z # using dollar sign and name, when possible
 ```
 
@@ -3433,7 +3435,7 @@ j_dat$z # using dollar sign and name, when possible
 ## [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE
 ```
 
-```r
+``` r
 namez=c("z")
 j_dat[[namez]] # using a character vector of names
 ```
@@ -3442,7 +3444,7 @@ j_dat[[namez]] # using a character vector of names
 ## [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE
 ```
 
-```r
+``` r
 #namez=c("z","w")
 #j_dat[[namez]] # does not work: Error
 ```
@@ -3452,22 +3454,22 @@ j_dat[[namez]] # using a character vector of names
 ## data.frames really are lists!
 
 
-```r
+``` r
 str(j_dat[c("x", "z")]) # get multiple variables
 ```
 
 ```
-## tibble [8 x 2] (S3: tbl_df/tbl/data.frame)
+## tibble [8 × 2] (S3: tbl_df/tbl/data.frame)
 ##  $ x: int [1:8] 1 2 3 4 5 6 7 8
 ##  $ z: logi [1:8] TRUE TRUE TRUE TRUE TRUE TRUE ...
 ```
 
-```r
+``` r
 select(j_dat, x, z) # better in interactive work
 ```
 
 ```
-## # A tibble: 8 x 2
+## # A tibble: 8 × 2
 ##       x z    
 ##   &lt;int&gt; &lt;lgl&gt;
 ## 1     1 TRUE 
@@ -3480,7 +3482,7 @@ select(j_dat, x, z) # better in interactive work
 ## 8     8 TRUE
 ```
 
-```r
+``` r
 identical(select(j_dat, x, z), j_dat[c("x", "z")])
 ```
 
@@ -3515,7 +3517,7 @@ class: code70
 Let's make a simple matrix and give it decent row and column names, which we know is a good practice. You'll see familiar or self-explanatory functions below for getting to know a matrix.
 
 
-```r
+``` r
 ## don't worry if the construction of this matrix confuses you; just focus on
 ## the product
 j_mat = outer(as.character(1:4), as.character(1:4),
@@ -3534,7 +3536,7 @@ j_mat
 ```
 
 
-```r
+``` r
 str(j_mat)
 ```
 
@@ -3547,7 +3549,7 @@ str(j_mat)
 ## Useful matrix functions
 
 
-```r
+``` r
 dim(j_mat)
 ```
 
@@ -3555,7 +3557,7 @@ dim(j_mat)
 ## [1] 4 4
 ```
 
-```r
+``` r
 length(j_mat)
 ```
 
@@ -3563,7 +3565,7 @@ length(j_mat)
 ## [1] 16
 ```
 
-```r
+``` r
 nrow(j_mat)
 ```
 
@@ -3571,7 +3573,7 @@ nrow(j_mat)
 ## [1] 4
 ```
 
-```r
+``` r
 ncol(j_mat)
 ```
 
@@ -3584,7 +3586,7 @@ ncol(j_mat)
 ## Dimensions can have names
 
 
-```r
+``` r
 rownames(j_mat)
 ```
 
@@ -3592,7 +3594,7 @@ rownames(j_mat)
 ## NULL
 ```
 
-```r
+``` r
 rownames(j_mat) = str_c("row", seq_len(nrow(j_mat)))
 colnames(j_mat) = str_c("col", seq_len(ncol(j_mat)))
 dimnames(j_mat) # also useful for assignment
@@ -3606,7 +3608,7 @@ dimnames(j_mat) # also useful for assignment
 ## [1] "col1" "col2" "col3" "col4"
 ```
 
-```r
+``` r
 j_mat
 ```
 
@@ -3623,7 +3625,7 @@ j_mat
 ## Indexing a matrix
 
 
-```r
+``` r
 j_mat[2, 3]
 ```
 
@@ -3631,7 +3633,7 @@ j_mat[2, 3]
 ## [1] "x23"
 ```
 
-```r
+``` r
 j_mat[2, ] # getting row 2
 ```
 
@@ -3640,7 +3642,7 @@ j_mat[2, ] # getting row 2
 ## "x21" "x22" "x23" "x24"
 ```
 
-```r
+``` r
 is.vector(j_mat[2, ]) # we get row 2 as an atomic vector
 ```
 
@@ -3648,7 +3650,7 @@ is.vector(j_mat[2, ]) # we get row 2 as an atomic vector
 ## [1] TRUE
 ```
 
-```r
+``` r
 j_mat[ , 3, drop = FALSE] # getting column 3
 ```
 
@@ -3660,7 +3662,7 @@ j_mat[ , 3, drop = FALSE] # getting column 3
 ## row4 "x43"
 ```
 
-```r
+``` r
 dim(j_mat[ , 3, drop = FALSE]) # we get column 3 as a 4 x 1 matrix
 ```
 
@@ -3673,7 +3675,7 @@ dim(j_mat[ , 3, drop = FALSE]) # we get column 3 as a 4 x 1 matrix
 ## Use all of your favorite vector methods, too.
 
 
-```r
+``` r
 j_mat[c("row1", "row4"), c("col2", "col3")]
 ```
 
@@ -3683,7 +3685,7 @@ j_mat[c("row1", "row4"), c("col2", "col3")]
 ## row4 "x42" "x43"
 ```
 
-```r
+``` r
 j_mat[-c(2, 3), c(TRUE, TRUE, FALSE, FALSE)] # wacky but possible
 ```
 
@@ -3718,7 +3720,7 @@ Under the hood, of course, matrices are just vectors with some extra facilities 
 
 Matrices can be indexed *exactly* like a vector, i.e. with no comma `\(i,j\)` business, like so:
 
-```r
+``` r
 j_mat[7]
 ```
 
@@ -3726,7 +3728,7 @@ j_mat[7]
 ## [1] "x32"
 ```
 
-```r
+``` r
 j_mat
 ```
 
@@ -3746,7 +3748,7 @@ How to understand this: start counting in the upper left corner, move down the c
 
 Note also that one can put an indexed matrix on the receiving end of an assignment operation and, as long as your replacement values have valid shape or extent, you can change the matrix.
 
-```r
+``` r
 j_mat["row1", 2:3] = c("HEY!", "THIS IS NUTS!")
 j_mat
 ```
@@ -3765,7 +3767,7 @@ class: code90
 ## Recycling also works!
 
 
-```r
+``` r
 (norm_mat = matrix(rnorm(6), nrow = 3))
 ```
 
@@ -3776,7 +3778,7 @@ class: code90
 ## [3,] -0.15579551  0.4179416
 ```
 
-```r
+``` r
 rowMeans(norm_mat)
 ```
 
@@ -3786,7 +3788,7 @@ rowMeans(norm_mat)
 
 Recycle over each entry in first column, each entry in second column
 
-```r
+``` r
 (center_mat = norm_mat - rowMeans(norm_mat))
 ```
 
@@ -3814,7 +3816,7 @@ To make a matrix:
 ## Fill with a vector 
 
 
-```r
+``` r
 matrix(1:15, nrow = 5)
 ```
 
@@ -3827,7 +3829,7 @@ matrix(1:15, nrow = 5)
 ## [5,]    5   10   15
 ```
 
-```r
+``` r
 matrix(1:15, nrow = 5, byrow = TRUE)
 ```
 
@@ -3847,7 +3849,7 @@ matrix(1:15, nrow = 5, byrow = TRUE)
 ## Recycle a vector
 
 
-```r
+``` r
 matrix(c("yo!", "foo?"), nrow = 3, ncol = 4)
 ```
 
@@ -3863,7 +3865,7 @@ matrix(c("yo!", "foo?"), nrow = 3, ncol = 4)
 ## Provide names
 
 
-```r
+``` r
 matrix(1:15, nrow = 5,
        dimnames = list(paste0("row", 1:5),
                        paste0("col", 1:3)))
@@ -3885,7 +3887,7 @@ matrix(1:15, nrow = 5,
 Here we create a matrix by binding vectors together. Watch the vector names propagate as row or column names.
 
 
-```r
+``` r
 vec1 = 5:1
 vec2 = 2^(1:5)
 cbind(vec1, vec2)
@@ -3905,7 +3907,7 @@ cbind(vec1, vec2)
 ## bind rows
 
 
-```r
+``` r
 rbind(vec1, vec2)
 ```
 
@@ -3924,13 +3926,13 @@ They have nicer defaults for data frames than `cbind()` and `rbind()`.
 ## From a data frame.
 
 
-```r
+``` r
 (vecDat = tibble(vec1 = 5:1,
                 vec2 = 2^(1:5)))
 ```
 
 ```
-## # A tibble: 5 x 2
+## # A tibble: 5 × 2
 ##    vec1  vec2
 ##   &lt;int&gt; &lt;dbl&gt;
 ## 1     5     2
@@ -3940,7 +3942,7 @@ They have nicer defaults for data frames than `cbind()` and `rbind()`.
 ## 5     1    32
 ```
 
-```r
+``` r
 vecMat = as.matrix(vecDat)
 str(vecMat)
 ```
@@ -3957,7 +3959,7 @@ str(vecMat)
 ## From a data frame with silent coercion 🤦
 
 
-```r
+``` r
 multiDat = tibble(vec1 = 5:1,
                   vec2 = paste0("hi", 1:5))
 (multiMat = as.matrix(multiDat))
@@ -3980,7 +3982,7 @@ class: code70
 Matrices have its own special multiplication operator, written `%*%`:
 
 
-```r
+``` r
 (six_sevens = matrix(rep(7,6), ncol=3))
 ```
 
@@ -3990,7 +3992,7 @@ Matrices have its own special multiplication operator, written `%*%`:
 ## [2,]    7    7    7
 ```
 
-```r
+``` r
 (z_mat = matrix(c(40,1,60,3), nrow=2))
 ```
 
@@ -4000,7 +4002,7 @@ Matrices have its own special multiplication operator, written `%*%`:
 ## [2,]    1    3
 ```
 
-```r
+``` r
 z_mat %*% six_sevens # [2x2] * [2x3]
 ```
 
@@ -4024,7 +4026,7 @@ z_mat %*% six_sevens # [2x2] * [2x3]
 ## rowSums vs apply
 
 
-```r
+``` r
 rowSums(z_mat)
 ```
 
@@ -4032,7 +4034,7 @@ rowSums(z_mat)
 ## [1] 100   4
 ```
 
-```r
+``` r
 apply(z_mat, 1, sum)
 ```
 
@@ -4047,7 +4049,7 @@ apply(z_mat, 1, sum)
 The `diag()` function can be used to extract the diagonal entries of a matrix:
 
 
-```r
+``` r
 diag(z_mat)
 ```
 
@@ -4058,7 +4060,7 @@ diag(z_mat)
 It can also replace  the diagonal:
 
 
-```r
+``` r
 diag(z_mat) = c(35,4)
 z_mat
 ```
@@ -4076,7 +4078,7 @@ z_mat
 Finally, `diag()` can be used to create a diagonal matrix:
 
 
-```r
+``` r
 diag(c(3,4))
 ```
 
@@ -4086,7 +4088,7 @@ diag(c(3,4))
 ## [2,]    0    4
 ```
 
-```r
+``` r
 diag(2)
 ```
 
@@ -4102,7 +4104,7 @@ diag(2)
 
 **Transpose**:
 
-```r
+``` r
 t(z_mat)
 ```
 
@@ -4114,7 +4116,7 @@ t(z_mat)
 
 **Determinant**:
 
-```r
+``` r
 det(z_mat)
 ```
 
@@ -4128,7 +4130,7 @@ det(z_mat)
 
 **Inverse**:
 
-```r
+``` r
 solve(z_mat)
 ```
 
@@ -4138,7 +4140,7 @@ solve(z_mat)
 ## [2,] -0.0125  0.4375
 ```
 
-```r
+``` r
 z_mat %*% solve(z_mat)
 ```
 
@@ -4165,12 +4167,12 @@ Hopefully the slog through vectors, matrices, and lists will be redeemed by grea
 ## Reviewing list-style indexing of a data.frame
 
 
-```r
+``` r
 j_dat
 ```
 
 ```
-## # A tibble: 8 x 4
+## # A tibble: 8 × 4
 ##         w     x y     z    
 ##     &lt;dbl&gt; &lt;int&gt; &lt;chr&gt; &lt;lgl&gt;
 ## 1 -0.621      1 A     TRUE 
@@ -4179,7 +4181,7 @@ j_dat
 ...
 ```
 
-```r
+``` r
 j_dat$z
 ```
 
@@ -4187,7 +4189,7 @@ j_dat$z
 ## [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE
 ```
 
-```r
+``` r
 i_want_this = "z" 
 (j_dat[[i_want_this]]) # atomic
 ```
@@ -4201,12 +4203,12 @@ i_want_this = "z"
 ## Reviewing vector-style indexing of a data.frame:
 
 
-```r
+``` r
 j_dat["y"]
 ```
 
 ```
-## # A tibble: 8 x 1
+## # A tibble: 8 × 1
 ##   y    
 ##   &lt;chr&gt;
 ## 1 A    
@@ -4215,13 +4217,13 @@ j_dat["y"]
 ...
 ```
 
-```r
+``` r
 i_want_this = c("w", "z")
 j_dat[i_want_this] # index with a vector of variable names
 ```
 
 ```
-## # A tibble: 8 x 2
+## # A tibble: 8 × 2
 ##         w z    
 ##     &lt;dbl&gt; &lt;lgl&gt;
 ## 1 -0.621  TRUE 
@@ -4235,12 +4237,12 @@ j_dat[i_want_this] # index with a vector of variable names
 ## Demonstrating matrix-style indexing of a data.frame:
 
 
-```r
+``` r
 j_dat[ , "z"] #For tibbles, drop = FALSE by default.
 ```
 
 ```
-## # A tibble: 8 x 1
+## # A tibble: 8 × 1
 ##   z    
 ##   &lt;lgl&gt;
 ## 1 TRUE 
@@ -4249,7 +4251,7 @@ j_dat[ , "z"] #For tibbles, drop = FALSE by default.
 ...
 ```
 
-```r
+``` r
 j_dat[ , "z", drop = TRUE]
 ```
 
@@ -4261,12 +4263,12 @@ j_dat[ , "z", drop = TRUE]
 ## Demonstrating matrix-style indexing of a data.frame:
 
 
-```r
+``` r
 j_dat[c(2, 4, 7), c(1, 4)] # awful and arbitrary but syntax works
 ```
 
 ```
-## # A tibble: 3 x 2
+## # A tibble: 3 × 2
 ##         w z    
 ##     &lt;dbl&gt; &lt;lgl&gt;
 ## 1 -2.21   TRUE 
@@ -4274,12 +4276,12 @@ j_dat[c(2, 4, 7), c(1, 4)] # awful and arbitrary but syntax works
 ## 3  0.821  FALSE
 ```
 
-```r
+``` r
 j_dat[j_dat$z, ]
 ```
 
 ```
-## # A tibble: 7 x 4
+## # A tibble: 7 × 4
 ##         w     x y     z    
 ##     &lt;dbl&gt; &lt;int&gt; &lt;chr&gt; &lt;lgl&gt;
 ## 1 -0.621      1 A     TRUE 
