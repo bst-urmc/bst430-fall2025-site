@@ -75,7 +75,7 @@ Due 5pm, Sept 18.
 13. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html)
     * Finish Lab 5
 14. [Functions i](lecture/l12-functions-i.html). 
-    *   [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html), make any groups as you like. [Invitation here](https://classroom.github.com/a/wSw6fhiZ). Due 5pm, Nov 16.
+    *   [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html), make any groups as you like. [Invitation here](https://classroom.github.com/a/wSw6fhiZ). Due 5pm, Oct 30.
 <!--     * Lab 6 [solutions](hw_lab_instruction/lab06-covid-times/lab06.html) -->
 <!-- 15. [Functions ii and iteration](lecture/l13-functions-ii.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=7c471b05-4bf6-419c-8b43-af410109b4f7) -->
 <!-- 16.  [Knitr tricks and debugging](lecture/l14-debugging.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=e11a5405-d128-459f-9ef5-af42010fdc8a) -->
