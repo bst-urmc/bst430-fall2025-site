@@ -31,13 +31,17 @@ library(tidyverse)
 library(rvest)
 library(lubridate)
 theme_set(theme_minimal())
+
+#knitr::opts_chunk$set(warning = FALSE)
 ```
 
   
 # Motivation
 
 *  Logic (and data...) should live in only one place
+
 *  Abstraction and isolation
+
 *  Clarity
 
 --
@@ -54,7 +58,7 @@ no data used
 
 [Gapminder](https://www.gapminder.org/about/) is a Swedish foundation that combats misconceptions about global development.  These are just a tiny exerpt of the full data available there -- containing populaton, life expectancy, deflated GDP per capita in $USD.
 
-```{r start_func1}
+```{r start_func1, warning=TRUE}
 library(gapminder)
 glimpse(gapminder)
 ```
@@ -62,11 +66,12 @@ glimpse(gapminder)
 ---
 
 ```{r}
-ggplot(gapminder, aes(x = year, y = lifeExp, color = continent))  + 
-  geom_line(aes(group = country), alpha = .5) + scale_color_brewer(type = 'qual') + 
-  geom_boxplot(data = filter(gapminder, year %in% seq(from=1952, to = 2002, by = 20)), 
-               aes(group = interaction(year,continent)), 
-               width = 8, outlier.shape = NA, position = 'dodge') 
+ggplot( gapminder, aes(x = year, y = lifeExp, color = continent))  + 
+  geom_line( aes(group = country), alpha = .5) + 
+  scale_color_brewer(type = 'qual') + 
+  geom_boxplot( aes(group = interaction(year,continent)), 
+    data = filter(gapminder, year %in% seq(from=1952, to = 2002, by = 20)), 
+    fill = 'grey', width = 8, outlier.shape = NA, position = 'dodge') 
 ```
 
 ---
@@ -176,7 +181,7 @@ Don't get truly diabolical (yet). Just make the kind of mistakes you can imagine
 
 ```{r error = TRUE}
 max_minus_min(gapminder) ## hey sometimes things "just work" on data.frames!
-max_minus_min(gapminder$country) ## factors are kind of like integer vectors, no?
+max_minus_min(gapminder$country) ## factors are kind of like integer vectors?
 max_minus_min("eggplants are purple") ## i have no excuse for this one
 ```
 
@@ -391,7 +396,7 @@ title = speech_page %>%
 # abstract = speech_page %>%
 #   html_node(".leader--first-para p") %>%
 #   html_text()
-# 
+
 text = speech_page %>%
   html_nodes("#preamble p") %>%
   html_text() %>%
@@ -482,7 +487,7 @@ scrape_speech = function(x){
 scrape_speech = function(url){
 
   # code we developed earlier to scrape info 
-  # on single art piece goes here
+  # on single article goes here
   
 }
 ```

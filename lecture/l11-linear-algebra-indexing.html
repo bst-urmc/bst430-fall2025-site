@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-09-27 (updated: 2024-10-14 by TL)
+### 2021-09-27 (updated: 2024-10-15 by TL)
 ]
 
 ---
@@ -68,10 +68,10 @@ delay_stats = flights %&gt;%
             mean_delay = total_delay/n)%&gt;%
   group_by(hour, origin, month) %&gt;%
   mutate(residual_mean_delay = mean_delay - mean(mean_delay, na.rm = TRUE),
-         residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
+         residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE)) %&gt;% ungroup()
 
 delay_june = filter(delay_stats, month == "6") %&gt;% 
-  select(day:origin, total_delay)
+  select(month, day:origin, total_delay)
 ```
 
 ---
@@ -86,15 +86,10 @@ delay_june %&gt;% slice_max(n = 1, order_by = total_delay)
 ```
 
 ```
-## # A tibble: 612 × 5
-## # Groups:   hour, origin, month [144]
+## # A tibble: 1 × 5
 ##   month day   hour  origin total_delay
 ##   &lt;fct&gt; &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;        &lt;dbl&gt;
-## 1 6     1     0     EWR             NA
-## 2 6     2     0     EWR             NA
-## 3 6     3     0     EWR             NA
-## 4 6     4     0     EWR             NA
-## # ℹ 608 more rows
+## 1 6     27    18    LGA           3402
 ```
 ---
 
@@ -2562,11 +2557,11 @@ cor(delay_matrix[-nrow(delay_matrix),],
 ## LGA 0.64 0.60 0.70
 ```
 
-`$$\begin{bmatrix} \text{cor}(\text{EWR}_{t-1}, \text{EWR}_{t}) &amp; \text{cor}(\text{EWR}_{t-1}, \text{JFK}_{t}) &amp;  \text{cor}(\text{EWR}_{t-1}, \text{LGA}_{t}) \\
+`$$\small \begin{bmatrix} 
+\text{cor}(\text{EWR}_{t-1}, \text{EWR}_{t}) &amp; \text{cor}(\text{EWR}_{t-1}, \text{JFK}_{t}) &amp;  \text{cor}(\text{EWR}_{t-1}, \text{LGA}_{t}) \\
 \text{cor}(\text{JFK}_{t-1}, \text{EWR}_{t}) &amp; \text{cor}(\text{JFK}_{t-1}, \text{JFK}_{t}) &amp;  \text{cor}(\text{JFK}_{t-1}, \text{LGA}_{t}) \\
 \text{cor}(\text{LGA}_{t-1}, \text{LGA}_{t}) &amp; \text{cor}(\text{LGA}_{t-1}, \text{JFK}_{t}) &amp;  \text{cor}(\text{LGA}_{t-1}, \text{LGA}_{t}) 
 \end{bmatrix}$$`
-
 
 
 ---
@@ -3336,20 +3331,8 @@ The return value will always be a list, even if you only request 1 element.
 
 
 ``` r
-(lmcars = lm(speed~dist, data=cars))
-```
+lmcars = lm(speed~dist, data=cars)
 
-```
-## 
-## Call:
-## lm(formula = speed ~ dist, data = cars)
-## 
-## Coefficients:
-## (Intercept)         dist  
-##      8.2839       0.1656
-```
-
-``` r
 lmcars[[1]]
 ```
 
@@ -3465,21 +3448,17 @@ str(j_dat[c("x", "z")]) # get multiple variables
 ```
 
 ``` r
-select(j_dat, x, z) # better in interactive work
+head(select(j_dat, x, z), 4) # tidyverse version is better in interactive work
 ```
 
 ```
-## # A tibble: 8 × 2
+## # A tibble: 4 × 2
 ##       x z    
 ##   &lt;int&gt; &lt;lgl&gt;
 ## 1     1 TRUE 
 ## 2     2 TRUE 
 ## 3     3 TRUE 
-## 4     4 TRUE 
-## 5     5 TRUE 
-## 6     6 TRUE 
-## 7     7 FALSE
-## 8     8 TRUE
+## 4     4 TRUE
 ```
 
 ``` r
@@ -3518,12 +3497,10 @@ Let's make a simple matrix and give it decent row and column names, which we kno
 
 
 ``` r
-## don't worry if the construction of this matrix confuses you; just focus on
-## the product
+## don't worry if the construction of this matrix confuses you; 
+## just focus on the product
 j_mat = outer(as.character(1:4), as.character(1:4),
-              function(x, y) {
-                paste0('x', x, y)
-                })
+              function(x, y)  paste0('x', x, y) )
 j_mat
 ```
 
@@ -3768,22 +3745,15 @@ class: code90
 
 
 ``` r
-(norm_mat = matrix(rnorm(6), nrow = 3))
+norm_mat = matrix(rnorm(6), nrow = 3)
+cbind(norm_mat, rep(1,3), rowMeans(norm_mat))
 ```
 
 ```
-##             [,1]       [,2]
-## [1,]  0.61982575 -1.4707524
-## [2,] -0.05612874 -0.4781501
-## [3,] -0.15579551  0.4179416
-```
-
-``` r
-rowMeans(norm_mat)
-```
-
-```
-## [1] -0.4254633 -0.2671394  0.1310730
+##             [,1]       [,2] [,3]       [,4]
+## [1,]  0.61982575 -1.4707524    1 -0.4254633
+## [2,] -0.05612874 -0.4781501    1 -0.2671394
+## [3,] -0.15579551  0.4179416    1  0.1310730
 ```
 
 Recycle over each entry in first column, each entry in second column
@@ -3974,6 +3944,15 @@ multiDat = tibble(vec1 = 5:1,
 ## [5,] "1"  "hi5"
 ```
 
+``` r
+# Hey! Where did that heading come from?
+emo::ji("person_facepalming")
+```
+
+```
+## 🤦
+```
+
 ---
 class: code70
 
@@ -4019,7 +3998,8 @@ z_mat %*% six_sevens # [2x2] * [2x3]
 *  `rowSums()` `rowMeans()`
 *  `colSums()` `colMeans()`
 *  many more in `matrixStats`
-*  roll your own with `apply(&lt;MATRIX&gt;, &lt;1|2&gt;, &lt;FUN&gt;)`.  Use `1` for rows, `2` for columns.
+*  roll your own with `apply(&lt;MATRIX&gt;, &lt;1|2&gt;, &lt;FUN&gt;)`
+  * Use `1` for rows, `2` for columns
 
 ---
 

@@ -70,16 +70,16 @@ Due 5pm, Sept 18.
 <!--     * HW 3 [solutions](hw_lab_instruction/hw03-fatal-geography/hw03.html) -->
 12. [Text analysis](lecture/l10-text-ii.html)   
     *  [Lab 5](hw_lab_instruction/lab05-sadplots/lab05-sadplots.html).  Pair up; you might want to take turns Pull-Committing because changing figures can cause extra GIT problems. [Invitation here](https://classroom.github.com/a/GrR3CQ2R). Due 5pm, Oct 18.
-<!--     * Lab 5 [solutions](hw_lab_instruction/lab05-sadplots/lab05.html) -->
+    * Lab 5 [solutions](hw_lab_instruction/lab05-sadplots/lab05.html)
     *  Reading: [r4ds chapter 14](https://r4ds.had.co.nz/strings.html)
 13. [Matrices, indexing, linear algebra](lecture/l11-linear-algebra-indexing.html)
     * Finish Lab 5
-<!-- 14. [Functions i](lecture/l12-functions-i.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=a9d6dc03-9d01-4f87-ad9b-af3c004e8055) -->
-<!-- 15. [Functions ii and iteration](lecture/l13-functions-ii.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=7c471b05-4bf6-419c-8b43-af410109b4f7) -->
-<!--     *   [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html) assigned, any groups as you like. [Invitation here](https://classroom.github.com/a/6GAvWurq). Due 5pm, Nov 16. -->
+14. [Functions i](lecture/l12-functions-i.html). 
+    *   [Lab 6](hw_lab_instruction/lab06-covid-times/lab06-covid-times.html), make any groups as you like. [Invitation here](https://classroom.github.com/a/6GAvWurq). Due 5pm, Nov 16.
 <!--     * Lab 6 [solutions](hw_lab_instruction/lab06-covid-times/lab06.html) -->
+<!-- 15. [Functions ii and iteration](lecture/l13-functions-ii.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=7c471b05-4bf6-419c-8b43-af410109b4f7) -->
 <!-- 16.  [Knitr tricks and debugging](lecture/l14-debugging.html). [video link](https://rochester.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=e11a5405-d128-459f-9ef5-af42010fdc8a) -->
-<!-- *  HW 4 assigned (revised to shorten it!!).  [instructions](hw_lab_instruction/hw05-modeling-gss/hw-04-modeling-gss.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/rNXgxZex)).  Due 5pm EDT, Nov 25. -->
+<!-- *  HW 4 assigned.  [instructions](hw_lab_instruction/hw05-modeling-gss/hw-04-modeling-gss.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/rNXgxZex)).  Due 5pm EDT, Nov 25. -->
 <!--     * HW 4 [solutions](hw_lab_instruction/hw05-modeling-gss/hw-04.html) -->
 <!-- * Work on Lab 6 -->
 <!-- 17.  [Linear models](lecture/l15-linear-models.html) -->

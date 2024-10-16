@@ -6,8 +6,8 @@
     <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/panelset/panelset.css" rel="stylesheet" />
     <script src="libs/panelset/panelset.js"></script>
     <link rel="stylesheet" href="css/lexis.css" type="text/css" />
@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-10-13 (updated: 2022-11-01 by TL)
+### 2021-10-13 (updated: 2024-10-16 by TL)
 ]
 
 ---
@@ -398,7 +398,9 @@ class: ur-title, center, middle, title-slide
 # Motivation
 
 *  Logic (and data...) should live in only one place
+
 *  Abstraction and isolation
+
 *  Clarity
 
 --
@@ -416,38 +418,39 @@ no data used
 [Gapminder](https://www.gapminder.org/about/) is a Swedish foundation that combats misconceptions about global development.  These are just a tiny exerpt of the full data available there -- containing populaton, life expectancy, deflated GDP per capita in $USD.
 
 
-```r
+``` r
 library(gapminder)
 ```
 
 ```
-## Warning: package 'gapminder' was built under R version 4.1.3
+## Warning: package 'gapminder' was built under R version 4.4.1
 ```
 
-```r
+``` r
 glimpse(gapminder)
 ```
 
 ```
 ## Rows: 1,704
 ## Columns: 6
-## $ country   &lt;fct&gt; "Afghanistan", "Afghanistan", "Afghanistan", ~
-## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asi~
-## $ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 198~
-## $ lifeExp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.43~
-## $ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 1307946~
-## $ gdpPercap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9~
+## $ country   &lt;fct&gt; "Afghanistan", "Afghanistan", "Afghanistan", …
+## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asi…
+## $ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 198…
+## $ lifeExp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.43…
+## $ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 1307946…
+## $ gdpPercap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9…
 ```
 
 ---
 
 
-```r
-ggplot(gapminder, aes(x = year, y = lifeExp, color = continent))  + 
-  geom_line(aes(group = country), alpha = .5) + scale_color_brewer(type = 'qual') + 
-  geom_boxplot(data = filter(gapminder, year %in% seq(from=1952, to = 2002, by = 20)), 
-               aes(group = interaction(year,continent)), 
-               width = 8, outlier.shape = NA, position = 'dodge') 
+``` r
+ggplot( gapminder, aes(x = year, y = lifeExp, color = continent))  + 
+  geom_line( aes(group = country), alpha = .5) + 
+  scale_color_brewer(type = 'qual') + 
+  geom_boxplot( aes(group = interaction(year,continent)), 
+    data = filter(gapminder, year %in% seq(from=1952, to = 2002, by = 20)), 
+    fill = 'grey', width = 8, outlier.shape = NA, position = 'dodge') 
 ```
 
 &lt;img src="l12-functions-i_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /&gt;
@@ -467,7 +470,7 @@ First, develop some working .alert[code for interactive use, using a representat
 R functions that will be useful: `min()`, `max()`, `range()`:
 
 
-```r
+``` r
 min(gapminder$lifeExp)
 ```
 
@@ -475,7 +478,7 @@ min(gapminder$lifeExp)
 ## [1] 23.599
 ```
 
-```r
+``` r
 max(gapminder$lifeExp)
 ```
 
@@ -483,7 +486,7 @@ max(gapminder$lifeExp)
 ## [1] 82.603
 ```
 
-```r
+``` r
 range(gapminder$lifeExp)
 ```
 
@@ -496,7 +499,7 @@ range(gapminder$lifeExp)
 ## Some natural solutions
 
 
-```r
+``` r
 max(gapminder$lifeExp) - min(gapminder$lifeExp)
 ```
 
@@ -504,7 +507,7 @@ max(gapminder$lifeExp) - min(gapminder$lifeExp)
 ## [1] 59.004
 ```
 
-```r
+``` r
 range(gapminder$lifeExp)[2] - range(gapminder$lifeExp)[1]
 ```
 
@@ -512,7 +515,7 @@ range(gapminder$lifeExp)[2] - range(gapminder$lifeExp)[1]
 ## [1] 59.004
 ```
 
-```r
+``` r
 range(gapminder[['lifeExp']])[2] - range(gapminder[['lifeExp']])[1]
 ```
 
@@ -520,7 +523,7 @@ range(gapminder[['lifeExp']])[2] - range(gapminder[['lifeExp']])[1]
 ## [1] 59.004
 ```
 
-```r
+``` r
 diff(range(gapminder$lifeExp))
 ```
 
@@ -556,7 +559,7 @@ This is related to the [Telescope Rule](https://wiki.c2.com/?TelescopeRule)
 Add NO new functionality! Just write your very first R function.
 
 
-```r
+``` r
 max_minus_min = function(x){
   max(x) - min(x)
 }
@@ -578,7 +581,7 @@ Check that you're getting the same answer as you did with your interactive code.
 Pick some new artificial inputs where you know (at least approximately) what your function should return.
 
 
-```r
+``` r
 max_minus_min(1:10)
 ```
 
@@ -586,7 +589,7 @@ max_minus_min(1:10)
 ## [1] 9
 ```
 
-```r
+``` r
 max_minus_min(runif(1000))
 ```
 
@@ -605,7 +608,7 @@ It is intentional that I tested on integer input as well as floating point. Like
 Back to the real world now. Two other quantitative variables are lying around: `gdpPercap` and `pop`. Let's have a go.
 
 
-```r
+``` r
 max_minus_min(gapminder$gdpPercap)
 ```
 
@@ -613,7 +616,7 @@ max_minus_min(gapminder$gdpPercap)
 ## [1] 113282
 ```
 
-```r
+``` r
 max_minus_min(gapminder$pop)
 ```
 
@@ -630,7 +633,7 @@ Either check these results "by hand" or apply the "does that even make sense?" t
 Don't get truly diabolical (yet). Just make the kind of mistakes you can imagine making at 2am when, 3 years from now, you rediscover this useful function you wrote.
 
 
-```r
+``` r
 max_minus_min(gapminder) ## hey sometimes things "just work" on data.frames!
 ```
 
@@ -638,15 +641,15 @@ max_minus_min(gapminder) ## hey sometimes things "just work" on data.frames!
 ## Error in FUN(X[[i]], ...): only defined on a data frame with all numeric-alike variables
 ```
 
-```r
-max_minus_min(gapminder$country) ## factors are kind of like integer vectors, no?
+``` r
+max_minus_min(gapminder$country) ## factors are kind of like integer vectors?
 ```
 
 ```
 ## Error in Summary.factor(structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, : 'max' not meaningful for factors
 ```
 
-```r
+``` r
 max_minus_min("eggplants are purple") ## i have no excuse for this one
 ```
 
@@ -672,7 +675,7 @@ How happy are you with those error messages? You must imagine that some entire _
 Here are some great examples students in UBC's STAT545 devised where the function __should break but it does not.__
 
 
-```r
+``` r
 max_minus_min(gapminder[c('lifeExp', 'gdpPercap', 'pop')])
 ```
 
@@ -680,7 +683,7 @@ max_minus_min(gapminder[c('lifeExp', 'gdpPercap', 'pop')])
 ## [1] 1318683072
 ```
 
-```r
+``` r
 max_minus_min(c(TRUE, TRUE, FALSE, TRUE, TRUE))
 ```
 
@@ -705,7 +708,7 @@ For functions that will be used again -- which is not all of them! -- it is good
 I use it here to make sure the input `x` is a numeric vector.
 
 
-```r
+``` r
 max_minus_min = function(x) {
   stopifnot(is.numeric(x))
   max(x) - min(x)
@@ -717,7 +720,7 @@ max_minus_min(gapminder)
 ## Error in max_minus_min(gapminder): is.numeric(x) is not TRUE
 ```
 
-```r
+``` r
 max_minus_min(gapminder$country)
 ```
 
@@ -725,7 +728,7 @@ max_minus_min(gapminder$country)
 ## Error in max_minus_min(gapminder$country): is.numeric(x) is not TRUE
 ```
 
-```r
+``` r
 max_minus_min("eggplants are purple")
 ```
 
@@ -736,7 +739,7 @@ max_minus_min("eggplants are purple")
 ---
 
 
-```r
+``` r
 max_minus_min(gapminder[c('lifeExp', 'gdpPercap', 'pop')])
 ```
 
@@ -744,7 +747,7 @@ max_minus_min(gapminder[c('lifeExp', 'gdpPercap', 'pop')])
 ## Error in max_minus_min(gapminder[c("lifeExp", "gdpPercap", "pop")]): is.numeric(x) is not TRUE
 ```
 
-```r
+``` r
 max_minus_min(c(TRUE, TRUE, FALSE, TRUE, TRUE))
 ```
 
@@ -761,7 +764,7 @@ And we see that it catches all of the self-inflicted damage we would like to avo
 `stopifnot()` doesn't provide a very good error message. The next approach is very widely used. Put your validity check inside an `if()` statement and call `stop()` yourself, with a custom error message, in the body.
 
 
-```r
+``` r
 max_minus_min = function(x) {
   if(!is.numeric(x)) {
     stop('I am so sorry, but this function only works for numeric input!\n',
@@ -814,7 +817,7 @@ of flow control when we discuss iteration with `for`, `while`, and `repeat`.
 ###Define functions that make displays
 
 
-```r
+``` r
 work_without_question = function(condition){
   print(str_c("Good capitalistic worker bee ", emo::ji("honey_pot")))
 }
@@ -829,7 +832,7 @@ life_crisis = function(condition){
 ###If life is good then work, else join a commune
 
 
-```r
+``` r
 life = function(condition) {
   good_things = c("skiing", "cats", "health",
                   "wilderness", "coffee")
@@ -842,7 +845,7 @@ life = function(condition) {
 ```
 
 
-```r
+``` r
 life(c("cats", "health"))
 ```
 
@@ -850,12 +853,12 @@ life(c("cats", "health"))
 ## Warning in life_crisis(condition): Joining a commune.
 ```
 
-```r
+``` r
 life(c("cats", "skiing", "health"))
 ```
 
 ```
-## [1] "Good capitalistic worker bee &lt;U+0001F36F&gt;"
+## [1] "Good capitalistic worker bee 🍯"
 ```
 
 ---
@@ -888,7 +891,7 @@ class: middle
 ## Read page for 23 Oct speech
 
 
-```r
+``` r
 url = "https://www.gov.scot/publications/coronavirus-covid-19-update-first-ministers-speech-23-october/"
 speech_page = read_html(url)
 ```
@@ -896,7 +899,7 @@ speech_page = read_html(url)
 
 
 
-```r
+``` r
 speech_page
 ```
 
@@ -904,15 +907,19 @@ speech_page
 ## {html_document}
 ## &lt;html dir="ltr" lang="en"&gt;
 ## [1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html ...
-## [2] &lt;body&gt;\n\n\n\n\n&lt;!-- Google Tag Manager (noscript) --&gt;\n&lt;n ...
+## [2] &lt;body&gt;\n    &lt;input type="hidden" id="site-root-path" value ...
 ```
+
+
+&lt;img src="l12/img/fm-speech-oct-23.png" width="75%" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
 ## Extract components of 23 Oct speech
 
 
-```r
+``` r
 title = speech_page %&gt;%
   html_node("title") %&gt;%
   html_text()
@@ -929,7 +936,7 @@ title = speech_page %&gt;%
 # abstract = speech_page %&gt;%
 #   html_node(".leader--first-para p") %&gt;%
 #   html_text()
-# 
+
 text = speech_page %&gt;%
   html_nodes("#preamble p") %&gt;%
   html_text() %&gt;%
@@ -941,7 +948,7 @@ text = speech_page %&gt;%
 ## Put it all in a data frame
 
 
-```r
+``` r
 oct_23_speech = tibble(
   title    = title,
   # date     = date,
@@ -955,13 +962,11 @@ oct_23_speech
 ```
 
 ```
-## # A tibble: 1 x 3
+## # A tibble: 1 × 3
 ##   title                                               text  url  
 ##   &lt;chr&gt;                                               &lt;lis&gt; &lt;chr&gt;
-## 1 Coronavirus (COVID-19) update: First Minister's sp~ &lt;chr&gt; http~
+## 1 Coronavirus (COVID-19) update: First Minister's sp… &lt;chr&gt; http…
 ```
-
-
 
 ---
 
@@ -988,7 +993,7 @@ When you’ve copied and pasted a block of code more than twice.
 &lt;br&gt;
 
 
-```r
+``` r
 scrape_speech = 
 ```
 
@@ -1002,7 +1007,7 @@ scrape_speech =
 &lt;br&gt;
 
 
-```r
+``` r
 scrape_speech = function(x){
   
   
@@ -1021,11 +1026,11 @@ scrape_speech = function(x){
 - Place the **code** you have developed in body of the function, a `{` block that immediately follows `function(...)`.
 
 
-```r
+``` r
 scrape_speech = function(url){
 
   # code we developed earlier to scrape info 
-  # on single art piece goes here
+  # on single article goes here
   
 }
 ```
@@ -1036,7 +1041,7 @@ class: code50
 ## `scrape_speech()`
 
 
-```r
+``` r
 scrape_speech = function(url) {
   
   speech_page = read_html(url)
@@ -1084,7 +1089,7 @@ class: middle
 - They take input(s) defined in the function definition
 
 
-```r
+``` r
 function([inputs separated by commas]){
   # what to do with those inputs
 }
@@ -1093,7 +1098,7 @@ function([inputs separated by commas]){
 - By default they return the last value computed in the function
 
 
-```r
+``` r
 scrape_page = function(x){
   # do bunch of stuff with the input...
   
@@ -1111,7 +1116,7 @@ What is going on here?
 ]
 
 
-```r
+``` r
 add_2 = function(x){
   x + 2
   1000
@@ -1119,7 +1124,7 @@ add_2 = function(x){
 ```
 
 
-```r
+``` r
 add_2(3)
 ```
 
@@ -1127,7 +1132,7 @@ add_2(3)
 ## [1] 1000
 ```
 
-```r
+``` r
 add_2(10)
 ```
 
@@ -1160,7 +1165,7 @@ add_2(10)
 - Avoid overwriting existing (especially widely used) functions
 
 
-```r
+``` r
 # JUST DON'T
 mean = function(x){ 
   x * 3 
@@ -1181,7 +1186,7 @@ Now, we generalize this function, learn more technical details about R functions
 ## Recall our function:
 
 
-```r
+``` r
 max_minus_min = function(x) {
   if(!is.numeric(x)) {
     stop('I am so sorry, but this function only works for numeric input!\n',
@@ -1218,7 +1223,7 @@ First, play around with the `quantile()` function. Convince yourself you know ho
 ---
 
 
-```r
+``` r
 library(gapminder)
 quantile(gapminder$lifeExp)
 ```
@@ -1228,7 +1233,7 @@ quantile(gapminder$lifeExp)
 ## 23.5990 48.1980 60.7125 70.8455 82.6030
 ```
 
-```r
+``` r
 quantile(gapminder$lifeExp, probs = 0.5)
 ```
 
@@ -1237,7 +1242,7 @@ quantile(gapminder$lifeExp, probs = 0.5)
 ## 60.7125
 ```
 
-```r
+``` r
 median(gapminder$lifeExp)
 ```
 
@@ -1245,7 +1250,7 @@ median(gapminder$lifeExp)
 ## [1] 60.7125
 ```
 
-```r
+``` r
 mean(gapminder$lifeExp &lt; median(gapminder$lifeExp))
 ```
 
@@ -1258,7 +1263,7 @@ mean(gapminder$lifeExp &lt; median(gapminder$lifeExp))
 Now write a code snippet that takes the difference between two quantiles.
 
 
-```r
+``` r
 probs=c(0.25,0.75)
 the_quantiles = quantile(x = gapminder$lifeExp, probs = probs)
 max(the_quantiles) - min(the_quantiles)
@@ -1268,7 +1273,7 @@ max(the_quantiles) - min(the_quantiles)
 ## [1] 22.6475
 ```
 
-```r
+``` r
 the_quantiles[2] - the_quantiles[1]
 ```
 
@@ -1284,7 +1289,7 @@ the_quantiles[2] - the_quantiles[1]
 I'll use `qdiff` as the base of our function's name. I copy the overall structure from our previous "max minus min" work but replace the guts of the function with the more general code we just developed.
 
 
-```r
+``` r
 qdiff1 = function(x, probs) {
   stopifnot(is.numeric(x))
   the_quantiles = quantile(x = x, probs = probs)
@@ -1295,7 +1300,7 @@ qdiff1 = function(x, probs) {
 ---
 
 
-```r
+``` r
 qdiff1(gapminder$lifeExp, probs = c(0.25, 0.75))
 ```
 
@@ -1303,7 +1308,7 @@ qdiff1(gapminder$lifeExp, probs = c(0.25, 0.75))
 ## [1] 22.6475
 ```
 
-```r
+``` r
 IQR(gapminder$lifeExp) # hey, we've reinvented IQR
 ```
 
@@ -1311,7 +1316,7 @@ IQR(gapminder$lifeExp) # hey, we've reinvented IQR
 ## [1] 22.6475
 ```
 
-```r
+``` r
 qdiff1(gapminder$lifeExp, probs = c(0, 1))
 ```
 
@@ -1319,7 +1324,7 @@ qdiff1(gapminder$lifeExp, probs = c(0, 1))
 ## [1] 59.004
 ```
 
-```r
+``` r
 max_minus_min(gapminder$lifeExp)
 ```
 
@@ -1338,7 +1343,7 @@ I want you to understand the importance of argument names.
 I can name my arguments almost anything I like. Proof:
 
 
-```r
+``` r
 qdiff2 = function(zeus, hera) {
   stopifnot(is.numeric(zeus))
   the_quantiles = quantile(x = zeus, probs = hera)
@@ -1369,7 +1374,7 @@ While I can name my arguments after Greek gods, it's usually a bad idea. Take al
 By default, a function returns the result of the last line of the body. I am just letting that happen with the line `max(the_quantiles) - min(the_quantiles)`. However, there is an explicit function for this: `return()`. I could just as easily make this the last line of my function's body:
 
 
-```r
+``` r
 return(max(the_quantiles) - min(the_quantiles))
 ```
 
@@ -1382,12 +1387,12 @@ You absolutely must use `return()` if you want to return early based on some con
 What happens if we call our function but neglect to specify the probabilities?
 
 
-```r
+``` r
 qdiff1(gapminder$lifeExp)
 ```
 
 ```
-## Error in quantile(x = x, probs = probs): argument "probs" is missing, with no default
+## Error in qdiff1(gapminder$lifeExp): argument "probs" is missing, with no default
 ```
 
 Oops! At the moment, this causes a fatal error. It can be nice to provide some reasonable default values for certain arguments. In our case, it would be crazy to specify a default value for the primary input `x`, but very kind to specify a default for `probs`.
@@ -1399,7 +1404,7 @@ Oops! At the moment, this causes a fatal error. It can be nice to provide some r
 We started by focusing on the max and the min, so I think those make reasonable defaults. Here's how to specify that in a function definition.
 
 
-```r
+``` r
 qdiff3 = function(x, probs = c(0, 1)) {
   stopifnot(is.numeric(x))
   the_quantiles = quantile(x, probs)
@@ -1412,7 +1417,7 @@ qdiff3 = function(x, probs = c(0, 1)) {
 Again we check how the function works, in old examples and new, specifying the `probs` argument and not.
 
 
-```r
+``` r
 qdiff3(gapminder$lifeExp)
 ```
 
@@ -1420,7 +1425,7 @@ qdiff3(gapminder$lifeExp)
 ## [1] 59.004
 ```
 
-```r
+``` r
 max_minus_min(gapminder$lifeExp)
 ```
 
@@ -1428,7 +1433,7 @@ max_minus_min(gapminder$lifeExp)
 ## [1] 59.004
 ```
 
-```r
+``` r
 qdiff3(gapminder$lifeExp, c(0.1, 0.9))
 ```
 
@@ -1451,7 +1456,7 @@ qdiff3(gapminder$lifeExp, c(0.1, 0.9))
 Here's the function we've written so far:
 
 
-```r
+``` r
 qdiff3
 ```
 
@@ -1461,7 +1466,7 @@ qdiff3
 ##   the_quantiles = quantile(x, probs)
 ##   max(the_quantiles) - min(the_quantiles)
 ## }
-## &lt;bytecode: 0x000000002361de20&gt;
+## &lt;bytecode: 0x00000267907af238&gt;
 ```
 
 ---

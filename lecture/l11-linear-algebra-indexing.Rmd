@@ -55,10 +55,10 @@ delay_stats = flights %>%
             mean_delay = total_delay/n)%>%
   group_by(hour, origin, month) %>%
   mutate(residual_mean_delay = mean_delay - mean(mean_delay, na.rm = TRUE),
-         residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
+         residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE)) %>% ungroup()
 
 delay_june = filter(delay_stats, month == "6") %>% 
-  select(day:origin, total_delay)
+  select(month, day:origin, total_delay)
 ```
 
 ---
@@ -221,11 +221,11 @@ cor(delay_matrix[-nrow(delay_matrix),],
     use = 'pairwise')
 ```
 
-$$\begin{bmatrix} \text{cor}(\text{EWR}_{t-1}, \text{EWR}_{t}) & \text{cor}(\text{EWR}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{EWR}_{t-1}, \text{LGA}_{t}) \\
+$$\small \begin{bmatrix} 
+\text{cor}(\text{EWR}_{t-1}, \text{EWR}_{t}) & \text{cor}(\text{EWR}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{EWR}_{t-1}, \text{LGA}_{t}) \\
 \text{cor}(\text{JFK}_{t-1}, \text{EWR}_{t}) & \text{cor}(\text{JFK}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{JFK}_{t-1}, \text{LGA}_{t}) \\
 \text{cor}(\text{LGA}_{t-1}, \text{LGA}_{t}) & \text{cor}(\text{LGA}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{LGA}_{t-1}, \text{LGA}_{t}) 
 \end{bmatrix}$$
-
 
 
 ---
@@ -585,7 +585,7 @@ The return value will always be a list, even if you only request 1 element.
 ## A useful list
 
 ```{r linear model}
-(lmcars = lm(speed~dist, data=cars))
+lmcars = lm(speed~dist, data=cars)
 
 lmcars[[1]]
 summary(lmcars)$sigma
@@ -626,7 +626,7 @@ j_dat[[namez]] # using a character vector of names
 
 ```{r, tidy = FALSE}
 str(j_dat[c("x", "z")]) # get multiple variables
-select(j_dat, x, z) # better in interactive work
+head(select(j_dat, x, z), 4) # tidyverse version is better in interactive work
 identical(select(j_dat, x, z), j_dat[c("x", "z")])
 ```
 
@@ -657,12 +657,10 @@ class: code70
 Let's make a simple matrix and give it decent row and column names, which we know is a good practice. You'll see familiar or self-explanatory functions below for getting to know a matrix.
 
 ```{r}
-## don't worry if the construction of this matrix confuses you; just focus on
-## the product
+## don't worry if the construction of this matrix confuses you; 
+## just focus on the product
 j_mat = outer(as.character(1:4), as.character(1:4),
-              function(x, y) {
-                paste0('x', x, y)
-                })
+              function(x, y)  paste0('x', x, y) )
 j_mat
 ```
 
@@ -764,8 +762,8 @@ class: code90
 ## Recycling also works!
 
 ```{r}
-(norm_mat = matrix(rnorm(6), nrow = 3))
-rowMeans(norm_mat)
+norm_mat = matrix(rnorm(6), nrow = 3)
+cbind(norm_mat, rep(1,3), rowMeans(norm_mat))
 ```
 
 Recycle over each entry in first column, each entry in second column
@@ -857,6 +855,9 @@ str(vecMat)
 multiDat = tibble(vec1 = 5:1,
                   vec2 = paste0("hi", 1:5))
 (multiMat = as.matrix(multiDat))
+
+# Hey! Where did that heading come from?
+emo::ji("person_facepalming")
 ```
 
 ---
@@ -879,7 +880,8 @@ z_mat %*% six_sevens # [2x2] * [2x3]
 *  `rowSums()` `rowMeans()`
 *  `colSums()` `colMeans()`
 *  many more in `matrixStats`
-*  roll your own with `apply(<MATRIX>, <1|2>, <FUN>)`.  Use `1` for rows, `2` for columns.
+*  roll your own with `apply(<MATRIX>, <1|2>, <FUN>)`
+  * Use `1` for rows, `2` for columns
 
 ---
 
