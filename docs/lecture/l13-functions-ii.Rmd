@@ -285,7 +285,7 @@ It's a testament to the tidyverse that we have made it this far into the semeste
 .pull-right[
 ### Ways to implicitly iterate
 
-*  `lapply` - iterate a **function** over a vector
+*  `lapply` - iterate a **function** over a vector or list
 *  `purrr` - iterate a **function** over a vector, but carefully
 *  `apply` - iterate a **function** over an array
 *  vectorized functions
@@ -360,8 +360,8 @@ We can **break** out of a `for()` loop early (before the counter has been iterat
 n = 5
 log.vec = NA
 for (i in 1:n) {
-  if (log(i) > 1) {
-    cat("I'm outta here. I don't like numbers bigger than 1\n")
+  if (log(i) > 2) {
+    cat("I'm outta here. I don't like numbers bigger than 2\n")
     break
   }
   log.vec[i] = log(i)

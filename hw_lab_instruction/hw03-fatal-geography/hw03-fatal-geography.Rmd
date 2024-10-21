@@ -111,7 +111,7 @@ Hint: you will want to either remove the "County" part of the `ctyname` in the c
 |Syracuse, NY                 |Onondaga    |
 |Utica, NY                    |Oneida      |
 
-8.  Derive the fatalities per 100,000 vehicle miles traveled, per county, using the crash count table Ex 3 and 5.  Repeat your plot from Ex 5 (though now you will only have <s>16</s> 17 counties).  Discuss your findings.
+8.  Derive the fatalities per 100,000 population divided by vehicle miles traveled (average per person), in each county, using the crash count table from  Ex 3 and 5.  Repeat your plot from Ex 5 (though now you will only have <s>16</s> 17 counties).  Discuss your findings.
 
 9.  Which estimate, if any, would be most informative about the hazard rate of being a pedestrian/cyclist in NY state?  What other factors would be helpful in refining your estimate of the hazard?
 

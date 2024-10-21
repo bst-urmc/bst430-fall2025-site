@@ -6,8 +6,8 @@
     <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/panelset/panelset.css" rel="stylesheet" />
     <script src="libs/panelset/panelset.js"></script>
     <link rel="stylesheet" href="css/lexis.css" type="text/css" />
@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-10-23 (updated: 2022-11-01 by TL)
+### 2021-10-23 (updated: 2024-10-21 by TL)
 ]
 
 ---
@@ -52,7 +52,7 @@ In this part, we tackle `NA`s, the special argument `...` and formal testing.
 Let's keep our previous function around as a baseline.
 
 
-```r
+``` r
 qdiff3 = function(x, probs = c(0, 1)) {
   stopifnot(is.numeric(x))
   the_quantiles = quantile(x, probs)
@@ -70,7 +70,7 @@ class: code70
 The Gapminder data is a fairly kind data set. In real life, missing data will make your life a living hell. Let's see how `quantile()` handles `NA`s:
 
 
-```r
+``` r
 z = gapminder$lifeExp
 z[3] = NA
 quantile(z)
@@ -80,7 +80,7 @@ quantile(z)
 ## Error in quantile.default(z): missing values and NaN's not allowed if 'na.rm' is FALSE
 ```
 
-```r
+``` r
 quantile(z, na.rm = TRUE)
 ```
 
@@ -96,7 +96,7 @@ So `quantile()` simply will not operate in the presence of `NA`s unless `na.rm =
 If we wanted to hardwire `na.rm = TRUE`, we could. Focus on our call to `quantile()` inside our function definition.
 
 
-```r
+``` r
 qdiff4 = function(x, probs = c(0, 1)) {
   stopifnot(is.numeric(x))
   the_quantiles = quantile(x, probs, na.rm = TRUE)
@@ -109,7 +109,7 @@ qdiff4(gapminder$lifeExp)
 ## [1] 59.004
 ```
 
-```r
+``` r
 qdiff4(z)
 ```
 
@@ -124,7 +124,7 @@ This works but it is dangerous to invert the default behavior of a well-known bu
 We could add an `na.rm =` argument to our own function. We might even enforce our preferred default -- but at least we're giving the user a way to control the behavior around `NA`s.
 
 
-```r
+``` r
 qdiff5 = function(x, probs = c(0, 1), na.rm = TRUE) {
   stopifnot(is.numeric(x))
   the_quantiles = quantile(x, probs, na.rm = na.rm)
@@ -137,7 +137,7 @@ qdiff5(gapminder$lifeExp)
 ## [1] 59.004
 ```
 
-```r
+``` r
 qdiff5(z)
 ```
 
@@ -145,7 +145,7 @@ qdiff5(z)
 ## [1] 59.004
 ```
 
-```r
+``` r
 qdiff5(z, na.rm = FALSE)
 ```
 
@@ -160,7 +160,7 @@ qdiff5(z, na.rm = FALSE)
 The practical significance of `quatile(x, type =)` in the Gapminder data is virtually nonexistent. But thanks to [@wrathematics][twitter-wrathematics], here's a small example where we can detect a difference due to `type`.
 
 
-```r
+``` r
 set.seed(1234)
 z = rnorm(10)
 quantile(z, type = 1)
@@ -171,7 +171,7 @@ quantile(z, type = 1)
 ## -2.3456977 -0.8900378 -0.5644520  0.4291247  1.0844412
 ```
 
-```r
+``` r
 quantile(z, type = 4)
 ```
 
@@ -185,7 +185,7 @@ quantile(z, type = 4)
 If a quantile is not unambiguously equal to an observed data point, you must somehow average two data points. You can weight this average different ways, depending on the rest of the data, and `type =` controls this.
 
 
-```r
+``` r
 sort(z)
 ```
 
@@ -194,7 +194,7 @@ sort(z)
 ##  [6] -0.5466319  0.2774292  0.4291247  0.5060559  1.0844412
 ```
 
-```r
+``` r
 quantile(z, type = 1)
 ```
 
@@ -203,7 +203,7 @@ quantile(z, type = 1)
 ## -2.3456977 -0.8900378 -0.5644520  0.4291247  1.0844412
 ```
 
-```r
+``` r
 quantile(z, type = 4)
 ```
 
@@ -218,7 +218,7 @@ quantile(z, type = 4)
 But let's say we want flexibility to specify how the quantiles are computed, but don't want to clutter the function's interface with this. This calls for the special `...`  ("ellipsis").
 
 
-```r
+``` r
 qdiff6 = function(x, probs = c(0, 1), na.rm = TRUE, ...) {
   the_quantiles = quantile(x = x, probs = probs, na.rm = na.rm, ...)
   max(the_quantiles) - min(the_quantiles)
@@ -230,7 +230,7 @@ qdiff6 = function(x, probs = c(0, 1), na.rm = TRUE, ...) {
 Now we can call our function, requesting that quantiles be computed in different ways.
 
 
-```r
+``` r
 qdiff6(z, probs = c(0.25, 0.75), type = 1)
 ```
 
@@ -238,7 +238,7 @@ qdiff6(z, probs = c(0.25, 0.75), type = 1)
 ## [1] 1.319163
 ```
 
-```r
+``` r
 qdiff6(z, probs = c(0.25, 0.75), type = 4)
 ```
 
@@ -267,7 +267,7 @@ There are also downsides to `...`:
 In R and in many languages, variables defined inside the function are local (private) to the function.
 
 
-```r
+``` r
 a = 10
 my_function = function(a, x){
   a = 5
@@ -277,7 +277,7 @@ my_function = function(a, x){
 
 
 
-```r
+``` r
 my_function(1, 2)
 ```
 
@@ -285,7 +285,7 @@ my_function(1, 2)
 ## [1] 10
 ```
 
-```r
+``` r
 print(a)
 ```
 
@@ -296,7 +296,7 @@ print(a)
 ---
 
 
-```r
+``` r
 my_function(a, 2)
 ```
 
@@ -304,7 +304,7 @@ my_function(a, 2)
 ## [1] 10
 ```
 
-```r
+``` r
 print(a)
 ```
 
@@ -313,7 +313,7 @@ print(a)
 ```
 
 
-```r
+``` r
 a = 3
 my_function(a, 2)
 ```
@@ -322,7 +322,7 @@ my_function(a, 2)
 ## [1] 10
 ```
 
-```r
+``` r
 print(a)
 ```
 
@@ -338,7 +338,7 @@ However, R uses something known as **lexical scope** to resolve conflicting vari
 &lt;!-- &lt;sup&gt;1&lt;/sup&gt; --&gt;
 
 
-```r
+``` r
 a = -5
 my_function2 = function(x){
   a*x
@@ -360,7 +360,7 @@ R looks at the enclosing environments of a function (what was being executed whe
 ### This can lead to very frustating errors
 
 
-```r
+``` r
 data = dplyr::starwars
 
 process_data = function(dta){
@@ -379,7 +379,7 @@ You may lose an entire day to this.
 ### Current environment is preferred.
 
 
-```r
+``` r
 a = -5
 my_function3 = function(x){
   a = 1e9
@@ -392,7 +392,7 @@ my_function3(2)
 ## [1] 2e+09
 ```
 
-```r
+``` r
 print(a)
 ```
 
@@ -408,7 +408,7 @@ print(a)
 A function is another type of object -- this means you can pass a function as an argument to a function!
 
 
-```r
+``` r
 quartic_eq = function(x) 3*x^4 - 10*x^3 - 20*x^2 + 10*x - 5
 class(quartic_eq)
 ```
@@ -417,7 +417,7 @@ class(quartic_eq)
 ## [1] "function"
 ```
 
-```r
+``` r
 body(quartic_eq)
 ```
 
@@ -425,7 +425,7 @@ body(quartic_eq)
 ## 3 * x^4 - 10 * x^3 - 20 * x^2 + 10 * x - 5
 ```
 
-```r
+``` r
 formals(quartic_eq); args(quartic_eq)
 ```
 
@@ -442,13 +442,13 @@ You can display a function's source by typing its name into the Console (without
 ---
 
 
-```r
+``` r
 curve(quartic_eq, from = -5, to = 5)
 ```
 
 &lt;img src="l13-functions-ii_files/figure-html/unnamed-chunk-19-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
-```r
+``` r
 optimize(quartic_eq, interval = c(-5, 5))
 ```
 
@@ -485,7 +485,7 @@ It's a testament to the tidyverse that we have made it this far into the semeste
 .pull-right[
 ### Ways to implicitly iterate
 
-*  `lapply` - iterate a **function** over a vector
+*  `lapply` - iterate a **function** over a vector or list
 *  `purrr` - iterate a **function** over a vector, but carefully
 *  `apply` - iterate a **function** over an array
 *  vectorized functions
@@ -510,7 +510,7 @@ where `&lt;BODY&gt;` contains a sequence of R expressions, as well as the keywor
 ---
 
 
-```r
+``` r
 n = 5
 log.vec = NA
 for (i in seq_len(n)) {
@@ -533,7 +533,7 @@ Note that rather than using `1:n`, which when `n = 0` equals `1 0`  we use `seq_
 
 .pull-left[
 
-```r
+``` r
 x = sort(runif(5))
 n_negative = sum(x&lt;0)
 for (i in 1:n_negative){
@@ -546,7 +546,7 @@ for (i in 1:n_negative){
 ## numeric(0)
 ```
 
-```r
+``` r
 cat("Exited loop.")
 ```
 
@@ -556,7 +556,7 @@ cat("Exited loop.")
 ]
 .pull-right[
 
-```r
+``` r
 x = sort(runif(5))
 n_negative = sum(x&lt;0)
 for (i in seq_len(n_negative)){
@@ -580,28 +580,21 @@ class: code70
 We can **break** out of a `for()` loop early (before the counter has been iterated over the whole vector), using `break`
 
 
-```r
+``` r
 n = 5
 log.vec = NA
 for (i in 1:n) {
-  if (log(i) &gt; 1) {
-    cat("I'm outta here. I don't like numbers bigger than 1\n")
+  if (log(i) &gt; 2) {
+    cat("I'm outta here. I don't like numbers bigger than 2\n")
     break
   }
   log.vec[i] = log(i)
 }
-```
-
-```
-## I'm outta here. I don't like numbers bigger than 1
-```
-
-```r
 log.vec
 ```
 
 ```
-## [1] 0.0000000 0.6931472
+## [1] 0.0000000 0.6931472 1.0986123 1.3862944 1.6094379
 ```
 
 ---
@@ -612,7 +605,7 @@ class: code70
 `next` skips the remainder of the body of a `for()` loop, returning to the top of the body and incrementing the counter. 
 
 
-```r
+``` r
 n = 5
 log.vec = NULL
 for (i in 1:n) {
@@ -629,7 +622,7 @@ for (i in 1:n) {
 ## I want to skip iteration 4
 ```
 
-```r
+``` r
 log.vec
 ```
 
@@ -645,7 +638,7 @@ class: code70
 when `next` skips the counter still grows, but not necessarily the results. 
 
 
-```r
+``` r
 n = 5
 log.vec = NULL
 for (i in 1:n) {
@@ -662,7 +655,7 @@ for (i in 1:n) {
 ## I want to skip iteration 4
 ```
 
-```r
+``` r
 log.vec
 ```
 
@@ -680,7 +673,7 @@ Many different variations on standard `for()` are possible. Two common ones:
 - Nested loops: body of the `for()` loop can contain another `for()` loop (or several others)
 
 
-```r
+``` r
 for (str in c("Tatoosh", "Infimum", "McGrindleCat")) {
   print(glue::glue("Free (OBO): {str}, one gently used cat."))
 }
@@ -699,7 +692,7 @@ for (str in c("Tatoosh", "Infimum", "McGrindleCat")) {
 ### Nested `for()` loops --  working with pairs
 
 
-```r
+``` r
 for (i in seq_len(4)) {
   for (j in i:4) {
     cat(paste(j,""))
@@ -726,7 +719,7 @@ A `while()` loop repeatedly runs a code block, again called the **body**, until 
 ### Roll your own linear regression
 
 
-```r
+``` r
 X = filter(starwars, !is.na(height) &amp; !is.na(mass)) %&gt;% pull(mass) %&gt;% scale
 X = cbind(1, X)
 y = filter(starwars, !is.na(height) &amp; !is.na(mass)) %&gt;% pull(height)
@@ -745,11 +738,11 @@ while (mean((beta - beta_new)^2) &gt; epsilon) {
 ```
 ## At i = 0, beta = (0, 0)
 ## At i = 1, beta = (1, 1)
-## At i = 2, beta = (205.16, 5.35781787904754)
-## At i = 3, beta = (168.4112, 4.66056701839993)
-## At i = 4, beta = (175.025984, 4.77212715610355)
-## At i = 5, beta = (173.83532288, 4.75427753407097)
-## At i = 6, beta = (174.0496418816, 4.75713347359618)
+## At i = 2, beta = (205.56, 5.23433684457756)
+## At i = 3, beta = (168.7392, 4.55684294944515)
+## At i = 4, beta = (175.366944, 4.66524197266634)
+## At i = 5, beta = (174.17395008, 4.64789812895095)
+## At i = 6, beta = (174.3886889856, 4.65067314394541)
 ```
 
 ---
@@ -757,7 +750,7 @@ while (mean((beta - beta_new)^2) &gt; epsilon) {
 ### Compare to `lm`
 
 
-```r
+``` r
 lm(height ~ scale(mass), data = dplyr::starwars)
 ```
 
@@ -768,7 +761,7 @@ lm(height ~ scale(mass), data = dplyr::starwars)
 ## 
 ## Coefficients:
 ## (Intercept)  scale(mass)  
-##     174.017        4.757
+##      174.36         4.65
 ```
 
 ---
@@ -798,7 +791,7 @@ Sometimes, you might combine `lapply` and friends with `split`, which chops a ve
 
 .pull-left[
 
-```r
+``` r
 weird_list = list(rnorm(5), stringr::fruit, TRUE, starwars)
 lapply(weird_list, length)
 ```
@@ -819,7 +812,7 @@ lapply(weird_list, length)
 ]
 .pull-right[
 
-```r
+``` r
 lapply(weird_list, class)
 ```
 
@@ -846,14 +839,14 @@ This applies a function, which must return a data frame, to each element of a li
 I reach for this often.
 
 
-```r
+``` r
 purrr::map_dfr(weird_list, function(x){
   tibble(length = length(x), class = class(x)[1])
 }, .id = 'item')
 ```
 
 ```
-## # A tibble: 4 x 3
+## # A tibble: 4 × 3
 ##   item  length class    
 ##   &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    
 ## 1 1          5 numeric  
@@ -871,7 +864,7 @@ This uses an **anonymous** function -- defined but not named.
 ### apply - for matricies and arrays
 
 
-```r
+``` r
 (A = matrix(1:18, nrow = 3))
 ```
 
@@ -882,7 +875,7 @@ This uses an **anonymous** function -- defined but not named.
 ## [3,]    3    6    9   12   15   18
 ```
 
-```r
+``` r
 count_odd = function(x) sum(x %% 2 &gt; 0)
 apply(A, 1, count_odd)
 ```
@@ -891,7 +884,7 @@ apply(A, 1, count_odd)
 ## [1] 3 3 3
 ```
 
-```r
+``` r
 apply(A, 2, count_odd)
 ```
 
@@ -925,7 +918,7 @@ and `\(a_i = f(a_{i-1})\)`.
 ### Collatz recursion
 
 
-```r
+``` r
 collatz = function(n){
   cat(n)
   if(n == 1) return(invisible(1))
@@ -942,7 +935,7 @@ collatz = function(n){
 ---
 
 
-```r
+``` r
 collatz(10)
 ```
 
@@ -951,7 +944,7 @@ collatz(10)
 ```
 
 
-```r
+``` r
 collatz(101)
 ```
 
@@ -960,7 +953,7 @@ collatz(101)
 ```
 
 
-```r
+``` r
 collatz(837799)
 ```
 
@@ -991,7 +984,7 @@ The [testthat][testthat-web] package provides excellent facilities for this, wit
 We will construct a test with `test_that()` and, within it, we put one or more *expectations* that check actual against expected results. You can simply your informal, interactive tests into formal unit tests. Here are some examples of tests and indicative expectations.
 
 
-```r
+``` r
 library(testthat)
 test_that('invalid args are detected', {
   expect_error(qdiff6("eggplants are purple"))
@@ -1000,10 +993,10 @@ test_that('invalid args are detected', {
 ```
 
 ```
-## Test passed
+## Test passed 😸
 ```
 
-```r
+``` r
 test_that('NA handling works', {
   expect_error(qdiff6(c(1:5, NA), na.rm = FALSE))
   expect_equal(qdiff6(c(1:5, NA)), 4)
@@ -1011,7 +1004,7 @@ test_that('NA handling works', {
 ```
 
 ```
-## Test passed
+## Test passed 🌈
 ```
 
 No news is good news!
@@ -1021,7 +1014,7 @@ No news is good news!
  Let's see what test failure would look like. Let's revert to a version of our function that does no `NA` handling, then test for proper `NA` handling. We can watch it fail.
 
 
-```r
+``` r
 qdiff_no_NA = function(x, probs = c(0, 1)) {
   the_quantiles = quantile(x = x, probs = probs)
   max(the_quantiles) - min(the_quantiles)
@@ -1032,16 +1025,22 @@ test_that('NA handling works', {
 ```
 
 ```
-## -- Error (&lt;text&gt;:6:3): NA handling works ---------------------------------------
+## ── Error: NA handling works ────────────────────────────────────────────────────
 ## Error in `quantile.default(x = x, probs = probs)`: missing values and NaN's not allowed if 'na.rm' is FALSE
 ## Backtrace:
-##  1. testthat::expect_that(qdiff_no_NA(c(1:5, NA)), equals(4))
-##  6. global qdiff_no_NA(c(1:5, NA))
-##  8. stats:::quantile.default(x = x, probs = probs)
+##     ▆
+##  1. ├─testthat::expect_that(qdiff_no_NA(c(1:5, NA)), equals(4))
+##  2. │ └─testthat (local) condition(object)
+##  3. │   └─testthat::expect_equal(x, expected, ..., expected.label = label)
+##  4. │     └─testthat::quasi_label(enquo(object), label, arg = "object")
+##  5. │       └─rlang::eval_bare(expr, quo_get_env(quo))
+##  6. └─global qdiff_no_NA(c(1:5, NA))
+##  7.   ├─stats::quantile(x = x, probs = probs)
+##  8.   └─stats:::quantile.default(x = x, probs = probs)
 ```
 
 ```
-## Error in `reporter$stop_if_needed()`:
+## Error:
 ## ! Test failed
 ```
 
