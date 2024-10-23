@@ -23,12 +23,19 @@ output:
 ```{r child = "setup.Rmd"}
 ```
 
+```{r, include = FALSE}
+library(tidyverse)
+library(nycflights13)
+library(lubridate)
+```
 
 # Agenda
 
 1.  Functions and generics
 2.  Knitr tricks
 3.  Debugging
+
+Here's the [R code in this lecture](l14/l14-debugging.R)
 
 ---
 
@@ -38,7 +45,6 @@ Have you ever wondered how does R knows to display a data.frame specially compar
 Consider:
 1.  When you input an object to the Console and hit "enter", R calls `print(object)`
 ```{r warning = FALSE}
-library(tidyverse)
 my_list = list(A = 1:4, B = rnorm(4), C = stringr::fruit[1:4])
 my_list
 ```
@@ -343,7 +349,8 @@ But sometimes code is monolithic, and there's nothing we can do about it.  To de
 
 *  break up pipelines and nested expressions
 *  inspect manually
-*  inspect with printf (discuss in lab)
+*  inspect with printf 
+<!-- (discuss in lab) -->
 *  inspect with `browser()` (set a breakpoint)
 *  step through with `debug`
 *  inspect with `options(error = recover)`
@@ -355,8 +362,6 @@ But sometimes code is monolithic, and there's nothing we can do about it.  To de
 .panelset[
 .panel[.panel-name[Code]
 ```{r cancel-plot-1, fig.show = 'hide', error = TRUE}
-library(nycflights13)
-library(lubridate)
 flights %>% 
   mutate(hourf = as.factor(hour), day_of_week = weekdays(ymd(glue::glue("{year}-month-{day}")))) %>%
   group_by(hourf, day_of_week, .drop = FALSE) %>%
@@ -455,8 +460,8 @@ But, to keep track of your debugging code (that you'll run in the console), you 
 # a look at it!
 mat = matrix(rnorm(1000)^3, 1000, 1000)
 mat
-# Note that the output of big.mat is not printed to the console, and also
-# that big.mat was never actually created! (This code was not evaluated)
+# Note that the output of mat is not printed to the console, and also
+# that mat was never actually created! (This code was not evaluated)
 ```
 
 ---
