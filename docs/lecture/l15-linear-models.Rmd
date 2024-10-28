@@ -149,7 +149,7 @@ Two paintings very rich in composition, of a beautiful execution, and whose meri
 
 ---
 
-```{r out.width="60%", echo=FALSE}
+```{r out.width="80%", echo=FALSE}
 knitr::include_graphics("l15/img/painting1.png")
 knitr::include_graphics("l15/img/painting2.png")
 knitr::include_graphics("l15/img/painting3.png")
@@ -223,7 +223,7 @@ ggplot(data = pp, aes(x = Width_in)) +
 ]
 .panel[.panel-name[Code]
 
-```{r height-width-plot, fig.show="hide"}
+```{r height-width-plot, fig.show="hide", warning=FALSE}
 ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
   geom_point() +
   geom_smooth(method = "lm") +
@@ -621,7 +621,7 @@ linear_reg() %>%
   glance()
 ```
 
-More of this in one week
+More of this coming
 
 ---
 
@@ -743,7 +743,7 @@ linear_reg() %>%
 
 ## Height & landscape features
 
-$$\widehat{Height_{in}} = 22.7 - 5.645~landsALL$$
+$$\widehat{height_{in}} = 22.7 - 5.645~landsALL$$
 
 - **Slope:** Paintings with landscape features are expected, on average, to be 5.645 inches shorter than paintings that without landscape features
   - Compares baseline level (`landsALL = 0`) to the other level (`landsALL = 1`)

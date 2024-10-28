@@ -6,8 +6,8 @@
     <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/panelset/panelset.css" rel="stylesheet" />
     <script src="libs/panelset/panelset.js"></script>
     <script src="libs/kePrint/kePrint.js"></script>
@@ -32,7 +32,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-10-28 (updated: 2022-11-07 by TL)
+### 2021-10-28 (updated: 2024-10-28 by TL)
 ]
 
 ---
@@ -75,7 +75,7 @@ class: middle
 ## Paris Paintings
 
 
-```r
+``` r
 pp = read_csv("l15/data/paris-paintings.csv", na = c("n/a", "", "NA"))
 ```
 
@@ -136,13 +136,13 @@ Two paintings very rich in composition, of a beautiful execution, and whose meri
 
 ---
 
-&lt;img src="l15/img/painting1.png" width="60%" style="display: block; margin: auto;" /&gt;&lt;img src="l15/img/painting2.png" width="60%" style="display: block; margin: auto;" /&gt;&lt;img src="l15/img/painting3.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l15/img/painting1.png" width="80%" style="display: block; margin: auto;" /&gt;&lt;img src="l15/img/painting2.png" width="80%" style="display: block; margin: auto;" /&gt;&lt;img src="l15/img/painting3.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 class: code40
 
 
-```r
+``` r
 pp %&gt;%
   filter(name == "R1777-89a") %&gt;%
   glimpse()
@@ -167,12 +167,12 @@ pp %&gt;%
 ## $ logprice          &lt;dbl&gt; 8.575462
 ## $ price             &lt;dbl&gt; 5300
 ## $ count             &lt;dbl&gt; 1
-## $ subject           &lt;chr&gt; "D\u008epart pour la chasse"
+## $ subject           &lt;chr&gt; "D\x8epart pour la chasse"
 ## $ authorstandard    &lt;chr&gt; "Wouwerman, Philips"
 ## $ artistliving      &lt;dbl&gt; 0
 ## $ authorstyle       &lt;chr&gt; NA
 ## $ author            &lt;chr&gt; "Philippe Wouwermans"
-## $ winningbidder     &lt;chr&gt; "Langlier, Jacques for Poullain, Anto~
+## $ winningbidder     &lt;chr&gt; "Langlier, Jacques for Poullain, Anto…
 ## $ winningbiddertype &lt;chr&gt; "DC"
 ## $ endbuyer          &lt;chr&gt; "C"
 ...
@@ -220,7 +220,7 @@ class: middle
 
 .small[
 
-```r
+``` r
 ggplot(data = pp, aes(x = Height_in)) +
   geom_histogram(binwidth = 5) +
   labs(x = "Height, in inches", y = NULL)
@@ -235,7 +235,7 @@ ggplot(data = pp, aes(x = Height_in)) +
 
 .small[
 
-```r
+``` r
 ggplot(data = pp, aes(x = Width_in)) +
   geom_histogram(binwidth = 5) +
   labs(x = "Width, in inches", y = NULL)
@@ -256,7 +256,7 @@ ggplot(data = pp, aes(x = Width_in)) +
 .panel[.panel-name[Code]
 
 
-```r
+``` r
 ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
   geom_point() +
   geom_smooth(method = "lm") +
@@ -266,15 +266,6 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
     x = "Width (inches)",
     y = "Height (inches)"
   )
-```
-
-```
-## Warning: Removed 258 rows containing non-finite values
-## (stat_smooth).
-```
-
-```
-## Warning: Removed 258 rows containing missing values (geom_point).
 ```
 ]
 ]
@@ -290,7 +281,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 .panel[.panel-name[Code]
 
 
-```r
+``` r
 ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
   geom_point() +
   geom_smooth(method = "lm", 
@@ -316,7 +307,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 .panel[.panel-name[Code]
 
 
-```r
+``` r
 ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE,
@@ -342,7 +333,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 .panel[.panel-name[Code]
 
 
-```r
+``` r
 ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
   geom_point() +
 * geom_smooth(method = "gam",
@@ -368,7 +359,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 .panel[.panel-name[Code]
 
 
-```r
+``` r
 ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
   geom_point() +
 * geom_smooth(method = "loess",
@@ -412,7 +403,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in)) +
 .panel[.panel-name[Code]
 .code60[
 
-```r
+``` r
 ht_wt_fit = linear_reg() %&gt;%
   set_engine("lm") %&gt;%
   fit(Height_in ~ Width_in, data = pp)
@@ -480,7 +471,7 @@ How, if at all, does the relationship between width and height of paintings vary
 ]
 .panel[.panel-name[Code]
 
-```r
+``` r
 ggplot(data = pp, aes(x = Width_in, y = Height_in, color = factor(landsALL))) +
   geom_point(alpha = 0.4) +
   geom_smooth(method = "lm", se = FALSE) +
@@ -506,7 +497,7 @@ ggplot(data = pp, aes(x = Width_in, y = Height_in, color = factor(landsALL))) +
 ]
 .panel[.panel-name[Code]
 
-```r
+``` r
 ggplot(data = pp, aes(x = Width_in, y = Height_in, color = factor(landsALL))) +
   geom_point(alpha = 0.4) +
   geom_smooth(method = "lm", se = FALSE,
@@ -577,7 +568,7 @@ class: middle
 ## Step 1: Specify model
 
 
-```r
+``` r
 linear_reg()
 ```
 
@@ -594,7 +585,7 @@ linear_reg()
 ## Step 2: Set model fitting *engine*
 
 
-```r
+``` r
 linear_reg() %&gt;%
   set_engine("lm") # lm: linear model
 ```
@@ -613,7 +604,7 @@ linear_reg() %&gt;%
 ... using **formula syntax**
 
 
-```r
+``` r
 linear_reg() %&gt;%
   set_engine("lm") %&gt;%
   fit(Height_in ~ Width_in, data = pp)
@@ -657,7 +648,7 @@ linear_reg() %&gt;%
 ## A tidy look at model output
 
 
-```r
+``` r
 linear_reg() %&gt;%
   set_engine("lm") %&gt;%
   fit(Height_in ~ Width_in, data = pp) %&gt;%
@@ -665,7 +656,7 @@ linear_reg() %&gt;%
 ```
 
 ```
-## # A tibble: 2 x 5
+## # A tibble: 2 × 5
 ##   term        estimate std.error statistic  p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
 ## 1 (Intercept)    3.62    0.254        14.3 8.82e-45
@@ -683,7 +674,7 @@ linear_reg() %&gt;%
 ## A glance at model summaries
 
 
-```r
+``` r
 linear_reg() %&gt;%
   set_engine("lm") %&gt;%
   fit(Height_in ~ Width_in, data = pp) %&gt;%
@@ -691,16 +682,15 @@ linear_reg() %&gt;%
 ```
 
 ```
-## # A tibble: 1 x 12
-##   r.squared adj.r.sq~1 sigma stati~2 p.value    df  logLik    AIC
-##       &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
-## 1     0.683      0.683  8.30   6749.       0     1 -11083. 22173.
-## # ... with 4 more variables: BIC &lt;dbl&gt;, deviance &lt;dbl&gt;,
-## #   df.residual &lt;int&gt;, nobs &lt;int&gt;, and abbreviated variable
-## #   names 1: adj.r.squared, 2: statistic
+## # A tibble: 1 × 12
+##   r.squared adj.r.squared sigma statistic p.value    df  logLik
+##       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1     0.683         0.683  8.30     6749.       0     1 -11083.
+## # ℹ 5 more variables: AIC &lt;dbl&gt;, BIC &lt;dbl&gt;, deviance &lt;dbl&gt;,
+## #   df.residual &lt;int&gt;, nobs &lt;int&gt;
 ```
 
-More of this in one week
+More of this coming
 
 ---
 
@@ -770,7 +760,7 @@ class: middle
 .code50[
 
 ```
-## # A tibble: 3,393 x 3
+## # A tibble: 3,393 × 3
 ##    name      Height_in landsALL
 ##    &lt;chr&gt;         &lt;dbl&gt;    &lt;dbl&gt;
 ##  1 L1764-2          37        0
@@ -793,7 +783,7 @@ class: middle
 ## 18 L1764-13a        15        1
 ## 19 L1764-13b        15        1
 ## 20 L1764-14         37        0
-## # ... with 3,373 more rows
+## # ℹ 3,373 more rows
 ```
 ]
 ]
@@ -807,7 +797,7 @@ class: middle
 ## Height &amp; landscape features
 
 
-```r
+``` r
 linear_reg() %&gt;%
   set_engine("lm") %&gt;%
   fit(Height_in ~ factor(landsALL), data = pp) %&gt;%
@@ -815,7 +805,7 @@ linear_reg() %&gt;%
 ```
 
 ```
-## # A tibble: 2 x 5
+## # A tibble: 2 × 5
 ##   term              estimate std.error statistic  p.value
 ##   &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
 ## 1 (Intercept)          22.7      0.328      69.1 0       
@@ -826,7 +816,7 @@ linear_reg() %&gt;%
 
 ## Height &amp; landscape features
 
-`$$\widehat{Height_{in}} = 22.7 - 5.645~landsALL$$`
+`$$\widehat{height_{in}} = 22.7 - 5.645~landsALL$$`
 
 - **Slope:** Paintings with landscape features are expected, on average, to be 5.645 inches shorter than paintings that without landscape features
   - Compares baseline level (`landsALL = 0`) to the other level (`landsALL = 1`)
@@ -838,7 +828,7 @@ linear_reg() %&gt;%
 ## Relationship between height and school
 
 
-```r
+``` r
 linear_reg() %&gt;%
   set_engine("lm") %&gt;%
   fit(Height_in ~ school_pntg, data = pp) %&gt;%
@@ -846,7 +836,7 @@ linear_reg() %&gt;%
 ```
 
 ```
-## # A tibble: 7 x 5
+## # A tibble: 7 × 5
 ##   term            estimate std.error statistic p.value
 ##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 (Intercept)        14.0       10.0     1.40  0.162  
@@ -864,7 +854,7 @@ linear_reg() %&gt;%
 
 
 ```
-## # A tibble: 7 x 5
+## # A tibble: 7 × 5
 ##   term            estimate std.error statistic p.value
 ##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 (Intercept)        14.0       10.0     1.40  0.162  
@@ -899,66 +889,66 @@ linear_reg() %&gt;%
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; A &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; D/FL &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 1) !important;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 255) !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 1) !important;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 255) !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; G &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 1) !important;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 255) !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; I &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 1) !important;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 255) !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; S &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 1) !important;"&gt; 1 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 255) !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; X &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 1) !important;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 1) !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(68, 1, 84, 255) !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 10em; color: white !important;background-color: rgba(122, 209, 81, 255) !important;"&gt; 1 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -967,7 +957,7 @@ linear_reg() %&gt;%
 .code50[
 
 ```
-## # A tibble: 3,393 x 3
+## # A tibble: 3,393 × 3
 ##    name      Height_in school_pntg
 ##    &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;      
 ##  1 L1764-2          37 F          
@@ -990,7 +980,7 @@ linear_reg() %&gt;%
 ## 18 L1764-13a        15 D/FL       
 ## 19 L1764-13b        15 D/FL       
 ## 20 L1764-14         37 F          
-## # ... with 3,373 more rows
+## # ℹ 3,373 more rows
 ```
 ]
 ]
@@ -1002,7 +992,7 @@ linear_reg() %&gt;%
 .code60[
 
 ```
-## # A tibble: 7 x 5
+## # A tibble: 7 × 5
 ##   term            estimate std.error statistic p.value
 ##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 (Intercept)        14.0       10.0     1.40  0.162  
