@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 16"
 subtitle: "Multivariate linear models"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-11-07 (updated: `r Sys.Date()`)"
+date: "2021-11-07 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -46,6 +46,7 @@ class: code70
   with R by default.
 ```{r, message=FALSE}
 library(tidyverse)
+library(tidymodels)
 library(broom)
 data("mtcars")
 glimpse(mtcars)
@@ -137,9 +138,7 @@ class: code70
 ```{r}
 ggplot(mtcars, aes(x = wt, mpg)) +
   geom_point() +
-  scale_x_log10() +
-  xlab("Weight") +
-  ylab("Miles Per Gallon")
+  scale_x_continuous(transform = "log") + xlab("Weight") + ylab("Miles Per Gallon")
 ```
     
 - It seems that log-weight is negatively associated with mpg.
@@ -178,11 +177,12 @@ The `data` argument tells `lm()` where to find the response and
 
 ###  Formula syntax
 
-*  `x:z` form the interaction between `x` and `z` -- this is element-by-element times if at least `x` or `z` is continuous, otherwise it is an outer-product.
+*  `x:z` form the interaction between `x` and `z` -- this is element-by-element multiplication if at least `x` or `z` is continuous, otherwise it is an outer-product.
 *  `x*z` form interactions and include main effects. Equivalent to `x + z + x:z`
 *  `+ 0` or `- 1` exclude an intercept term, or `- x` exclude `x` if included otherwise.
 *  `(x + z + u)^2` form all two-way interactions and main effects with `x`, `z`, `u`.
-*  `I(x - 10)` or `I(x^2)` -- perform arithmetic operations that use `+`, `-`, `*`, `^`, etc, on a variable "on-the-fly" in the formula.   Can also just transform before you model.
+*  `I(x - 10)` or `I(x^2)` -- perform arithmetic operations that use `+`, `-`, `*`, `^`, etc, on a variable "on-the-fly" in the formula.   
+  * better than just transform before you model
 *  `y ~ .` every variable in the data, except the response `y`.
 
 ---
@@ -207,14 +207,6 @@ For a predictive goal, probably should use some method that does shrinkage and b
     ```{r}
     glance(lmout)
     ```
-
----
-
-class: middle
-
-.hand[Your turn]
-
-[Complete L16 AE part i](https://rstudio.cloud/spaces/162296/project/3184932)
 
 ---
 
@@ -289,14 +281,6 @@ class: middle
 
 ---
 
-class: middle
-
-.hand[Your turn]
-
-[L16 AE part ii](https://rstudio.cloud/spaces/162296/project/3184932)
-
----
-
 ## Assumptions and Violations
 
 - In the linear model, you can trade assumptions for inference:
@@ -310,6 +294,7 @@ class: middle
      any *too* extreme points. (Only an issue if you have outliers and a 
      small number of observations because thanks be to the 
      [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem)).
+  5. **Fixed and Known** predictors
 
 ---
 
@@ -322,8 +307,9 @@ class: middle
   3. **Equal Variance** violated - Linear regression line is unbiased, but standard 
      errors are off. Your $p$-values may be too small, or too large.
   4. **Normality** violated - Only an issue if your sample size is "small".  Unstable results if outliers are present.  Your $p$-values may be too small, or too large.
+  5. **Fixed and Known** violated if there is measurement error in the predictors 
      
-.question[What assumptions are made about the distribution of the 
+.question[Why are no assumptions made about the distribution of the 
   explanatory variable (the $x_i$'s)?]
 
 ---
@@ -374,11 +360,12 @@ class: code50
 1. Linearity Violated: Try a transformation. If the relationship looks 
    curved and monotone (i.e. either always increasing or always decreasing) then 
    try a log transformation.
-2. Independence Violated: Try a two-step procedure (that collapses over repeated measures) or ke longitudinal data analysis.
+2. Independence Violated: Try a two-step procedure (that collapses over repeated measures) or use longitudinal data analysis.
 3. Equal Variance Violated: If the relationship is also curved and monotone, 
    try a log transformation on the response variable. Use a bootstrap.  Or stay tuned for en you learn about sandwich estimation.
 4. Normality Violated: Don't trust prediction intervals 
    (confidence intervals are fine).
+5. Fixed and Known Violated: fit measurement error models 
    
 ---
 
@@ -386,7 +373,7 @@ class: code50
 
 .panelset[
 .panel[.panel-name[Fit]
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 set.seed(1)
 x = rnorm(100, sd = 1)
 y = x + rnorm(100)
@@ -398,7 +385,7 @@ qplot(x, y, xlab = "X", ylab = "Y", main = "Raw Data") +
 ```
 ]
 .panel[.panel-name[Residual]
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 qplot(fit_vec, res_vec, xlab = "Fitted Values", ylab = "Residuals", main = "Residual Plot") +
   geom_hline(yintercept = 0)
 ```
@@ -527,7 +514,7 @@ fit_vec = fitted(lmout)
 qplot(x, y, xlab = "X", ylab = "Y", main = "Raw Data")+ geom_smooth(se = FALSE, method = "lm")
 ```
 ]
-.panel[.panel-name[Code]
+.panel[.panel-name[Residual]
 ```{r, echo = FALSE}
 qplot(fit_vec, res_vec, xlab = "Fitted Values", ylab = "Residuals", main = "Residual Plot") + geom_hline(yintercept = 0)
 ```
@@ -698,18 +685,19 @@ GGally::ggcoef_compare(list(only_wt = only_wt, only_disp = only_disp, only_cyl =
 
 .panelset[
 .panel[.panel-name[Code]
-```{r pred-plot, fig.show='hide'}
+```{r pred-plot, fig.show='hide', warning = FALSE}
 (newdf = expand.grid(wt = mean(mtcars$wt),
                    disp = mean(mtcars$disp),
                    cyl = factor(c(4, 6, 8))))
 
 newdf = newdf %>% mutate(mpg = predict(complicated_model, across()))
-ggplot(mtcars, aes(x = cyl, y = mpg)) + geom_boxplot() +
+ggplot(mtcars, aes(x = cyl, y = mpg)) + 
+  geom_boxplot() +
   geom_line(data =newdf, aes(group = 1), color = 'red')
 ```
 ]
 .panel[.panel-name[Plot]
-```{r ref.label = 'pred-plot', echo = FALSE, out.width = '70%', results = 'hide'}
+```{r ref.label = 'pred-plot', echo = FALSE, out.width = '70%', results = 'hide', warning = FALSE}
 ```
 ]
 ]
@@ -719,8 +707,9 @@ ggplot(mtcars, aes(x = cyl, y = mpg)) + geom_boxplot() +
 
 ```{r}
 
-ggplot(mtcars, aes(x = log(disp), y = mpg)) + geom_point() + 
-  geom_smooth(method = 'lm') + facet_wrap(~cyl) + 
+ggplot(mtcars, aes(x = log(disp), y = mpg)) + 
+  geom_point() + facet_wrap(~cyl) + 
+  geom_smooth(method = 'lm') + 
   geom_point(data =newdf, aes(group = 1), color = 'red')
 
 ```
@@ -756,9 +745,9 @@ class: middle
 # Motivation
 
 - The gapminder data
-    ```{r, message = FALSE}
+    ```{r, message = FALSE, warning = FALSE}
     library(tidyverse)
-    library(broom)
+    library(tidymodels)
     library(gapminder)
     data("gapminder")
     glimpse(gapminder)
@@ -857,15 +846,20 @@ unnested_output = tidied_output %>%
 
 ### Specific example
 
-```{r, output.lines = 7}
+```{r, output.lines = 7, warning = FALSE, message = FALSE}
 fit_model = function(data) {
-  fit = lm(lifeExp ~ I(year-1990), data)
-  list(fit)
+  linear_reg() %>%
+    set_engine("lm") %>%
+    fit(lifeExp ~ I(year-1990), data = data) %>%
+    list()
+# Base R version for lm
+#  fit = lm(lifeExp ~ I(year-1990), data)
+#  list(fit)
 }
 
 many_fits = gapminder %>% 
   group_by(country, continent) %>%
-  summarize(fit = fit_model(across())) %>% 
+  summarize(fit = fit_model(across(.col = 1:4))) %>% 
   ungroup()
 many_fits
 ```
@@ -878,12 +872,12 @@ many_fits
 Now we can see the model fit in Japan:
 
 ```{r}
-filter(many_fits, country == 'Japan')$fit[[1]] %>% tidy()
+dplyr::filter(many_fits, country == 'Japan')$fit[[1]] %>% tidy()
 ```
 
 or Senegal
 ```{r}
-filter(many_fits, country == 'Senegal')$fit[[1]] %>% tidy()
+dplyr::filter(many_fits, country == 'Senegal')$fit[[1]] %>% tidy()
 
 ```
 
@@ -893,17 +887,21 @@ filter(many_fits, country == 'Senegal')$fit[[1]] %>% tidy()
 
 1. Use `across()` to pass the data frame, subset to the current group to our fit function.
 2. We have to do an unlisting operation to extract the lm object itself.  Without we get a length-1 list:
-   ```{r}
-   filter(many_fits, country == 'Senegal')$fit 
-   ```
+```{r}
+dplyr::filter(many_fits, country == 'Senegal')$fit 
+```
    
 ---
    
 3.We have to wrap the `lm` output as a list:
 ```{r, error=TRUE}
 fit_not_list = function(data) {
- fit = lm(lifeExp ~ I(year-1990), data)
- fit
+  linear_reg() %>%
+    set_engine("lm") %>%
+    fit(lifeExp ~ I(year-1990), data = data)
+# Base R version for lm also doesn't work
+# fit = lm(lifeExp ~ I(year-1990), data)
+# fit
 }
 
 many_fits = gapminder %>% 
@@ -964,7 +962,7 @@ purrr::map(df$y, nchar)
 
 ### Finally, using mutate
 
-```{r}
+```{r purrr}
 (df = df %>% mutate(nchar = purrr::map(y, nchar)))
 ```
 
@@ -976,17 +974,9 @@ purrr::map(df$y, nchar)
 
 Ok, back to our set of `lm` fits:
 
-```{r}
-many_fits = many_fits %>% mutate(tidyout = map(fit, tidy))
-many_fits
-```
-
----
-
-### With rowwise
-
-```{r}
-many_fits = many_fits %>% rowwise() %>% mutate(augmentout = list(augment(fit)))
+```{r map}
+many_fits = many_fits %>% 
+  mutate(tidyout = map(fit, tidy))
 many_fits
 ```
 
@@ -1020,11 +1010,12 @@ What is the distribution of 1990-estimated life expectancy?
 .panel[.panel-name[Code]
 ```{r country-intercept, fig.show='hide'}
 intercept = many_fits_coef %>% 
-  filter(term == '(Intercept)') %>% 
+  dplyr::filter(term == '(Intercept)') %>% 
   arrange(desc(estimate)) %>%
   mutate(country = fct_inorder(country))
 
-to_show = intercept %>% group_by(continent) %>% summarize(country = country[seq(from = 1, to = length(country), by = 5)]) %>% ungroup()
+to_show = intercept %>% group_by(continent) %>% 
+  reframe(country = country[seq(from = 1, to = length(country), by = 5)]) 
 
 intercept %>%
 ggplot(aes(y = country, x = estimate, xmin = estimate - std.error, xmax = estimate + std.error)) + 
@@ -1039,43 +1030,7 @@ ggplot(aes(y = country, x = estimate, xmin = estimate - std.error, xmax = estima
 ```
 
 ]]
----
 
-- You can check all of the models' qualities by looking at the residuals
-
-.panelset[
-.panel[.panel-name[Code]
-```{r country-resid, fig.show='hide'}
-augment_df = many_fits %>% 
-  unnest(cols = c(augmentout)) %>%
-  mutate(year = `I(year - 1990)` + 1990)
-
-augment_df %>%
-  ggplot(aes(x = year, y = .std.resid, group = country)) +
-  geom_line(alpha = 1/3) +
-  facet_wrap(.~continent) +
-  geom_hline(yintercept = 0, lty = 2, col = "blue") +
-  xlab("Year") +
-  ylab("Residual")
-```
-]
-.panel[.panel-name[Plot]
-```{r, ref.label = 'country-resid', echo = FALSE, out.width='70%'}
-
-```
-Actually, there's a pretty severe indication that linearity is being violated!  
-]
-]
-
-
----
-class: middle
-
-.hand[Your turn]
-
-
-[Complete part iii](https://rstudio.cloud/spaces/162296/project/3184932)
- 
 ---
 
 # Acknowledgments

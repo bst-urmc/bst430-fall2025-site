@@ -6,8 +6,8 @@
     <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/panelset/panelset.css" rel="stylesheet" />
     <script src="libs/panelset/panelset.js"></script>
     <link rel="stylesheet" href="css/lexis.css" type="text/css" />
@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-11-07 (updated: 2022-11-15 by TL)
+### 2021-11-07 (updated: 2024-10-30 by TL)
 ]
 
 ---
@@ -59,7 +59,7 @@ class: code70
 - For this lesson, we will use the (infamous) `mtcars` dataset that comes
   with R by default.
 
-```r
+``` r
 library(tidyverse)
 library(broom)
 data("mtcars")
@@ -69,17 +69,17 @@ glimpse(mtcars)
 ```
 ## Rows: 32
 ## Columns: 11
-## $ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22~
-## $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8,~
-## $ disp &lt;dbl&gt; 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 1~
-## $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175, 105, 245, 62, 95, 123, 123~
-## $ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.~
-## $ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440, 3.460, 3.570, 3~
-## $ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 2~
-## $ vs   &lt;dbl&gt; 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,~
-## $ am   &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
-## $ gear &lt;dbl&gt; 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3,~
-## $ carb &lt;dbl&gt; 4, 4, 1, 1, 2, 1, 4, 2, 2, 4, 4, 3, 3, 3, 4, 4, 4,~
+## $ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22…
+## $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8,…
+## $ disp &lt;dbl&gt; 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 1…
+## $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175, 105, 245, 62, 95, 123, 123…
+## $ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.…
+## $ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440, 3.460, 3.570, 3…
+## $ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 2…
+## $ vs   &lt;dbl&gt; 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,…
+## $ am   &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ gear &lt;dbl&gt; 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3,…
+## $ carb &lt;dbl&gt; 4, 4, 1, 1, 2, 1, 4, 2, 2, 4, 4, 3, 3, 3, 4, 4, 4,…
 ```
 
 ???
@@ -121,9 +121,9 @@ Pairs plots!
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 library(GGally)
-GGally::ggpairs(mtcars)
+GGally::ggpairs(mtcars[c(1,2,4,6,8,9,10)])
 ```
 
 ]
@@ -140,9 +140,9 @@ GGally::ggpairs(mtcars)
 .panelset[
 .panel[.panel-name[Code]
 
-```r
+``` r
 mtcars = mtcars %&gt;% mutate(across(c(vs, am, gear, cyl), factor))
-GGally::ggpairs(mtcars)
+GGally::ggpairs(mtcars[c(1,2,4,6,8,9,10)])
 ```
 
 ]
@@ -166,12 +166,10 @@ class: code70
   and mpg
 
 
-```r
+``` r
 ggplot(mtcars, aes(x = wt, mpg)) +
   geom_point() +
-  scale_x_log10() +
-  xlab("Weight") +
-  ylab("Miles Per Gallon")
+  scale_x_continuous(transform = "log") + xlab("Weight") + ylab("Miles Per Gallon")
 ```
 
 &lt;img src="l16-crossv-lm_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
@@ -184,31 +182,32 @@ ggplot(mtcars, aes(x = wt, mpg)) +
 ### OLS fits in R
 
 1. Make sure you have the explanatory variables in the format you want:
-   
-   ```r
-   submt = mtcars %&gt;% mutate(logwt = log(wt))
-   ```
+
+``` r
+submt = mtcars %&gt;% mutate(logwt = log(wt))
+```
 2. Use `lm()`
-   
-   ```r
-   lmout = lm(mpg ~ logwt, data = submt)
-   lmtide = tidy(lmout)
-   select(lmtide, term, estimate)
-   ```
-   
-   ```
-   ## # A tibble: 2 x 2
-   ##   term        estimate
-   ##   &lt;chr&gt;          &lt;dbl&gt;
-   ## 1 (Intercept)     39.3
-   ## 2 logwt          -17.1
-   ```
+
+``` r
+lmout = lm(mpg ~ logwt, data = submt)
+lmtide = tidy(lmout)
+select(lmtide, term, estimate)
+```
+
+```
+## # A tibble: 2 × 2
+##   term        estimate
+##   &lt;chr&gt;          &lt;dbl&gt;
+## 1 (Intercept)     39.3
+## 2 logwt          -17.1
+```
 
 ---
 
 ### `lm` syntax
 
-```r
+
+``` r
 lm(response ~ pred1 + pred2*pred3, data = data) 
 ```
 Finds the OLS estimates of the following model: 
@@ -222,11 +221,12 @@ The `data` argument tells `lm()` where to find the response and
 
 ###  Formula syntax
 
-*  `x:z` form the interaction between `x` and `z` -- this is element-by-element times if at least `x` or `z` is continuous, otherwise it is an outer-product.
+*  `x:z` form the interaction between `x` and `z` -- this is element-by-element multiplication if at least `x` or `z` is continuous, otherwise it is an outer-product.
 *  `x*z` form interactions and include main effects. Equivalent to `x + z + x:z`
 *  `+ 0` or `- 1` exclude an intercept term, or `- x` exclude `x` if included otherwise.
 *  `(x + z + u)^2` form all two-way interactions and main effects with `x`, `z`, `u`.
-*  `I(x - 10)` or `I(x^2)` -- perform arithmetic operations that use `+`, `-`, `*`, `^`, etc, on a variable "on-the-fly" in the formula.   Can also just transform before you model.
+*  `I(x - 10)` or `I(x^2)` -- perform arithmetic operations that use `+`, `-`, `*`, `^`, etc, on a variable "on-the-fly" in the formula.   
+  * better than just transform before you model
 *  `y ~ .` every variable in the data, except the response `y`.
 
 ---
@@ -237,43 +237,24 @@ class: code50
 .alert[But don't do this without thinking!]
 
 
-```r
+``` r
 tidy(lm(mpg ~ ., data = mtcars))
 ```
 
 ```
-## # A tibble: 13 x 5
+## # A tibble: 13 × 5
 ##   term        estimate std.error statistic p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 (Intercept)  15.1      17.1        0.881   0.389
 ## 2 cyl6         -1.20      2.39      -0.502   0.621
 ## 3 cyl8          3.05      4.83       0.633   0.535
 ## 4 disp          0.0126    0.0177     0.708   0.487
-## # ... with 9 more rows
+## # ℹ 9 more rows
 ```
 
 
 For a predictive goal, probably should use some method that does shrinkage and basis expansion.  For inference, need to consider putative casual models.
 
----
-
-
-- Use `broom::glance()` function to get the estimated standard deviation, `\(R^2\)`, and information criteria. It's the value
-  in the `sigma` column.
-    
-    ```r
-    glance(lmout)
-    ```
-    
-    ```
-    ## # A tibble: 1 x 12
-    ##   r.squ~1 adj.r~2 sigma stati~3  p.value    df logLik   AIC   BIC
-    ##     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-    ## 1   0.810   0.804  2.67    128. 2.39e-12     1  -75.8  158.  162.
-    ## # ... with 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;,
-    ## #   nobs &lt;int&gt;, and abbreviated variable names 1: r.squared,
-    ## #   2: adj.r.squared, 3: statistic
-    ```
 
 ---
 
@@ -287,12 +268,12 @@ For a predictive goal, probably should use some method that does shrinkage and b
 ---
 
 - Interpolation
-    &lt;img src="l16-crossv-lm_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l16-crossv-lm_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 - Extrapolation
-    &lt;img src="l16-crossv-lm_files/figure-html/unnamed-chunk-12-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l16-crossv-lm_files/figure-html/unnamed-chunk-12-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -309,18 +290,18 @@ For a predictive goal, probably should use some method that does shrinkage and b
 
 1. You need a data frame with the exact same
    variable name as the explanatory variable. 
-   
-   ```r
-   newdf = tribble(~logwt,
-                   1, 
-                   1.5)
-   ```
+
+``` r
+newdf = tribble(~logwt,
+                 1, 
+                 1.5)
+```
 2. Then you use the `predict()` function to obtain predictions.
-   
-   ```r
-   newdf = newdf %&gt;%
-     mutate(predictions = predict(object = lmout, newdata = newdf))
-   ```
+
+``` r
+newdf = newdf %&gt;%
+mutate(predictions = predict(object = lmout, newdata = newdf))
+```
 
 ---
 
@@ -337,6 +318,7 @@ For a predictive goal, probably should use some method that does shrinkage and b
      any *too* extreme points. (Only an issue if you have outliers and a 
      small number of observations because thanks be to the 
      [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem)).
+  5. **Fixed and Known** predictors
 
 ---
 
@@ -349,8 +331,9 @@ For a predictive goal, probably should use some method that does shrinkage and b
   3. **Equal Variance** violated - Linear regression line is unbiased, but standard 
      errors are off. Your `\(p\)`-values may be too small, or too large.
   4. **Normality** violated - Only an issue if your sample size is "small".  Unstable results if outliers are present.  Your `\(p\)`-values may be too small, or too large.
+  5. **Fixed and Known** violated if there is measurement error in the predictors 
      
-.question[What assumptions are made about the distribution of the 
+.question[Why are no assumptions made about the distribution of the 
   explanatory variable (the `\(x_i\)`'s)?]
 
 ---
@@ -581,7 +564,7 @@ class: middle
 ## Performing the split
 
 
-```r
+``` r
 # Fix random numbers by setting the seed 
 # Enables analysis to be reproducible when random numbers are used 
 set.seed(20211115)
@@ -604,66 +587,66 @@ class: code70
 .small[
 .pull-left[
 
-```r
+``` r
 glimpse(train_data)
 ```
 
 ```
 ## Rows: 3,136
 ## Columns: 21
-## $ spam         &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ to_multiple  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, ~
-## $ from         &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~
-## $ cc           &lt;int&gt; 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 1, 0, 0, 0, ~
-## $ sent_email   &lt;fct&gt; 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, ~
-## $ time         &lt;dttm&gt; 2012-01-23 19:23:58, 2012-03-28 09:13:47,~
-## $ image        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ attach       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ dollar       &lt;dbl&gt; 0, 0, 0, 0, 2, 0, 0, 0, 4, 0, 0, 0, 4, 0, ~
-## $ winner       &lt;fct&gt; no, no, no, no, no, no, no, no, no, no, no~
-## $ inherit      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, ~
-## $ viagra       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ password     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ num_char     &lt;dbl&gt; 24.832, 4.998, 3.568, 26.110, 7.870, 5.127~
-## $ line_breaks  &lt;int&gt; 624, 114, 81, 652, 253, 120, 74, 118, 190,~
-## $ format       &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, ~
-## $ re_subj      &lt;fct&gt; 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, ~
-## $ exclaim_subj &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ urgent_subj  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ exclaim_mess &lt;dbl&gt; 2, 0, 1, 1, 8, 0, 0, 2, 5, 0, 8, 0, 8, 1, ~
-## $ number       &lt;fct&gt; small, small, small, small, big, small, sm~
+## $ spam         &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ to_multiple  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, …
+## $ from         &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ cc           &lt;int&gt; 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 1, 0, 0, 0, …
+## $ sent_email   &lt;fct&gt; 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, …
+## $ time         &lt;dttm&gt; 2012-01-23 19:23:58, 2012-03-28 09:13:47,…
+## $ image        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ attach       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ dollar       &lt;dbl&gt; 0, 0, 0, 0, 2, 0, 0, 0, 4, 0, 0, 0, 4, 0, …
+## $ winner       &lt;fct&gt; no, no, no, no, no, no, no, no, no, no, no…
+## $ inherit      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, …
+## $ viagra       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ password     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ num_char     &lt;dbl&gt; 24.832, 4.998, 3.568, 26.110, 7.870, 5.127…
+## $ line_breaks  &lt;int&gt; 624, 114, 81, 652, 253, 120, 74, 118, 190,…
+## $ format       &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, …
+## $ re_subj      &lt;fct&gt; 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, …
+## $ exclaim_subj &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ urgent_subj  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ exclaim_mess &lt;dbl&gt; 2, 0, 1, 1, 8, 0, 0, 2, 5, 0, 8, 0, 8, 1, …
+## $ number       &lt;fct&gt; small, small, small, small, big, small, sm…
 ```
 ]
 .pull-right[
 
-```r
+``` r
 glimpse(test_data)
 ```
 
 ```
 ## Rows: 785
 ## Columns: 21
-## $ spam         &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ to_multiple  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, ~
-## $ from         &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~
-## $ cc           &lt;int&gt; 1, 2, 1, 7, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, ~
-## $ sent_email   &lt;fct&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, ~
-## $ time         &lt;dttm&gt; 2012-01-01 14:38:32, 2012-01-01 18:32:53,~
-## $ image        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, ~
-## $ attach       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, ~
-## $ dollar       &lt;dbl&gt; 0, 2, 0, 0, 0, 2, 0, 9, 0, 0, 0, 0, 0, 0, ~
-## $ winner       &lt;fct&gt; no, no, no, no, no, no, no, no, no, no, no~
-## $ inherit      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ viagra       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ password     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ num_char     &lt;dbl&gt; 15.075, 19.693, 3.959, 0.334, 1.482, 4.103~
-## $ line_breaks  &lt;int&gt; 354, 330, 81, 9, 24, 173, 107, 151, 76, 41~
-## $ format       &lt;fct&gt; 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~
-## $ re_subj      &lt;fct&gt; 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, ~
-## $ exclaim_subj &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, ~
-## $ urgent_subj  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
-## $ exclaim_mess &lt;dbl&gt; 10, 4, 1, 0, 0, 0, 0, 1, 4, 0, 8, 2, 1, 3,~
-## $ number       &lt;fct&gt; small, big, small, small, none, small, sma~
+## $ spam         &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ to_multiple  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, …
+## $ from         &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ cc           &lt;int&gt; 1, 2, 1, 7, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, …
+## $ sent_email   &lt;fct&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, …
+## $ time         &lt;dttm&gt; 2012-01-01 14:38:32, 2012-01-01 18:32:53,…
+## $ image        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, …
+## $ attach       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, …
+## $ dollar       &lt;dbl&gt; 0, 2, 0, 0, 0, 2, 0, 9, 0, 0, 0, 0, 0, 0, …
+## $ winner       &lt;fct&gt; no, no, no, no, no, no, no, no, no, no, no…
+## $ inherit      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ viagra       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ password     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ num_char     &lt;dbl&gt; 15.075, 19.693, 3.959, 0.334, 1.482, 4.103…
+## $ line_breaks  &lt;int&gt; 354, 330, 81, 9, 24, 173, 107, 151, 76, 41…
+## $ format       &lt;fct&gt; 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ re_subj      &lt;fct&gt; 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …
+## $ exclaim_subj &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, …
+## $ urgent_subj  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ exclaim_mess &lt;dbl&gt; 10, 4, 1, 0, 0, 0, 0, 1, 4, 0, 8, 2, 1, 3,…
+## $ number       &lt;fct&gt; small, big, small, small, none, small, sma…
 ```
 ]
 ]
@@ -679,7 +662,7 @@ class: middle
 ## Fit a model to the training dataset
 
 
-```r
+``` r
 email_fit = logistic_reg() %&gt;%
   set_engine("glm") %&gt;%
   fit(spam ~ ., data = train_data, family = "binomial")
@@ -700,7 +683,7 @@ email_fit = logistic_reg() %&gt;%
 ## Fit a model to the training dataset
 
 
-```r
+``` r
 email_fit = logistic_reg() %&gt;%
   set_engine("glm") %&gt;%
 * fit(spam ~ . - from - sent_email - viagra, data = train_data, family = "binomial")
@@ -712,7 +695,7 @@ email_fit = logistic_reg() %&gt;%
 
 .code50[
 
-```r
+``` r
 email_fit
 ```
 
@@ -746,19 +729,19 @@ Dropping `from`, `sent_email` quells the warnings about predicted probabilities 
 ## Predict outcome on the testing dataset
 
 
-```r
+``` r
 predict(email_fit, test_data)
 ```
 
 ```
-## # A tibble: 785 x 1
+## # A tibble: 785 × 1
 ##   .pred_class
 ##   &lt;fct&gt;      
 ## 1 0          
 ## 2 0          
 ## 3 0          
 ## 4 0          
-## # ... with 781 more rows
+## # ℹ 781 more rows
 ```
 
 
@@ -767,7 +750,7 @@ predict(email_fit, test_data)
 ## Predict probabilities on the testing dataset
 
 
-```r
+``` r
 email_pred = predict(email_fit, test_data, type = "prob") %&gt;%
   bind_cols(test_data %&gt;% select(spam, time))
 
@@ -775,14 +758,14 @@ email_pred
 ```
 
 ```
-## # A tibble: 785 x 4
+## # A tibble: 785 × 4
 ##   .pred_0 .pred_1 spam  time               
 ##     &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;dttm&gt;             
 ## 1   0.999 0.00127 0     2012-01-01 14:38:32
 ## 2   0.996 0.00373 0     2012-01-01 18:32:53
 ## 3   0.994 0.00596 0     2012-01-01 22:16:39
 ## 4   0.992 0.00801 0     2012-01-02 19:07:51
-## # ... with 781 more rows
+## # ℹ 781 more rows
 ```
 
 ---
@@ -791,14 +774,14 @@ email_pred
 
 
 
-```r
+``` r
 email_pred %&gt;%
   arrange(desc(.pred_1)) %&gt;%
   print(n = 10)
 ```
 
 ```
-## # A tibble: 785 x 4
+## # A tibble: 785 × 4
 ##    .pred_0 .pred_1 spam  time               
 ##      &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;dttm&gt;             
 ##  1  0.0970   0.903 1     2012-03-27 01:17:01
@@ -811,7 +794,7 @@ email_pred %&gt;%
 ##  8  0.293    0.707 1     2012-02-24 19:43:44
 ##  9  0.308    0.692 0     2012-01-31 10:07:48
 ## 10  0.346    0.654 0     2012-02-04 05:39:37
-## # ... with 775 more rows
+## # ℹ 775 more rows
 ```
 
 ---
@@ -822,7 +805,7 @@ email_pred %&gt;%
 
 .pull-left[
 
-```r
+``` r
 email_pred %&gt;%
   roc_curve(
     truth = spam,
@@ -850,7 +833,7 @@ Find the area under the curve:
 
 .pull-left[
 
-```r
+``` r
 email_pred %&gt;%
   roc_auc(
     truth = spam,
@@ -860,7 +843,7 @@ email_pred %&gt;%
 ```
 
 ```
-## # A tibble: 1 x 3
+## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
 ## 1 roc_auc binary         0.840
@@ -898,7 +881,7 @@ class: middle
 ## A simple approach: `mutate()`
 
 
-```r
+``` r
 library(lubridate)
 train_data %&gt;%
   mutate(
@@ -911,7 +894,7 @@ train_data %&gt;%
 ```
 
 ```
-## # A tibble: 5 x 4
+## # A tibble: 5 × 4
 ##   time                date         dow month
 ##   &lt;dttm&gt;              &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;
 ## 1 2012-01-31 17:06:58 2012-01-31     3     1
@@ -962,7 +945,7 @@ Actually, is building up and saving a set of functions (without evaluating them)
 ## Initiate a recipe
 
 
-```r
+``` r
 email_rec = recipe(
   spam ~ .,          # formula
   data = train_data  # data to use for cataloguing names and types of variables
@@ -974,30 +957,30 @@ summary(email_rec)
 .code50[
 
 ```
-## # A tibble: 21 x 4
-##    variable     type    role      source  
-##    &lt;chr&gt;        &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;   
-##  1 to_multiple  nominal predictor original
-##  2 from         nominal predictor original
-##  3 cc           numeric predictor original
-##  4 sent_email   nominal predictor original
-##  5 time         date    predictor original
-##  6 image        numeric predictor original
-##  7 attach       numeric predictor original
-##  8 dollar       numeric predictor original
-##  9 winner       nominal predictor original
-## 10 inherit      numeric predictor original
-## 11 viagra       numeric predictor original
-## 12 password     numeric predictor original
-## 13 num_char     numeric predictor original
-## 14 line_breaks  numeric predictor original
-## 15 format       nominal predictor original
-## 16 re_subj      nominal predictor original
-## 17 exclaim_subj numeric predictor original
-## 18 urgent_subj  nominal predictor original
-## 19 exclaim_mess numeric predictor original
-## 20 number       nominal predictor original
-## 21 spam         nominal outcome   original
+## # A tibble: 21 × 4
+##    variable     type      role      source  
+##    &lt;chr&gt;        &lt;list&gt;    &lt;chr&gt;     &lt;chr&gt;   
+##  1 to_multiple  &lt;chr [3]&gt; predictor original
+##  2 from         &lt;chr [3]&gt; predictor original
+##  3 cc           &lt;chr [2]&gt; predictor original
+##  4 sent_email   &lt;chr [3]&gt; predictor original
+##  5 time         &lt;chr [1]&gt; predictor original
+##  6 image        &lt;chr [2]&gt; predictor original
+##  7 attach       &lt;chr [2]&gt; predictor original
+##  8 dollar       &lt;chr [2]&gt; predictor original
+##  9 winner       &lt;chr [3]&gt; predictor original
+## 10 inherit      &lt;chr [2]&gt; predictor original
+## 11 viagra       &lt;chr [2]&gt; predictor original
+## 12 password     &lt;chr [2]&gt; predictor original
+## 13 num_char     &lt;chr [2]&gt; predictor original
+## 14 line_breaks  &lt;chr [2]&gt; predictor original
+## 15 format       &lt;chr [3]&gt; predictor original
+## 16 re_subj      &lt;chr [3]&gt; predictor original
+## 17 exclaim_subj &lt;chr [2]&gt; predictor original
+## 18 urgent_subj  &lt;chr [3]&gt; predictor original
+## 19 exclaim_mess &lt;chr [2]&gt; predictor original
+## 20 number       &lt;chr [3]&gt; predictor original
+## 21 spam         &lt;chr [3]&gt; outcome   original
 ```
 ]
 
@@ -1006,26 +989,13 @@ summary(email_rec)
 ## Remove certain variables
 
 
-```r
+``` r
 email_rec = email_rec %&gt;%
   step_rm(from, sent_email)
 ```
 
 .code70[
 
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email
-```
 ]
 
 ---
@@ -1033,7 +1003,7 @@ email_rec = email_rec %&gt;%
 ## Feature engineer date
 
 
-```r
+``` r
 email_rec = email_rec %&gt;%
   step_date(time, features = c("dow", "month")) %&gt;%
   step_rm(time)
@@ -1041,21 +1011,6 @@ email_rec = email_rec %&gt;%
 
 .code70[
 
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email
-## Date features from time
-## Variables removed time
-```
 ]
 
 ---
@@ -1063,7 +1018,7 @@ email_rec = email_rec %&gt;%
 ## Discretize numeric variables
 
 
-```r
+``` r
 email_rec = email_rec %&gt;%
   step_cut(cc, attach, dollar, breaks = c(0, 1)) %&gt;%
   step_cut(inherit, password, breaks = c(0, 1, 5, 10, 20))
@@ -1071,23 +1026,6 @@ email_rec = email_rec %&gt;%
 
 .code70[
 
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email
-## Date features from time
-## Variables removed time
-## Cut numeric for cc, attach, dollar
-## Cut numeric for inherit, password
-```
 ]
 
 ---
@@ -1095,31 +1033,13 @@ email_rec = email_rec %&gt;%
 ## Create dummy variables
 
 
-```r
+``` r
 email_rec = email_rec %&gt;%
   step_dummy(all_nominal(), -all_outcomes())
 ```
 
 .code70[
 
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email
-## Date features from time
-## Variables removed time
-## Cut numeric for cc, attach, dollar
-## Cut numeric for inherit, password
-## Dummy variables from all_nominal(), -all_outcomes()
-```
 ]
 
 ---
@@ -1129,32 +1049,13 @@ email_rec = email_rec %&gt;%
 Variables that contain only a single value
 
 
-```r
+``` r
 email_rec = email_rec %&gt;%
   step_zv(all_predictors())
 ```
 
 .code70[
 
-```
-## Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         20
-## 
-## Operations:
-## 
-## Variables removed from, sent_email
-## Date features from time
-## Variables removed time
-## Cut numeric for cc, attach, dollar
-## Cut numeric for inherit, password
-## Dummy variables from all_nominal(), -all_outcomes()
-## Zero variance filter on all_predictors()
-```
 ]
 
 ---
@@ -1162,7 +1063,7 @@ email_rec = email_rec %&gt;%
 ## All in one place
 
 
-```r
+``` r
 email_rec = recipe(spam ~ ., data = email) %&gt;%
   step_rm(from, sent_email) %&gt;%
   step_date(time, features = c("dow", "month")) %&gt;%               
@@ -1184,7 +1085,7 @@ class: middle
 ## Define model
 
 
-```r
+``` r
 email_mod = logistic_reg() %&gt;% 
   set_engine("glm")
 
@@ -1204,7 +1105,7 @@ email_mod
 **Workflows** bring together models and recipes so that they can be easily applied to both the training and test data.
 
 
-```r
+``` r
 email_wflow = workflow() %&gt;% 
   add_model(email_mod) %&gt;% 
   add_recipe(email_rec)
@@ -1213,22 +1114,22 @@ email_wflow = workflow() %&gt;%
 .code60[
 
 ```
-## == Workflow ========================================================================================
+## ══ Workflow ════════════════════════════════════════════════════════════════════════════════════════
 ## Preprocessor: Recipe
 ## Model: logistic_reg()
 ## 
-## -- Preprocessor ------------------------------------------------------------------------------------
+## ── Preprocessor ────────────────────────────────────────────────────────────────────────────────────
 ## 7 Recipe Steps
 ## 
-## * step_rm()
-## * step_date()
-## * step_rm()
-## * step_cut()
-## * step_cut()
-## * step_dummy()
-## * step_zv()
+## • step_rm()
+## • step_date()
+## • step_rm()
+## • step_cut()
+## • step_cut()
+## • step_dummy()
+## • step_zv()
 ## 
-## -- Model -------------------------------------------------------------------------------------------
+## ── Model ───────────────────────────────────────────────────────────────────────────────────────────
 ## Logistic Regression Model Specification (classification)
 ## 
 ## Computational engine: glm
@@ -1240,7 +1141,7 @@ email_wflow = workflow() %&gt;%
 ## Fit model to training data
 
 
-```r
+``` r
 email_fit = email_wflow %&gt;% 
   fit(data = train_data)
 ```
@@ -1253,19 +1154,19 @@ email_fit = email_wflow %&gt;%
 
 .code50[
 
-```r
+``` r
 tidy(email_fit)
 ```
 
 ```
-## # A tibble: 30 x 5
+## # A tibble: 30 × 5
 ##   term        estimate std.error statistic   p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
 ## 1 (Intercept) -1.18      0.273       -4.31 0.0000164
 ## 2 image       -2.00      0.976       -2.05 0.0408   
 ## 3 num_char     0.0611    0.0240       2.54 0.0111   
 ## 4 line_breaks -0.00517   0.00135     -3.82 0.000135 
-## # ... with 26 more rows
+## # ℹ 26 more rows
 ```
 ]
 
@@ -1274,7 +1175,7 @@ tidy(email_fit)
 ## Make predictions for test data
 
 
-```r
+``` r
 email_pred = predict(email_fit, test_data, type = "prob") %&gt;% 
   bind_cols(test_data) 
 
@@ -1282,7 +1183,7 @@ email_pred
 ```
 
 ```
-## # A tibble: 785 x 23
+## # A tibble: 785 × 23
 ##   .pred_0  .pred_1 spam  to_multiple from     cc sent_email
 ##     &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt; &lt;int&gt; &lt;fct&gt;     
 ## 1   0.999 0.000809 0     0           1         1 1         
@@ -1301,7 +1202,7 @@ email_pred
 
 .pull-left[
 
-```r
+``` r
 email_pred %&gt;%
   roc_curve(
     truth = spam,
@@ -1321,7 +1222,7 @@ email_pred %&gt;%
 
 .pull-left[
 
-```r
+``` r
 email_pred %&gt;%
   roc_auc(
     truth = spam,
@@ -1331,7 +1232,7 @@ email_pred %&gt;%
 ```
 
 ```
-## # A tibble: 1 x 3
+## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
 ## 1 roc_auc binary         0.847
@@ -1364,7 +1265,7 @@ Suppose we decide to label an email as spam if the model predicts the probabilit
 ]
 .panel[.panel-name[Code]
 
-```r
+``` r
 cutoff_prob = 0.5
 email_pred %&gt;%
   mutate(
@@ -1395,7 +1296,7 @@ Suppose we decide to label an email as spam if the model predicts the probabilit
 ]
 .panel[.panel-name[Code]
 
-```r
+``` r
 cutoff_prob = 0.25
 email_pred %&gt;%
   mutate(
@@ -1426,7 +1327,7 @@ Suppose we decide to label an email as spam if the model predicts the probabilit
 ]
 .panel[.panel-name[Code]
 
-```r
+``` r
 cutoff_prob = 0.75
 email_pred %&gt;%
   mutate(
@@ -1492,7 +1393,7 @@ You might also heard of this referred to as k-fold cross validation.
 
 .pull-left[
 
-```r
+``` r
 set.seed(345)
 
 folds = vfold_cv(train_data, v = 5)
@@ -1501,7 +1402,7 @@ folds
 
 ```
 ## #  5-fold cross-validation 
-## # A tibble: 5 x 2
+## # A tibble: 5 × 2
 ##   splits             id   
 ##   &lt;list&gt;             &lt;chr&gt;
 ## 1 &lt;split [2508/628]&gt; Fold1
@@ -1522,7 +1423,7 @@ class: code60
 
 .pull-left[
 
-```r
+``` r
 set.seed(456)
 
 email_fit_rs = email_wflow %&gt;%
@@ -1534,18 +1435,21 @@ email_fit_rs
 ```
 ## # Resampling results
 ## # 5-fold cross-validation 
-## # A tibble: 5 x 4
+## # A tibble: 5 × 4
 ##   splits             id    .metrics         .notes          
 ##   &lt;list&gt;             &lt;chr&gt; &lt;list&gt;           &lt;list&gt;          
-## 1 &lt;split [2508/628]&gt; Fold1 &lt;tibble [2 x 4]&gt; &lt;tibble [2 x 3]&gt;
-## 2 &lt;split [2509/627]&gt; Fold2 &lt;tibble [2 x 4]&gt; &lt;tibble [1 x 3]&gt;
-## 3 &lt;split [2509/627]&gt; Fold3 &lt;tibble [2 x 4]&gt; &lt;tibble [1 x 3]&gt;
-## 4 &lt;split [2509/627]&gt; Fold4 &lt;tibble [2 x 4]&gt; &lt;tibble [2 x 3]&gt;
-## 5 &lt;split [2509/627]&gt; Fold5 &lt;tibble [2 x 4]&gt; &lt;tibble [1 x 3]&gt;
+## 1 &lt;split [2508/628]&gt; Fold1 &lt;tibble [3 × 4]&gt; &lt;tibble [2 × 3]&gt;
+## 2 &lt;split [2509/627]&gt; Fold2 &lt;tibble [3 × 4]&gt; &lt;tibble [1 × 3]&gt;
+## 3 &lt;split [2509/627]&gt; Fold3 &lt;tibble [3 × 4]&gt; &lt;tibble [1 × 3]&gt;
+## 4 &lt;split [2509/627]&gt; Fold4 &lt;tibble [3 × 4]&gt; &lt;tibble [2 × 3]&gt;
+## 5 &lt;split [2509/627]&gt; Fold5 &lt;tibble [3 × 4]&gt; &lt;tibble [1 × 3]&gt;
 ## 
 ## There were issues with some computations:
 ## 
-##   - Warning(s) x4: glm.fit: fitted probabilities numerically 0 or 1 occurredThere are new levels in a...   - Warning(s) x3: glm.fit: fitted probabilities numerically 0 or 1 occurredThere are new levels in a...
+##   - Warning(s) x1: ! There are new levels in `attach`: NA. ℹ Consider using step_unknown() (`?recipes...
+##   - Warning(s) x1: ! There are new levels in `cc`: NA. ℹ Consider using step_unknown() (`?recipes::st...
+##   - Warning(s) x1: ! There are new levels in `password`: NA. ℹ Consider using step_unknown() (`?recip...
+##   - Warning(s) x4: glm.fit: fitted probabilities numerically 0 or 1 occurred
 ## 
 ## Run `show_notes(.Last.tune.result)` for more information.
 ```
@@ -1559,16 +1463,17 @@ email_fit_rs
 ## Collect CV metrics
 
 
-```r
+``` r
 collect_metrics(email_fit_rs)
 ```
 
 ```
-## # A tibble: 2 x 6
-##   .metric  .estimator  mean     n std_err .config             
-##   &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
-## 1 accuracy binary     0.908     5 0.00395 Preprocessor1_Model1
-## 2 roc_auc  binary     0.837     5 0.00384 Preprocessor1_Model1
+## # A tibble: 3 × 6
+##   .metric     .estimator   mean     n std_err .config            
+##   &lt;chr&gt;       &lt;chr&gt;       &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;              
+## 1 accuracy    binary     0.908      5 0.00395 Preprocessor1_Mode…
+## 2 brier_class binary     0.0698     5 0.00278 Preprocessor1_Mode…
+## 3 roc_auc     binary     0.837      5 0.00384 Preprocessor1_Mode…
 ```
 
 ---
@@ -1578,36 +1483,37 @@ collect_metrics(email_fit_rs)
 .panelset[
 .panel[.panel-name[Raw]
 
-```r
+``` r
 collect_metrics(email_fit_rs, summarize = FALSE) %&gt;%
   print(n = 10)
 ```
 
 ```
-## # A tibble: 10 x 5
-##    id    .metric  .estimator .estimate .config             
-##    &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-##  1 Fold1 accuracy binary         0.915 Preprocessor1_Model1
-##  2 Fold1 roc_auc  binary         0.834 Preprocessor1_Model1
-##  3 Fold2 accuracy binary         0.904 Preprocessor1_Model1
-##  4 Fold2 roc_auc  binary         0.847 Preprocessor1_Model1
-##  5 Fold3 accuracy binary         0.915 Preprocessor1_Model1
-##  6 Fold3 roc_auc  binary         0.844 Preprocessor1_Model1
-##  7 Fold4 accuracy binary         0.895 Preprocessor1_Model1
-##  8 Fold4 roc_auc  binary         0.828 Preprocessor1_Model1
-##  9 Fold5 accuracy binary         0.910 Preprocessor1_Model1
-## 10 Fold5 roc_auc  binary         0.831 Preprocessor1_Model1
+## # A tibble: 15 × 5
+##    id    .metric     .estimator .estimate .config             
+##    &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
+##  1 Fold1 accuracy    binary        0.915  Preprocessor1_Model1
+##  2 Fold1 roc_auc     binary        0.834  Preprocessor1_Model1
+##  3 Fold1 brier_class binary        0.0632 Preprocessor1_Model1
+##  4 Fold2 accuracy    binary        0.904  Preprocessor1_Model1
+##  5 Fold2 roc_auc     binary        0.847  Preprocessor1_Model1
+##  6 Fold2 brier_class binary        0.0730 Preprocessor1_Model1
+##  7 Fold3 accuracy    binary        0.915  Preprocessor1_Model1
+##  8 Fold3 roc_auc     binary        0.844  Preprocessor1_Model1
+##  9 Fold3 brier_class binary        0.0652 Preprocessor1_Model1
+## 10 Fold4 accuracy    binary        0.895  Preprocessor1_Model1
+## # ℹ 5 more rows
 ```
 ]
 .panel[.panel-name[Pretty]
 
-|Fold  | accuracy| roc_auc|
-|:-----|--------:|-------:|
-|Fold1 |    0.915|   0.834|
-|Fold2 |    0.904|   0.847|
-|Fold3 |    0.915|   0.844|
-|Fold4 |    0.895|   0.828|
-|Fold5 |    0.910|   0.831|
+|Fold  | accuracy| roc_auc| brier_class|
+|:-----|--------:|-------:|-----------:|
+|Fold1 |    0.915|   0.834|       0.063|
+|Fold2 |    0.904|   0.847|       0.073|
+|Fold3 |    0.915|   0.844|       0.065|
+|Fold4 |    0.895|   0.828|       0.079|
+|Fold5 |    0.910|   0.831|       0.069|
 ]
 ]
 
@@ -1629,7 +1535,7 @@ In the typical case, we use cross-validation to tune and select between models, 
 
 .pull-left[
 
-```r
+``` r
 set.seed(123)
 train_data_small = train_data %&gt;% sample_n(size = 100)
 overfit = fit(email_wflow, data = train_data_small)
@@ -1642,7 +1548,7 @@ overpredict = predict(overfit, train_data_small, type = "prob") %&gt;%
 &lt;img src="l16-crossv-lm_files/figure-html/unnamed-chunk-65-1.png" width="90%" style="display: block; margin: auto;" /&gt;
 
 ```
-## # A tibble: 1 x 3
+## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
 ## 1 roc_auc binary             1

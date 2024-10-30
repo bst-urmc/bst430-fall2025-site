@@ -37,6 +37,8 @@ knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
 
 Here's the [R code in this lecture](l15/l15-linear-models.R)
 
+and the [auction dataset](l15/data/paris-paintings.csv)
+
 ---
 
 ## Modelling

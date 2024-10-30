@@ -30,6 +30,7 @@ library(tidymodels)
 library(openintro)
 library(patchwork)
 library(skimr)
+library(conflicted)
 set.seed(1234)
 options(
   warnPartialMatchArgs = FALSE,
@@ -104,7 +105,7 @@ Pairs plots!
 .panel[.panel-name[Code]
 ```{r pairs1, fig.show="hide"}
 library(GGally)
-GGally::ggpairs(mtcars)
+GGally::ggpairs(mtcars[c(1,2,4,6,8,9,10)])
 ```
 
 ]
@@ -123,7 +124,7 @@ GGally::ggpairs(mtcars)
 .panel[.panel-name[Code]
 ```{r pairs2, fig.show="hide"}
 mtcars = mtcars %>% mutate(across(c(vs, am, gear, cyl), factor))
-GGally::ggpairs(mtcars)
+GGally::ggpairs(mtcars[c(1,2,4,6,8,9,10)])
 ```
 
 ]
@@ -150,9 +151,7 @@ class: code70
 ```{r}
 ggplot(mtcars, aes(x = wt, mpg)) +
   geom_point() +
-  scale_x_log10() +
-  xlab("Weight") +
-  ylab("Miles Per Gallon")
+  scale_x_continuous(transform = "log") + xlab("Weight") + ylab("Miles Per Gallon")
 ```
     
 - It seems that log-weight is negatively associated with mpg.
@@ -163,21 +162,21 @@ ggplot(mtcars, aes(x = wt, mpg)) +
 ### OLS fits in R
 
 1. Make sure you have the explanatory variables in the format you want:
-   ```{r}
-   submt = mtcars %>% mutate(logwt = log(wt))
-   ```
+```{r}
+submt = mtcars %>% mutate(logwt = log(wt))
+```
 2. Use `lm()`
-   ```{r}
-   lmout = lm(mpg ~ logwt, data = submt)
-   lmtide = tidy(lmout)
-   select(lmtide, term, estimate)
-   ```
+```{r}
+lmout = lm(mpg ~ logwt, data = submt)
+lmtide = tidy(lmout)
+select(lmtide, term, estimate)
+```
 
 ---
 
 ### `lm` syntax
 
-```r
+```{r, eval=FALSE}
 lm(response ~ pred1 + pred2*pred3, data = data) 
 ```
 Finds the OLS estimates of the following model: 
@@ -191,11 +190,12 @@ The `data` argument tells `lm()` where to find the response and
 
 ###  Formula syntax
 
-*  `x:z` form the interaction between `x` and `z` -- this is element-by-element times if at least `x` or `z` is continuous, otherwise it is an outer-product.
+*  `x:z` form the interaction between `x` and `z` -- this is element-by-element multiplication if at least `x` or `z` is continuous, otherwise it is an outer-product.
 *  `x*z` form interactions and include main effects. Equivalent to `x + z + x:z`
 *  `+ 0` or `- 1` exclude an intercept term, or `- x` exclude `x` if included otherwise.
 *  `(x + z + u)^2` form all two-way interactions and main effects with `x`, `z`, `u`.
-*  `I(x - 10)` or `I(x^2)` -- perform arithmetic operations that use `+`, `-`, `*`, `^`, etc, on a variable "on-the-fly" in the formula.   Can also just transform before you model.
+*  `I(x - 10)` or `I(x^2)` -- perform arithmetic operations that use `+`, `-`, `*`, `^`, etc, on a variable "on-the-fly" in the formula.   
+  * better than just transform before you model
 *  `y ~ .` every variable in the data, except the response `y`.
 
 ---
@@ -212,14 +212,6 @@ tidy(lm(mpg ~ ., data = mtcars))
 
 For a predictive goal, probably should use some method that does shrinkage and basis expansion.  For inference, need to consider putative casual models.
 
----
-
-
-- Use `broom::glance()` function to get the estimated standard deviation, $R^2$, and information criteria. It's the value
-  in the `sigma` column.
-    ```{r}
-    glance(lmout)
-    ```
 
 ---
 
@@ -233,38 +225,38 @@ For a predictive goal, probably should use some method that does shrinkage and b
 ---
 
 - Interpolation
-    ```{r, echo = FALSE}
-    ggplot(data = submt, mapping = aes(x = logwt, y = mpg)) +
-      geom_point() +
-      geom_abline(slope = coef(lmout)[2], intercept = coef(lmout)[1], lwd = 1, col = "blue", alpha = 1/2) +
-      geom_segment(data = data.frame(x    = 1, 
-                                     xend = 1,
-                                     y    = 0,
-                                     yend = coef(lmout)[1] + 1 * coef(lmout)[2]),
-                   mapping = aes(x = x, xend = xend, y = y, yend = yend), 
-                   lty = 2, color = "red", lwd = 1) +
-      geom_hline(yintercept = 0, lty = 2, alpha = 1/2) +
-      ylab("MPG") +
-      xlab("Log-weight")
-    ```
+```{r, echo = FALSE}
+ggplot(data = submt, mapping = aes(x = logwt, y = mpg)) +
+    geom_point() +
+    geom_abline(slope = coef(lmout)[2], intercept = coef(lmout)[1], lwd = 1, col = "blue", alpha = 1/2) +
+    geom_segment(data = data.frame(x    = 1, 
+                                   xend = 1,
+                                   y    = 0,
+                                   yend = coef(lmout)[1] + 1 * coef(lmout)[2]),
+                 mapping = aes(x = x, xend = xend, y = y, yend = yend), 
+                 lty = 2, color = "red", lwd = 1) +
+    geom_hline(yintercept = 0, lty = 2, alpha = 1/2) +
+    ylab("MPG") +
+    xlab("Log-weight")
+```
 
 ---
 
 - Extrapolation
-    ```{r, echo = FALSE}
-    ggplot(data = submt, mapping = aes(x = logwt, y = mpg)) +
-      geom_point() +
-      geom_abline(slope = coef(lmout)[2], intercept = coef(lmout)[1], lwd = 1, col = "blue", alpha = 1/2) +
-      geom_segment(data = data.frame(x    = 3, 
-                                     xend = 3,
-                                     y    = 0,
-                                     yend = coef(lmout)[1] + 3 * coef(lmout)[2]),
-                   mapping = aes(x = x, xend = xend, y = y, yend = yend), 
-                   lty = 2, color = "red", lwd = 1) +
-      geom_hline(yintercept = 0, lty = 2, alpha = 1/2) +
-      ylab("MPG") +
-      xlab("Log-weight")
-    ```
+```{r, echo = FALSE}
+ggplot(data = submt, mapping = aes(x = logwt, y = mpg)) +
+    geom_point() +
+    geom_abline(slope = coef(lmout)[2], intercept = coef(lmout)[1], lwd = 1, col = "blue", alpha = 1/2) +
+    geom_segment(data = data.frame(x    = 3, 
+                                   xend = 3,
+                                   y    = 0,
+                                   yend = coef(lmout)[1] + 3 * coef(lmout)[2]),
+                 mapping = aes(x = x, xend = xend, y = y, yend = yend), 
+                 lty = 2, color = "red", lwd = 1) +
+    geom_hline(yintercept = 0, lty = 2, alpha = 1/2) +
+    ylab("MPG") +
+    xlab("Log-weight")
+```
 
 ---
 
@@ -281,16 +273,16 @@ For a predictive goal, probably should use some method that does shrinkage and b
 
 1. You need a data frame with the exact same
    variable name as the explanatory variable. 
-   ```{r}
-   newdf = tribble(~logwt,
-                   1, 
-                   1.5)
-   ```
+```{r}
+newdf = tribble(~logwt,
+                 1, 
+                 1.5)
+```
 2. Then you use the `predict()` function to obtain predictions.
-   ```{r}
-   newdf = newdf %>%
-     mutate(predictions = predict(object = lmout, newdata = newdf))
-   ```
+```{r}
+newdf = newdf %>%
+mutate(predictions = predict(object = lmout, newdata = newdf))
+```
 
 ---
 
@@ -307,6 +299,7 @@ For a predictive goal, probably should use some method that does shrinkage and b
      any *too* extreme points. (Only an issue if you have outliers and a 
      small number of observations because thanks be to the 
      [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem)).
+  5. **Fixed and Known** predictors
 
 ---
 
@@ -319,8 +312,9 @@ For a predictive goal, probably should use some method that does shrinkage and b
   3. **Equal Variance** violated - Linear regression line is unbiased, but standard 
      errors are off. Your $p$-values may be too small, or too large.
   4. **Normality** violated - Only an issue if your sample size is "small".  Unstable results if outliers are present.  Your $p$-values may be too small, or too large.
+  5. **Fixed and Known** violated if there is measurement error in the predictors 
      
-.question[What assumptions are made about the distribution of the 
+.question[Why are no assumptions made about the distribution of the 
   explanatory variable (the $x_i$'s)?]
 
 ---
@@ -1272,7 +1266,7 @@ collect_metrics(email_fit_rs, summarize = FALSE) %>%
 collect_metrics(email_fit_rs, summarize = FALSE) %>%
   select(id, .metric, .estimate) %>%
   pivot_wider(names_from = .metric, values_from = .estimate) %>%
-  knitr::kable(col.names = c("Fold", "accuracy", "roc_auc"), digits = 3)
+  knitr::kable(col.names = c("Fold", "accuracy", "roc_auc", "brier_class"), digits = 3)
 ```
 ]
 ]
