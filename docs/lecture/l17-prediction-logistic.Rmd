@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 17"
 subtitle: "Prediction and Logistic Regression"
-author: "Andrew McDavid"
+author: "Tanzy Love, based on the course by Andrew McDavid"
 institute: "U of Rochester"
-date: "2021-11-14 (updated: `r Sys.Date()`)"
+date: "2021-11-14 (updated: `r Sys.Date()` by TL)"
 output:
   xaringan::moon_reader:
     css:
@@ -31,6 +31,7 @@ library(tidymodels)
 library(openintro)
 library(patchwork)
 library(skimr)
+library(conflicted)
 set.seed(1234)
 options(
   warnPartialMatchArgs = FALSE,
@@ -874,7 +875,7 @@ class: code60
 set.seed(456)
 
 email_fit_rs = email_wflow %>%
-  fit_resamples(folds)
+  fit_resamples(folds, metrics = metric_set(accuracy, roc_auc))
 
 email_fit_rs
 ```
@@ -961,20 +962,12 @@ overpredict %>% roc_auc(
 
 # Final announcements
 
+*  Final exam posted tomorrow (around noon) and due by 5pm 11/7, Thursday
 *  You will have access to the lectures as long as github exists and provides hosting for websites.  
 *  You will have access to your completed homework assignments on github as long as you have access to your github account.
-*  You will have indefinite access to rstudio cloud and your projects there, but your account will revert back to the "free" tier (5 hours/month) on/around 19 Dec 2021. So you might need to export at the project to do much with it after this point.
-*  I am not distributing the homework keys, but you are welcome to ask about homework during office hours or with a classmate. I would rather that you not electronically redistribute the entirety of a graded assignment with a classmate<sup>1</sup> 
-*  I will accept corrections on labs / homework until +7 days after HW05 is returned.
+*  I would rather that you not electronically redistribute the entirety of a graded assignment with another student<sup>1</sup> 
 
 .footnote[[1] Reminder: sharing graded assignments within a class year isn't technically prohibited, but sharing across class years is prohibited and is a violation of the academic honesty policy per department policy.]
-
----
-class: middle
-
-## A final request
-
-Since I am not sure how long it will take for you to receive an formal invitation to evaluate this course, please fill out [this short, anonymous survey on the course](https://docs.google.com/forms/d/e/1FAIpQLSeCWQ2FHl8aabut8-Gcj4Ea2Xke8qAM0Yo0ecmHkcv-X-8aqg/viewform?usp=sf_link)
 
 ---
 
