@@ -47,6 +47,11 @@ class: middle
 
 # Prediction
 
+Here's the [R code in this lecture](l17/l17-prediction-logistic.R)
+
+The dataset is loaded in the openintro library
+
+
 ---
 
 ## Goal: Building a spam filter
@@ -56,7 +61,7 @@ class: middle
 - Optimize our model by picking the model with the best predictive performance
 
 --
-- Building a model to predict the probability that an email is spam is only half of the battle! We also need a decision rule about which emails get flagged as spam (e.g. what probability should we use as out cutoff?)
+- Building a model to predict the probability that an email is spam is only half of the battle! We also need a decision rule about which emails get flagged as spam (e.g. what probability should we use as our cutoff?)
 
 --
 - A simple approach: choose a single threshold probability and any email that exceeds that probability is flagged as spam
@@ -72,9 +77,8 @@ class: middle
 
 - Logistic regression is a *generalized linear model(GLM)* used to model a binary categorical outcome using numerical and categorical predictors
 
-- A GLM is an extension of the least squares linear model `\(E(Y_i|\mathbf{x}_i) = \mathbf{x}_i \beta\)`, `\(\text{Var}(Y|\mathbf{x}_i) = \sigma^2\)` to
-`$$g(E(Y_i|x_i)) = \eta_i = \mathbf{x}_i \beta$$`
-, `\(Y|X \sim\)` Exponential-Family, and `\(g\)` is known as a **link** function.
+- A GLM is an extension of the least squares linear model `\(E(Y_i|\mathbf{x}_i) = \mathbf{x}_i \beta\)` and  `\(Y|\mathbf{x}_i ~ N(\mathbf{x}_i \beta, \sigma^2)\)` generalizes to 
+`$$g(E(Y_i|x_i)) = \eta_i = \mathbf{x}_i \beta,$$` `\(Y|X \sim\)` Exponential-Family, and `\(g\)` is known as a **link** function.
 
 - Whereby the glm allows non-linear effects in `\(\beta\)`, and since the conditional distribution of `\(Y|X\)` can include all sorts of interesting families, it also permits non-constant residual variance.
 
@@ -110,7 +114,7 @@ class: middle
 - The expit function takes a value between `\(-\infty\)` and `\(\infty\)` and maps it to a value between 0 and 1
 
 --
-- This formulation is also useful for interpreting the model, since the logit can be interpreted as the log odds of a success -- more on this later
+- This formulation is also useful for interpreting the model, since the logit slope can be interpreted as the odds ratio of a success -- more on this later
 
 ---
 
@@ -305,7 +309,35 @@ email_fit = logistic_reg() %&gt;%
 
 ## Categorical predictors
 
+
+``` r
+p_to_multiple = ggplot(train_data, aes(x = to_multiple, fill = spam)) +
+  geom_bar() + scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_from = ggplot(train_data, aes(x = from, fill = spam)) + geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_sent_email = ggplot(train_data, aes(x = sent_email, fill = spam)) + 
+  geom_bar() + scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_winner = ggplot(train_data, aes(x = winner, fill = spam)) + geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_format = ggplot(train_data, aes(x = format, fill = spam)) +geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_re_subj = ggplot(train_data, aes(x = re_subj, fill = spam)) + geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_urgent_subj = ggplot(train_data, aes(x = urgent_subj, fill = spam)) + 
+  geom_bar() + scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_number = ggplot(train_data, aes(x = number, fill = spam)) + geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_to_multiple + p_from + p_sent_email + p_winner + p_format + p_re_subj + p_urgent_subj + p_number +
+  plot_layout(ncol = 4, guides = "collect") &amp; 
+  theme(axis.title.y = element_blank())
+```
+
 &lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-8-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+---
+# Categorical predictors
+
+&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-9-1.png" width="75%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -315,7 +347,7 @@ email_fit = logistic_reg() %&gt;%
 ``` r
 email_fit = logistic_reg() %&gt;%
   set_engine("glm") %&gt;%
-* fit(spam ~ . - from - sent_email - viagra, data = train_data, family = "binomial")
+* fit(spam ~ . - from - sent_email - viagra - urgent_subj - winner - time, data = train_data, family = "binomial")
 ```
 
 ```
@@ -332,20 +364,20 @@ email_fit
 ## parsnip model object
 ## 
 ## 
-## Call:  stats::glm(formula = spam ~ . - from - sent_email - viagra, family = stats::binomial, 
-##     data = data)
+## Call:  stats::glm(formula = spam ~ . - from - sent_email - viagra - 
+##     urgent_subj - winner, family = stats::binomial, data = data)
 ## 
 ## Coefficients:
 ##  (Intercept)  to_multiple1            cc          time         image        attach        dollar  
-##   -1.043e+02    -2.802e+00     2.799e-02     7.810e-08    -3.578e+00     6.103e-01    -7.948e-02  
-##    winneryes       inherit      password      num_char   line_breaks       format1      re_subj1  
-##    2.111e+00     4.099e-01    -7.562e-01     6.814e-02    -5.259e-03    -9.421e-01    -3.474e+00  
-## exclaim_subj  urgent_subj1  exclaim_mess   numbersmall     numberbig  
-##    2.886e-01     2.734e+00     7.918e-03    -7.879e-01     2.957e-02  
+##   -1.009e+02    -2.788e+00     2.946e-02     7.558e-08    -3.515e+00     5.984e-01    -7.664e-02  
+##      inherit      password      num_char   line_breaks       format1      re_subj1  exclaim_subj  
+##    4.432e-01    -6.615e-01     7.340e-02    -5.372e-03    -9.700e-01    -3.424e+00     3.485e-01  
+## exclaim_mess   numbersmall     numberbig  
+##    7.896e-03    -7.653e-01     5.971e-02  
 ## 
-## Degrees of Freedom: 3135 Total (i.e. Null);  3117 Residual
+## Degrees of Freedom: 3135 Total (i.e. Null);  3119 Residual
 ## Null Deviance:	    1933 
-## Residual Deviance: 1413 	AIC: 1451
+## Residual Deviance: 1440 	AIC: 1474
 ```
 ]
 
@@ -390,10 +422,10 @@ email_pred
 ## # A tibble: 785 × 4
 ##   .pred_0 .pred_1 spam  time               
 ##     &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;dttm&gt;             
-## 1   0.999 0.00127 0     2012-01-01 14:38:32
-## 2   0.996 0.00373 0     2012-01-01 18:32:53
-## 3   0.994 0.00596 0     2012-01-01 22:16:39
-## 4   0.992 0.00801 0     2012-01-02 19:07:51
+## 1   0.999 0.00143 0     2012-01-01 14:38:32
+## 2   0.996 0.00438 0     2012-01-01 18:32:53
+## 3   0.993 0.00670 0     2012-01-01 22:16:39
+## 4   0.991 0.00899 0     2012-01-02 19:07:51
 ## # ℹ 781 more rows
 ```
 
@@ -413,16 +445,16 @@ email_pred %&gt;%
 ## # A tibble: 785 × 4
 ##    .pred_0 .pred_1 spam  time               
 ##      &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;dttm&gt;             
-##  1  0.0970   0.903 1     2012-03-27 01:17:01
-##  2  0.165    0.835 1     2012-03-01 00:40:27
-*##  3  0.191    0.809 1     2012-01-21 16:55:55
-##  4  0.206    0.794 0     2012-01-02 22:30:31
-##  5  0.243    0.757 1     2012-03-31 05:20:24
-##  6  0.258    0.742 1     2012-03-17 12:20:57
-*##  7  0.288    0.712 0     2012-02-03 08:25:39
-##  8  0.293    0.707 1     2012-02-24 19:43:44
-##  9  0.308    0.692 0     2012-01-31 10:07:48
-## 10  0.346    0.654 0     2012-02-04 05:39:37
+##  1   0.275   0.725 0     2012-02-03 08:25:39
+##  2   0.286   0.714 0     2012-01-31 10:07:48
+*##  3   0.292   0.708 1     2012-02-24 19:43:44
+##  4   0.344   0.656 1     2012-01-18 20:42:10
+##  5   0.346   0.654 0     2012-02-04 05:39:37
+##  6   0.360   0.640 1     2012-01-25 11:17:54
+*##  7   0.393   0.607 1     2012-01-05 18:12:55
+##  8   0.403   0.597 1     2012-03-20 22:00:30
+##  9   0.420   0.580 0     2012-03-05 23:52:23
+## 10   0.465   0.535 0     2012-01-24 07:00:04
 ## # ℹ 775 more rows
 ```
 
@@ -445,7 +477,7 @@ email_pred %&gt;%
 ```
 ]
 .pull-right[
-&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 .footnote[
@@ -475,11 +507,11 @@ email_pred %&gt;%
 ## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 roc_auc binary         0.840
+## 1 roc_auc binary         0.826
 ```
 ]
 .pull-right[
-&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 
@@ -681,6 +713,7 @@ Variables that contain only a single value
 ``` r
 email_rec = email_rec %&gt;%
   step_zv(all_predictors())
+#zv is short for "zero variability"
 ```
 
 .code70[
@@ -808,20 +841,22 @@ tidy(email_fit)
 email_pred = predict(email_fit, test_data, type = "prob") %&gt;% 
   bind_cols(test_data) 
 
-email_pred
+email_pred %&gt;%
+  arrange(desc(.pred_1)) %&gt;%
+  print(n = 10)
 ```
 
 ```
 ## # A tibble: 785 × 23
-##   .pred_0  .pred_1 spam  to_multiple from     cc sent_email
-##     &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt; &lt;int&gt; &lt;fct&gt;     
-## 1   0.999 0.000809 0     0           1         1 1         
-## 2   0.998 0.00177  0     0           1         2 0         
-## 3   0.996 0.00409  0     0           1         1 0         
-## 4   0.996 0.00429  0     0           1         7 0         
-##   time                image attach dollar winner inherit
-##   &lt;dttm&gt;              &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;
-## 1 2012-01-01 14:38:32     0      0      0 no           0
+##    .pred_0 .pred_1 spam  to_multiple from     cc sent_email
+##      &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt; &lt;int&gt; &lt;fct&gt;     
+##  1  0.0761   0.924 0     0           1         0 0         
+##  2  0.0970   0.903 0     0           1         0 0         
+##  3  0.136    0.864 1     0           1         4 0         
+##  4  0.166    0.834 1     0           1         0 0         
+##  5  0.172    0.828 1     0           1         0 0         
+##  6  0.201    0.799 1     0           1         0 0         
+##  7  0.205    0.795 1     0           1         0 0         
 ...
 ```
 
@@ -842,7 +877,7 @@ email_pred %&gt;%
 ```
 ]
 .pull-right[
-&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-36-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-37-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -868,7 +903,7 @@ email_pred %&gt;%
 ```
 ]
 .pull-right[
-&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-38-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-39-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -1097,12 +1132,11 @@ collect_metrics(email_fit_rs)
 ```
 
 ```
-## # A tibble: 3 × 6
-##   .metric     .estimator   mean     n std_err .config            
-##   &lt;chr&gt;       &lt;chr&gt;       &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;              
-## 1 accuracy    binary     0.908      5 0.00395 Preprocessor1_Mode…
-## 2 brier_class binary     0.0698     5 0.00278 Preprocessor1_Mode…
-## 3 roc_auc     binary     0.837      5 0.00384 Preprocessor1_Mode…
+## # A tibble: 2 × 6
+##   .metric  .estimator  mean     n std_err .config             
+##   &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;               
+## 1 accuracy binary     0.908     5 0.00395 Preprocessor1_Model1
+## 2 roc_auc  binary     0.837     5 0.00384 Preprocessor1_Model1
 ```
 
 ---
@@ -1118,20 +1152,19 @@ collect_metrics(email_fit_rs, summarize = FALSE) %&gt;%
 ```
 
 ```
-## # A tibble: 15 × 5
-##    id    .metric     .estimator .estimate .config             
-##    &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-##  1 Fold1 accuracy    binary        0.915  Preprocessor1_Model1
-##  2 Fold1 roc_auc     binary        0.834  Preprocessor1_Model1
-##  3 Fold1 brier_class binary        0.0632 Preprocessor1_Model1
-##  4 Fold2 accuracy    binary        0.904  Preprocessor1_Model1
-##  5 Fold2 roc_auc     binary        0.847  Preprocessor1_Model1
-##  6 Fold2 brier_class binary        0.0730 Preprocessor1_Model1
-##  7 Fold3 accuracy    binary        0.915  Preprocessor1_Model1
-##  8 Fold3 roc_auc     binary        0.844  Preprocessor1_Model1
-##  9 Fold3 brier_class binary        0.0652 Preprocessor1_Model1
-## 10 Fold4 accuracy    binary        0.895  Preprocessor1_Model1
-## # ℹ 5 more rows
+## # A tibble: 10 × 5
+##    id    .metric  .estimator .estimate .config             
+##    &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
+##  1 Fold1 accuracy binary         0.915 Preprocessor1_Model1
+##  2 Fold1 roc_auc  binary         0.834 Preprocessor1_Model1
+##  3 Fold2 accuracy binary         0.904 Preprocessor1_Model1
+##  4 Fold2 roc_auc  binary         0.847 Preprocessor1_Model1
+##  5 Fold3 accuracy binary         0.915 Preprocessor1_Model1
+##  6 Fold3 roc_auc  binary         0.844 Preprocessor1_Model1
+##  7 Fold4 accuracy binary         0.895 Preprocessor1_Model1
+##  8 Fold4 roc_auc  binary         0.828 Preprocessor1_Model1
+##  9 Fold5 accuracy binary         0.910 Preprocessor1_Model1
+## 10 Fold5 roc_auc  binary         0.831 Preprocessor1_Model1
 ```
 ]
 .panel[.panel-name[Pretty]
@@ -1174,7 +1207,7 @@ overpredict = predict(overfit, train_data_small, type = "prob") %&gt;%
 ]
 
 .pull-right[
-&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-51-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="l17-prediction-logistic_files/figure-html/unnamed-chunk-52-1.png" width="90%" style="display: block; margin: auto;" /&gt;
 
 ```
 ## # A tibble: 1 × 3

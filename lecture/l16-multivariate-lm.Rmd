@@ -36,6 +36,8 @@ knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
 4.  Interpreting interaction models
 4.  Many models
 
+Here's the [R code in this lecture](l16/l16-multivariate-lm.R)
+
 ---
 
 class: code70

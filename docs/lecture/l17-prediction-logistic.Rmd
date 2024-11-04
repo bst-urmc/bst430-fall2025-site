@@ -41,10 +41,16 @@ options(
 )
 knitr::opts_chunk$set(cache = TRUE, autodep = TRUE)
 conflict_prefer("step", "recipes")
+conflict_prefer("filter", "dplyr")
 ```
 
 
 # Prediction
+
+Here's the [R code in this lecture](l17/l17-prediction-logistic.R)
+
+The dataset is loaded in the openintro library
+
 
 ---
 
@@ -55,7 +61,7 @@ conflict_prefer("step", "recipes")
 - Optimize our model by picking the model with the best predictive performance
 
 --
-- Building a model to predict the probability that an email is spam is only half of the battle! We also need a decision rule about which emails get flagged as spam (e.g. what probability should we use as out cutoff?)
+- Building a model to predict the probability that an email is spam is only half of the battle! We also need a decision rule about which emails get flagged as spam (e.g. what probability should we use as our cutoff?)
 
 --
 - A simple approach: choose a single threshold probability and any email that exceeds that probability is flagged as spam
@@ -71,9 +77,8 @@ class: middle
 
 - Logistic regression is a *generalized linear model(GLM)* used to model a binary categorical outcome using numerical and categorical predictors
 
-- A GLM is an extension of the least squares linear model $E(Y_i|\mathbf{x}_i) = \mathbf{x}_i \beta$, $\text{Var}(Y|\mathbf{x}_i) = \sigma^2$ to
-$$g(E(Y_i|x_i)) = \eta_i = \mathbf{x}_i \beta$$
-, $Y|X \sim$ Exponential-Family, and $g$ is known as a **link** function.
+- A GLM is an extension of the least squares linear model $E(Y_i|\mathbf{x}_i) = \mathbf{x}_i \beta$ and  $Y|\mathbf{x}_i ~ N(\mathbf{x}_i \beta, \sigma^2)$ generalizes to 
+$$g(E(Y_i|x_i)) = \eta_i = \mathbf{x}_i \beta,$$ $Y|X \sim$ Exponential-Family, and $g$ is known as a **link** function.
 
 - Whereby the glm allows non-linear effects in $\beta$, and since the conditional distribution of $Y|X$ can include all sorts of interesting families, it also permits non-constant residual variance.
 
@@ -118,7 +123,7 @@ $$g^{-1}(x) = \frac{\exp(x)}{1+\exp(x)} = \frac{1}{1+\exp(-x)}$$
 - The expit function takes a value between $-\infty$ and $\infty$ and maps it to a value between 0 and 1
 
 --
-- This formulation is also useful for interpreting the model, since the logit can be interpreted as the log odds of a success -- more on this later
+- This formulation is also useful for interpreting the model, since the logit slope can be interpreted as the odds ratio of a success -- more on this later
 
 ---
 
@@ -280,6 +285,31 @@ email_fit = logistic_reg() %>%
 
 ## Categorical predictors
 
+```{r echo=TRUE, evval = FALSE, out.width="75%", fig.width=10}
+p_to_multiple = ggplot(train_data, aes(x = to_multiple, fill = spam)) +
+  geom_bar() + scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_from = ggplot(train_data, aes(x = from, fill = spam)) + geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_sent_email = ggplot(train_data, aes(x = sent_email, fill = spam)) + 
+  geom_bar() + scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_winner = ggplot(train_data, aes(x = winner, fill = spam)) + geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_format = ggplot(train_data, aes(x = format, fill = spam)) +geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_re_subj = ggplot(train_data, aes(x = re_subj, fill = spam)) + geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_urgent_subj = ggplot(train_data, aes(x = urgent_subj, fill = spam)) + 
+  geom_bar() + scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_number = ggplot(train_data, aes(x = number, fill = spam)) + geom_bar() +
+  scale_fill_manual(values = c("#E48957", "#CA235F"))
+p_to_multiple + p_from + p_sent_email + p_winner + p_format + p_re_subj + p_urgent_subj + p_number +
+  plot_layout(ncol = 4, guides = "collect") & 
+  theme(axis.title.y = element_blank())
+```
+
+---
+# Categorical predictors
+
 ```{r echo=FALSE, out.width="75%", fig.width=10}
 factor_predictors = train_data %>%
   select(where(is.factor), -spam) %>%
@@ -329,7 +359,7 @@ p_to_multiple + p_from + p_sent_email + p_winner + p_format + p_re_subj + p_urge
 ```{r}
 email_fit = logistic_reg() %>%
   set_engine("glm") %>%
-  fit(spam ~ . - from - sent_email - viagra, data = train_data, family = "binomial") #<<
+  fit(spam ~ . - from - sent_email - viagra - urgent_subj - winner - time, data = train_data, family = "binomial") #<<
 ```
 
 .code50[
@@ -587,6 +617,7 @@ Variables that contain only a single value
 ```{r}
 email_rec = email_rec %>%
   step_zv(all_predictors())
+#zv is short for "zero variability"
 ```
 
 .code70[
@@ -670,7 +701,9 @@ tidy(email_fit)
 email_pred = predict(email_fit, test_data, type = "prob") %>% 
   bind_cols(test_data) 
 
-email_pred
+email_pred %>%
+  arrange(desc(.pred_1)) %>%
+  print(n = 10)
 ```
 
 ---

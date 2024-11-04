@@ -50,6 +50,8 @@ conflict_prefer("step", "recipes")
 3.  Diagnostics
 4. Prediction
 
+Here's the [R code in this lecture](l16/l16-crossv-lm.R)
+
 ---
 
 class: code70
