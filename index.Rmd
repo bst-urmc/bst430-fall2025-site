@@ -94,5 +94,6 @@ Due 5pm, Sept 18.
 19.  [Prediction and logistic regression](lecture/l17-prediction-logistic.html)
 20.   No class 11/6, work on your final exam.
 * Final Exam. Remember I will be looking at the `.md` for results and the `.Rmd` for your code. [instructions](hw_lab_instruction/final-modeling.html) and repo (accept GH classroom [invite](https://classroom.github.com/a/v_2aITIX)).  Due 5pm EDT, Nov 7.
-<!-- 21.  [Ensemble models](lecture/l20-trees-and-forests.html) -->
+21.  [Ensemble models](lecture/l20-trees-and-forests.html)
+[Matt Corsetti Thesis](lecture/l20/Corsetti_Thesis_Oral_Presentation.pdf)
 

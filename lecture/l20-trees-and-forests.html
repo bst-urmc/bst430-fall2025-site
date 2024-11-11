@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>BST430 Lecture 20</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Tanzy Love" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="css/lexis.css" type="text/css" />
+    <link rel="stylesheet" href="css/lexis-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: ur-title, center, middle, title-slide
+
+.title[
+# BST430 Lecture 20
+]
+.subtitle[
+## Trees and Forests
+]
+.author[
+### Tanzy Love
+]
+.institute[
+### U of Rochester
+]
+.date[
+### 2024-11-10 (updated: 2024-11-10)
+]
+
+---
+
+  
+
+
+
+
+
+
+# Overview
+
+*  Tree learners (CART)
+*  Bootstrap Aggregation (Bagging)
+*  Random Subspaces
+*  Random Forests
+*  Boosting
+*  Bayesian Ensembles of trees (BART)
+*  Grafted and Vanishing Random Subspaces
+  
+Here's the [R code in this lecture](l20-trees-and-forests_files/l20-trees-and-forests.R)
+
+---
+  
+## Classification and Regression Trees (CART)
+
+.pull-left[
+Proposed by Leo Breiman in 1984
+_Problem_: Linear regression models often perform poorly with complex real-world data
+
+_Idea_: Try fitting simple regression models to different partitions of the covariate space to achieve a better fit
+
+_Solution_: Partition up the covariate space using a binary classification tree and fit a model to each subspace
+]
+.pull-right[
+&lt;img src="l20/Leo_Breiman.jpg" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
+]
+
+---
+
+## Growing a Regression Tree:
+
+*The data consists of `\(p\)` inputs and a response for each of `\(N\)` observations, that is, `\((x_i,y_i)\)` for `\(i = 1,\dots, N\)`, with `\(x_i = (x_{i1}, \dots, x_{ip})\)`
+
+*The algorithm sequentially identifies a variable on which to make a split/partition as well as the respective split point/value
+
+*CART partitions the covariate space into `\(M\)` distinct, non-overlapping regions `\(R_1, \dots, R_M\)` and we model the response as a constant `\(\gamma_m\)` in each of the regions as follows:
+
+$$
+T(x) = \sum_{m=1}^M \gamma_m I(x \in R_m)
+$$
+
+---
+
+## Boston Housing Data Example
+    
+&lt;img src="l20/fig_boston_partitions.png" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
+*
+---
+
+
+``` r
+library(mlbench) #you probably need to install thsi library
+data("BostonHousing")
+names(BostonHousing)
+```
+
+```
+##  [1] "crim"    "zn"      "indus"   "chas"    "nox"     "rm"      "age"     "dis"     "rad"    
+## [10] "tax"     "ptratio" "b"       "lstat"   "medv"
+```
+
+``` r
+ggplot(BostonHousing, aes(x=lstat, y=rm, color=medv)) +
+geom_point()
+```
+
+&lt;img src="l20-trees-and-forests_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+---
+
+## Boston Housing Data Tree
+
+.pull-left[
+* The first split `\((\# \text{rooms} &lt; 6.941)\)` partitions the space into `\(R_1\)` and `\(R_2\)` 
+* The second split `\((\% \text{lower status})\)` further divides up the `\(R_2\)` subspace
+]
+.pull-right[
+&lt;img src="l20/fig_boston_cart_tree.png" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
+]
+
+---
+
+## Boston Housing Data Tree
+
+.pull-left[
+* The solution that minimizes the sum of squared errors uses the average of the `\(y_i\)` in the region `\(R_m\)` as the estimates for the `\(\gamma_m\)`'s
+$$
+\hat{\gamma}_m = \text{ave}(y_i|x_i \in R_M)
+$$
+]
+.pull-right[
+&lt;img src="l20/fig_boston_skeleton_partitions.png" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
+]
+
+---
+
+## How do we pick the splits?:
+
+* Consider a split variable `\(k\)` and value at which to split it `\(s\)` and define the pair of half-planes
+`\begin{equation}
+\underset{k,s}{\operatorname{min}} \Bigg[
+\underset{\gamma_1}{\operatorname{min}}
+\sum_{x_i \in R_1(k,s)} (y_i-\gamma_1)^2 +
+\underset{\gamma_2}{\operatorname{min}}
+\sum_{x_i \in R_2(k,s)} (y_i-\gamma_2)^2\Bigg]
+\end{equation}`
+* Inner minimization is solved by `\(\hat{\gamma}_1 = \text{ave}(y_i|x_i \in R_1(k,s))\)` and `\(\hat{\gamma}_2 = \text{ave}(y_i|x_i \in R_2(k,s))\)`
+* The partition is made on the best available split (greedy) identified using equation 2, then the process is repeated 
+
+---
+
+## How/when do we stop?: Cost-Complexity Pruning
+
+* Add up all the squared deviations from the leaf-level estimates
+* Add a penalty that grows with the number of partitions
+* Minimize the penalized sum of deviations
+
+`\begin{equation}
+\sum_{m=1}^{|M|} \sum_{x_i \in R_m} (y_i - \hat{\gamma}_m)^2 + \alpha |M|
+\end{equation}`
+
+---
+
+
+``` r
+library(rpart) #you probably need to install this library
+#rpart(medv ~., data = BostonHousing, control = rpart.control(maxdepth = 2))
+rpart(medv ~., data = BostonHousing, control = rpart.control(cp = .1))
+```
+
+```
+## n= 506 
+## 
+## node), split, n, deviance, yval
+##       * denotes terminal node
+## 
+## 1) root 506 42716.300 22.53281  
+##   2) rm&lt; 6.941 430 17317.320 19.93372  
+##     4) lstat&gt;=14.4 175  3373.251 14.95600 *
+##     5) lstat&lt; 14.4 255  6632.217 23.34980 *
+##   3) rm&gt;=6.941 76  6059.419 37.23816 *
+```
+
+``` r
+set.seed(1234)
+BostonSplit = initial_split(BostonHousing, prop=0.80)
+trained1 = rpart(medv ~., data = training(BostonSplit), control = rpart.control(cp = .1))
+cat("\n Sum Squared Error for one Tree", sum((predict(trained1, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for one Tree 3333.595
+```
+
+---
+
+## Ensemble Methods
+
+_Ensemble learning_: methods that join together *simple* models or *weak* learners to form a committee or ensemble
+
+* Ensembles leverage the combined strength of their base models to achieve increased predictive performance greater than that of the individual learners
+
+* Generally speaking, ensembles are made stronger when there is disagreement and very little correlation among the learners
+
+* "Diversity and independence are important because the best collective decisions are the product of disagreement and contest, not consensus or compromise." -James Surowiecki, The Wisdom of Crowds
+
+---
+
+## Bootstrap Aggregation (Bagging)
+    
+
+* Ensemble procedure that reduces variance in the estimate `\(\hat{f}(x)\)` by averaging over predictions from individual trees (bias unchanged)
+
+* Bagging with trees:
+
+ * Draw `\(B\)` bootstrapped samples from the data `\(\boldsymbol{Z} = \{(x_1,y_1), \dots, (x_n,y_n)\}\)`
+ * For each bootstrap sample `\(\boldsymbol{Z}_{b}\)`,  `\(b = 1,\dots,B\)`, fit a tree `\(T(x; \theta_b)\)` and obtain predictions, then average predictions across trees:
+`\begin{equation}
+\hat{f}_\text{Bagged}(x) = 
+\frac{1}{B} \sum_{b=1}^B T(x; \theta_b),
+\end{equation}`
+where `\(\theta_b\)` characterizes the `\(b^\text{th}\)` tree (split variables, cut points, terminal node values)
+
+---
+
+
+``` r
+library(ipred) #you probably need to install this library
+bagging(medv ~., data = BostonHousing, nbagg=100)
+```
+
+```
+## 
+## Bagging regression trees with 100 bootstrap replications 
+## 
+## Call: bagging.data.frame(formula = medv ~ ., data = BostonHousing, 
+##     nbagg = 100)
+```
+
+``` r
+#bagging(medv ~., data = BostonHousing, nbagg=100)$mtrees[[25]]$btree
+
+trained2 = bagging(medv ~., data = training(BostonSplit), nbagg=100)
+cat("\n Sum Squared Error for Bagging", sum((predict(trained2, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for Bagging 1660.073
+```
+
+---
+
+## Random Subspaces
+    
+* Proposed by Tin Kam Ho in 1998, also known as "attribute bagging"
+
+* Random subspaces with trees:
+
+    * Draw `\(B\)` randomly chosen subsets of the predictor variables (referred to as "feature subsets") from the data, each of size  `\(r &lt; p\)`
+    * For each feature subset `\(X^{b}_{\{n \times r\}}\)` `\(b = 1,\dots,B\)` fit a tree `\(T(x; \theta_b)\)` and obtain the predictions, then average predictions over trees:
+`\begin{equation}
+\small
+\hat{f}_\text{RSM}(x) = 
+\frac{1}{B} \sum_{b=1}^B T(x; \theta_b)
+\end{equation}`
+
+* Building trees on different feature subsets can reduce correlation between trees making for a stronger ensemble
+
+---
+
+## Random Forests
+    
+* Proposed by Leo Breiman in 2001
+
+* RF both bootstraps the data and the attributes
+
+* Improves the variance reduction of bagging by reducing correlation among trees in the ensemble
+* Draw `\(B\)` bootstrapped samples from the data `\(\boldsymbol{Z} = \{(x_1,y_1), \dots, (x_n,y_n)\}\)`
+* For each bootstrap sample `\(\boldsymbol{Z}_{b}\)`, `\(b = 1,\dots,B\)`,
+    * select mtry$=r$ of the variables  `\(X^{b}_{\{n \times r\}}\)`
+    * fit a tree `\(T(x; \theta_b)\)`, with mtry candidate variables
+    * obtain the predictions, then average predictions over trees:
+`\begin{equation}
+\small
+\hat{f}_\text{RF}(x) = 
+\frac{1}{B} \sum_{b=1}^B T(x; \theta_b)
+\end{equation}`
+
+---
+
+
+``` r
+library(randomForest) #you probably need to install this library
+randomForest(medv ~., data = BostonHousing, mtry=4)
+```
+
+```
+## 
+## Call:
+##  randomForest(formula = medv ~ ., data = BostonHousing, mtry = 4) 
+##                Type of random forest: regression
+##                      Number of trees: 500
+## No. of variables tried at each split: 4
+## 
+##           Mean of squared residuals: 10.014
+##                     % Var explained: 88.14
+```
+
+``` r
+trained3 = randomForest(medv ~., data = training(BostonSplit), mtry=3)
+cat("\n Sum Squared Error for randomForest", sum((predict(trained3, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for randomForest 1295.292
+```
+
+---
+
+## Boosting
+    
+* Propsed by Robert Schapire in 1990, sum of trees ensemble
+
+* Fit tree `\(T(x, \theta_b)\)` to residuals from ensemble consisting of all trees that came before it (instead of `\(y\)`):
+`\begin{equation}
+\small
+\hat{\theta_b} =
+\underset{\theta_b}{\operatorname{argmin}}
+\Bigg[
+\sum_{i = 1}^n L(y_i, f_{b-1}(x_i) +
+T(x_i, \theta_b))
+\Bigg],
+\end{equation}`
+
+* Fitting each tree to ensemble residuals allows ensemble to improve in areas where it performs poorly
+
+* Boosted tree model is the sum over these trees
+`\begin{equation}
+\hat{f}_\text{Boost}(x) = \sum_{b=1}^B T(x; \theta_b)
+\end{equation}`
+
+---
+
+## Boosting
+
+* Shrunken version of new tree is added to the ensemble
+`\begin{equation}
+f_b(x) = f_{b-1}(x) + \omega T(x_i, \theta_b)
+\end{equation}`
+`\begin{equation}
+\hat{f}_\text{Boost}(x) = \sum_{b=1}^B \omega T(x; \theta_b)
+\quad 0 \le \omega \le 1
+\end{equation}`
+
+* Shrinkage prevents any one tree from being overly influential
+
+* Shrinkage parameter `\(\omega\)` controls rate at which boosting learns (smaller `\(\omega\)` values with large forests sizes tend to work well)
+
+---
+
+
+``` r
+library(mboost) #you probably need to install this library
+blackboost(medv ~., data = BostonHousing,
+                      control = boost_control(mstop = 50))
+```
+
+```
+## 
+## 	 Model-based Boosting
+## 
+## Call:
+## blackboost(formula = medv ~ ., data = BostonHousing, control = boost_control(mstop = 50))
+## 
+## 
+## 	 Squared Error (Regression) 
+## 
+## Loss function: (y - f)^2 
+##  
+## 
+## Number of boosting iterations: mstop = 50 
+## Step size:  0.1 
+## Offset:  22.53281 
+## Number of baselearners:  1
+```
+
+``` r
+trained4 = blackboost(medv ~., data = training(BostonSplit))
+cat("\n Sum Squared Error for Boosting", sum((predict(trained4, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for Boosting 1231.961
+```
+
+---
+
+## Combining Ensemble Methods
+    
+* Much work has been done in combining data-partitioning methods with feature-partitioning methods and also with boosting
+
+&lt;img src="l20/Algorithm_Map.PNG" width="100%" style="display: block; margin: auto 0 auto auto;" /&gt;
+
+---
+
+##  Bayesian Additive Regression Trees (BART) 
+
+* Instead of fitting a greedy optimizer to a tree, we can put a prior distribution on trees and get a posterior distribution for the tree
+
+* If we build an ensemble of Bayesian trees in the right way, we get a BART model
+
+* Details omitted
+
+---
+
+
+``` r
+library(dbarts) #you probably need to install this library
+set.seed(99)
+bartFit &lt;- dbarts::bart(BostonHousing[-14], BostonHousing$medv)
+```
+
+```
+## 
+## Running BART with numeric y
+## 
+## number of trees: 200
+## number of chains: 1, number of threads 1
+## tree thinning rate: 1
+## Prior:
+## 	k prior fixed to 2.000000
+## 	degrees of freedom in sigma prior: 3.000000
+## 	quantile in sigma prior: 0.900000
+## 	scale in sigma prior: 0.002166
+## 	power and base for tree prior: 2.000000 0.950000
+## 	use quantiles for rule cut points: false
+## 	proposal probabilities: birth/death 0.50, swap 0.10, change 0.40; birth 0.50
+## data:
+## 	number of training observations: 506
+## 	number of test observations: 0
+## 	number of explanatory variables: 13
+## 	init sigma: 4.745298, curr sigma: 4.745298
+## 
+## Cutoff rules c in x&lt;=c vs x&gt;c
+## Number of cutoffs: (var: number of possible c):
+## (1: 100) (2: 100) (3: 100) (4: 100) (5: 100) 
+## (6: 100) (7: 100) (8: 100) (9: 100) (10: 100) 
+## (11: 100) (12: 100) (13: 100) 
+## Running mcmc loop:
+## iteration: 100 (of 1000)
+## iteration: 200 (of 1000)
+## iteration: 300 (of 1000)
+## iteration: 400 (of 1000)
+## iteration: 500 (of 1000)
+## iteration: 600 (of 1000)
+## iteration: 700 (of 1000)
+## iteration: 800 (of 1000)
+## iteration: 900 (of 1000)
+## iteration: 1000 (of 1000)
+## total seconds in loop: 0.786817
+## 
+## Tree sizes, last iteration:
+## [1] 4 3 3 3 3 3 2 2 2 2 3 2 2 2 2 2 1 2 
+## 3 3 2 3 4 2 2 2 2 2 2 3 2 2 2 2 2 2 2 2 
+## 3 2 2 4 2 2 2 4 2 2 3 1 3 2 2 2 2 2 3 2 
+## 2 3 3 2 4 3 2 2 3 2 4 5 2 3 3 3 2 3 2 3 
+## 3 3 3 3 2 4 2 2 2 2 2 2 1 1 4 3 2 3 3 3 
+## 3 2 2 4 3 2 2 3 2 2 4 2 2 1 2 3 2 2 2 3 
+## 3 2 2 2 3 3 3 3 3 2 2 2 4 2 2 3 1 2 2 4 
+## 2 2 3 2 2 2 2 3 2 2 2 2 2 2 4 3 3 3 4 2 
+## 3 2 3 2 1 2 2 2 2 3 3 3 4 3 2 2 3 4 2 3 
+## 3 2 2 2 2 4 2 4 3 2 4 2 2 4 2 2 2 2 5 3 
+## 2 3 
+## 
+## Variable Usage, last iteration (var:count):
+## (1: 20) (2: 23) (3: 18) (4: 14) (5: 19) 
+## (6: 39) (7: 15) (8: 23) (9: 26) (10: 34) 
+## (11: 24) (12: 20) (13: 24) 
+## DONE BART
+```
+
+``` r
+plot(bartFit)
+```
+
+&lt;img src="l20-trees-and-forests_files/figure-html/unnamed-chunk-13-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+``` r
+trained5 = dbarts::bart(training(BostonSplit)[-14], training(BostonSplit)$medv, keeptrees = TRUE)
+```
+
+```
+## 
+## Running BART with numeric y
+## 
+## number of trees: 200
+## number of chains: 1, number of threads 1
+## tree thinning rate: 1
+## Prior:
+## 	k prior fixed to 2.000000
+## 	degrees of freedom in sigma prior: 3.000000
+## 	quantile in sigma prior: 0.900000
+## 	scale in sigma prior: 0.002051
+## 	power and base for tree prior: 2.000000 0.950000
+## 	use quantiles for rule cut points: false
+## 	proposal probabilities: birth/death 0.50, swap 0.10, change 0.40; birth 0.50
+## data:
+## 	number of training observations: 404
+## 	number of test observations: 0
+## 	number of explanatory variables: 13
+## 	init sigma: 4.617533, curr sigma: 4.617533
+## 
+## Cutoff rules c in x&lt;=c vs x&gt;c
+## Number of cutoffs: (var: number of possible c):
+## (1: 100) (2: 100) (3: 100) (4: 100) (5: 100) 
+## (6: 100) (7: 100) (8: 100) (9: 100) (10: 100) 
+## (11: 100) (12: 100) (13: 100) 
+## Running mcmc loop:
+## iteration: 100 (of 1000)
+## iteration: 200 (of 1000)
+## iteration: 300 (of 1000)
+## iteration: 400 (of 1000)
+## iteration: 500 (of 1000)
+## iteration: 600 (of 1000)
+## iteration: 700 (of 1000)
+## iteration: 800 (of 1000)
+## iteration: 900 (of 1000)
+## iteration: 1000 (of 1000)
+## total seconds in loop: 0.877157
+## 
+## Tree sizes, last iteration:
+## [1] 2 2 3 3 4 2 2 1 3 2 2 2 2 2 3 2 3 2 
+## 3 2 4 2 3 2 2 2 3 2 2 4 2 3 2 2 1 3 2 3 
+## 3 2 2 3 2 3 2 3 4 2 3 2 2 2 2 3 2 2 2 3 
+## 3 3 4 2 2 2 3 3 2 2 2 2 2 2 4 5 3 4 2 3 
+## 2 2 2 1 4 2 3 2 2 2 2 4 4 2 2 3 3 2 3 2 
+## 4 2 2 2 2 4 2 2 2 2 2 1 3 2 2 3 3 3 2 3 
+## 5 3 2 2 2 2 2 2 2 2 2 2 3 2 2 5 2 5 2 2 
+## 2 3 2 3 2 2 2 2 2 2 2 2 2 3 1 1 2 2 2 2 
+## 2 3 3 3 3 3 2 3 2 2 2 2 3 2 1 5 2 2 4 4 
+## 3 3 2 2 4 2 2 2 2 3 2 2 2 4 3 2 3 2 2 2 
+## 6 2 
+## 
+## Variable Usage, last iteration (var:count):
+## (1: 14) (2: 11) (3: 18) (4: 16) (5: 31) 
+## (6: 32) (7: 23) (8: 24) (9: 18) (10: 25) 
+## (11: 21) (12: 28) (13: 33) 
+## DONE BART
+```
+
+``` r
+cat("\n Sum Squared Error for BART", sum((colMeans(predict(trained5, testing(BostonSplit))) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for BART 1100.773
+```
+---
+
+
+
+``` r
+cat("\n Sum Squared Error for one Tree", sum((predict(trained1, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for one Tree 3333.595
+```
+
+``` r
+cat("\n Sum Squared Error for Bagging", sum((predict(trained2, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for Bagging 1660.073
+```
+
+``` r
+cat("\n Sum Squared Error for randomForest", sum((predict(trained3, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for randomForest 1295.292
+```
+
+``` r
+cat("\n Sum Squared Error for Boosting", sum((predict(trained4, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for Boosting 1231.961
+```
+
+``` r
+cat("\n Sum Squared Error for BART", sum((colMeans(predict(trained5, testing(BostonSplit))) - testing(BostonSplit)$medv)^2),"\n")
+```
+
+```
+## 
+##  Sum Squared Error for BART 10432.25
+```
+---
+
+## Grafting and Vanishing Random Subspaces
+
+_Problem_:
+
+* Procedures that use random sampling of the input variables for split candidates (e.g. Random Forests, RSM) suffer when the number of truly informative features `\(s\)` is small relative to `\(p\)`
+
+* Feature (input variable) subsets are likely to contain many non-informative features
+
+* Learners built on these subsets can be harmful to ensemble
+
+_Solution_:
+
+* Allow each tree to share information regarding variable importance in its feature subset with the trees that come after it in the ensemble
+
+
+---
+
+# Acknowledgments
+
+Adapted from Matthew Corsetti's [Thesis](https://www.urmc.rochester.edu/education/graduate/statistics-and-facts/2021-2022-thesis-titles.aspx)
+
+Simplilearn [Lesson 8](https://www.simplilearn.com/tutorials/data-science-tutorial/random-forest-in-r) 
+
+## Resources
+
+- [Hands-On Machine Learning with R](https://bradleyboehmke.github.io/HOML/random-forest.html) by Bradley Boehmke &amp; Brandon Greenwell
+
+---
+
+## References
+* Breiman, L., Friedman, J. H., Olshen, R. A., &amp; Stone, C. J. (1984). Classification and regression trees. Boca Raton, FL: CRC Press.
+* Ho, T. K. (1995). Random Decision Forests.Proceedings of the 3rd International Conference on Document Analysis and Recognition, 278-282.
+* Hastie, T., Tibshirani, R., &amp; Friedman, J. H. (2004). The elements of statistical learning: Data mining, inference, and prediction: With 200 full-color illustrations. New York: Springer.
+* Schapire, R. E. (1990). The strength of weak learnability. Machine Learning, 5(2), 197-227.
+* Corsetti M. A. &amp;  Love T. M. (2022).Grafted and Vanishing Random Subspaces. Pattern Anal Appl. 25(1), 89-124.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "3:2"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
