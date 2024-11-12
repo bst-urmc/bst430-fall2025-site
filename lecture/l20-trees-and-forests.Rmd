@@ -303,11 +303,10 @@ f_b(x) = f_{b-1}(x) + \omega T(x_i, \theta_b)
 
 ```{r warning = FALSE}
 library(mboost) #you probably need to install this library
-blackboost(medv ~., data = BostonHousing,
-                      control = boost_control(mstop = 50))
+blackboost(medv ~., data = BostonHousing, control = boost_control(mstop = 50))
 
 trained4 = blackboost(medv ~., data = training(BostonSplit))
-cat("\n Sum Squared Error for Boosting", sum((predict(trained4, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
+cat("Sum Squared Error for Boosting", sum((predict(trained4, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
 ```
 
 ---
@@ -336,24 +335,28 @@ knitr::include_graphics("l20/Algorithm_Map.PNG")
 library(dbarts) #you probably need to install this library
 set.seed(99)
 bartFit <- dbarts::bart(BostonHousing[-14], BostonHousing$medv)
-plot(bartFit)
-
-trained5 = dbarts::bart(training(BostonSplit)[-14], training(BostonSplit)$medv, keeptrees = TRUE)
-cat("\n Sum Squared Error for BART", sum((colMeans(predict(trained5, testing(BostonSplit))) - testing(BostonSplit)$medv)^2),"\n")
-
 ```
 ---
 
+```{r}
+plot(bartFit)
 
-```{r warning = FALSE, echo=FALSE}
+trained5 = dbarts::bart(training(BostonSplit)[-14], training(BostonSplit)$medv, 
+              keeptrees = TRUE) # must keep trees to do predictions
+cat("\n Sum Squared Error for BART", sum((colMeans(predict(trained5, testing(BostonSplit))) - testing(BostonSplit)$medv)^2),"\n")
 
+```
+
+---
+
+```{r echo = FALSE}
 cat("\n Sum Squared Error for one Tree", sum((predict(trained1, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
 cat("\n Sum Squared Error for Bagging", sum((predict(trained2, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
 cat("\n Sum Squared Error for randomForest", sum((predict(trained3, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
 cat("\n Sum Squared Error for Boosting", sum((predict(trained4, testing(BostonSplit)) - testing(BostonSplit)$medv)^2),"\n")
 cat("\n Sum Squared Error for BART", sum((colMeans(predict(trained5, testing(BostonSplit))) - testing(BostonSplit)$medv)^2),"\n")
-
 ```
+
 ---
 
 ## Grafting and Vanishing Random Subspaces
