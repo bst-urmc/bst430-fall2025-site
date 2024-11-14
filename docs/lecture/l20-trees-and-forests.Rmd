@@ -48,7 +48,7 @@ options(
 *  Bayesian Ensembles of trees (BART)
 *  Grafted and Vanishing Random Subspaces
   
-Here's the [R code in this lecture](l20-trees-and-forests_files/l20-trees-and-forests.R)
+Here's the [R code in this lecture](l20/l20-trees-and-forests.R)
 
 ---
   
