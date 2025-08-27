@@ -1,0 +1,173 @@
+---
+
+class: middle
+
+# R Data "sets"
+
+---
+
+## Rectangular Data "sets" in R
+
+- A rectangular (spreadsheet-like) data "set" can be one of the following class:
+    + `tibble`
+    + `data.frame`
+- We'll often work with `tibble`s:
+    + `readr` package (e.g. `read_csv` function) loads data as a `tibble` by default
+    + `tibble`s are part of the tidyverse, so they work well with other packages we are using
+    + they implement safer and more sensible defaults, so are less likely to cause hard to track bugs in your code
+
+---
+
+## Data frames
+
+- A data frame is the most commonly used data structure in R, they are just a `list` of equal length vectors (usually atomic). Each vector is treated as a column and elements of the vectors as rows.
+
+- A tibble is a type of data frame that ... makes your life (i.e. data analysis) easier.
+
+- Most often a data frame will be constructed by reading in from a file, but we can also create them from scratch.
+---
+
+## Data frames
+
+```{r}
+df = tibble(x = 1:3, y = c("a", "b", "c"))
+typeof(df)
+class(df)
+str(df)
+```
+
+---
+
+## Data frames (cont.)
+
+```{r}
+attributes(df)
+typeof(df$y)
+```
+
+---
+
+## Working with tibbles in pipelines
+
+.question[
+How many respondents have below average number of cats?
+]
+
+```{r, warning=FALSE}
+mean_cats = cat_lovers %>%
+  summarise(mean_cats = mean(number_of_cats))
+
+cat_lovers %>%
+  filter(number_of_cats < mean_cats) %>%
+  nrow()
+```
+
+.question[
+Do you believe this number? Why, why not?
+]
+
+???
+
+Why this works within an error or warning is an entirely different question, and relates to the bowels of the `data.frame` methods for the `groupGeneric`.  I still can't figure out what method is being dispatched here and why it does what it does...
+---
+
+## A result of a pipeline is always a tibble
+
+```{r}
+mean_cats
+str(mean_cats)
+```
+
+---
+
+## `pull()` can be your new best friend
+
+But use it sparingly!
+
+```{r}
+mean_cats = cat_lovers %>%
+  summarise(mean_cats = mean(number_of_cats)) %>%
+  pull()
+
+cat_lovers %>%
+  filter(number_of_cats < mean_cats) %>%
+  nrow()
+```
+
+--
+
+```{r}
+mean_cats
+class(mean_cats)
+```
+
+---
+
+## How does tidyverse *want* you to do that code?
+
+```{r}
+ cat_lovers %>%
+     filter(number_of_cats < mean(number_of_cats)) %>%
+     nrow()
+```
+
+This will work if the number that you need to calculate comes from **the same** dataset as the one you are filtering
+
+Note: since 2022, someone has added a warning that displays when you run the code as it appears in the notes.
+I don't think it's useful for identifying the problem here, but at least it might make you look at the results and see if they are correct.
+
+> Warning: Using one column matrices in `filter()` was deprecated in dplyr 1.1.0.
+> ℹ Please use one dimensional logical vectors instead.
+<!-- > This warning is displayed once every 8 hours. -->
+<!-- > Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated. -->
+
+---
+
+## Use forcats to manipulate factors
+
+```{r}
+cat_lovers = cat_lovers %>%
+  mutate(handedness = fct_relevel(handedness, 
+                                  "right", "left", "ambidextrous"))
+```
+
+```{r}
+ggplot(cat_lovers, mapping = aes(x = handedness)) +
+  geom_bar()
+```
+
+---
+
+## .pull-left[
+Come for the functionality
+]
+
+.pull-right[
+<img src = "l02/img/forcats.png" width = "30%">
+<!-- ![](l02/img/forcats.png) -->
+]
+
+... stay for the logo
+
+- R uses factors to handle categorical variables, variables that have a fixed and known set of possible values. For historical reasons many base R functions automatically convert character vectors to factors, and have been heartily cursed by generations of R programmers for this default behavior.
+
+- Factors **are** useful when you have true categorical data, and when you want to override the ordering of character vectors to improve display. The forcats package provides a suite of useful tools that solve common problems with factors.
+
+Source: [forcats.tidyverse.org](http://forcats.tidyverse.org/)
+
+
+## Recap
+
+- Best to think of data as part of a tibble
+    + This plays nicely with the `tidyverse` as well
+    + Rows are observations, columns are variables
+
+- Be careful about data types / classes
+    + Sometimes `R` makes silly assumptions about your data class
+        +  `tibble`s have safer defaults, but won't fold laundry for you
+        + Think about your data in context, e.g. 0/1 variable is most likely a `factor`
+    + If a plot/output is not behaving the way you expect, first
+    investigate the data class with `str`
+    + If you are absolutely sure how you want a factor, over-write it
+    so that you don't need to keep having to keep track of it
+        + `mutate` the variable with the correct class

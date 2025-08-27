@@ -1,0 +1,801 @@
+---
+title: "BST430  Lecture 02-A"
+subtitle: "Data types in R"
+author: "Seong-Hwan Jun, based on the course by Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-09-01 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(DT)
+library(scales)
+```
+
+class: middle
+
+# Why should you care about data types?
+
+---
+
+## Example: Cat lovers
+
+A survey asked respondents their name and number of cats. The instructions said to enter the number of cats as a numerical value.
+
+```{r message=FALSE}
+cat_lovers = read_csv("data/cat-lovers.csv")
+```
+
+```{r }
+cat_lovers
+```
+
+Here's the [R code in this lecture](l02/data-types-i.R)
+
+Here's the [datafile](data/cat-lovers.csv)
+*You have to have a good filepath to the dataset*
+---
+
+## Oh why won't you work?!
+
+```{r}
+cat_lovers %>%
+  summarise(mean_cats = mean(number_of_cats))
+```
+
+---
+
+```{r eval=FALSE}
+?mean
+```
+
+```{r echo=FALSE, caption="Help for mean", out.width="75%"}
+knitr::include_graphics("l02/img/mean-help.png")
+```
+
+---
+
+## Oh why won't you still work??!!
+
+```{r}
+cat_lovers %>%
+  summarise(mean_cats = mean(number_of_cats, na.rm = TRUE))
+```
+
+---
+
+## Take a breath and look at your data
+
+.question[
+What is the type of the `number_of_cats` variable?
+]
+
+```{r}
+glimpse(cat_lovers)
+```
+--
+
+.large[.center[`r emo::ji("bulb")`!]]
+
+---
+
+## Let's take another look
+
+.small[
+```{r echo=FALSE}
+options(htmltools.preserve.raw = FALSE)
+cat_lovers %>%
+  datatable()
+```
+]
+
+---
+
+## Sometimes you might need to babysit your respondents
+
+.midi[
+```{r}
+cat_lovers %>%
+  mutate(number_of_cats = case_when(
+    name == "Ginger Clark" ~ 2,
+    name == "Doug Bass"    ~ 3,
+    TRUE                   ~ as.numeric(number_of_cats)
+    )) %>%
+  summarise(mean_cats = mean(number_of_cats))
+```
+]
+
+---
+
+## Always you need to respect data types
+
+```{r}
+cat_lovers %>%
+  mutate(
+    number_of_cats = case_when(
+      name == "Ginger Clark" ~ "2",
+      name == "Doug Bass"    ~ "3",
+      TRUE                   ~ number_of_cats
+      ),
+    number_of_cats = as.numeric(number_of_cats)
+    ) %>%
+  summarise(mean_cats = mean(number_of_cats))
+```
+
+<!-- ??? -->
+
+<!-- This generates a warning for unknown (case_when specific) reasons -->
+---
+
+## Now that we know what we're doing...
+
+```{r}
+cat_lovers = cat_lovers %>% #<<
+  mutate(
+    number_of_cats = case_when(
+      name == "Ginger Clark" ~ "2",
+      name == "Doug Bass"    ~ "3",
+      TRUE                   ~ number_of_cats
+      ),
+    number_of_cats = as.numeric(number_of_cats)
+    )
+```
+
+---
+
+## Moral of the story
+
+- If your data does not behave how you expect it to, type coercion upon reading in the data might be the reason.
+- Go in and investigate your data, apply the fix, *save your data*, live happily ever after.
+
+---
+
+class: middle
+
+.hand[.light-blue[now that we have a good motivation for]]  
+.hand[.light-blue[learning about data types in R]]
+
+<br>
+
+.large[
+.hand[.light-blue[let's learn about data types in R!]]
+]
+
+---
+
+class: middle
+
+# Data types
+
+---
+
+## Atomic data types in R
+
+These are the fundamental building blocks (**atoms**) of all R vectors (and all data in R is a vector!)
+- **logical**
+- **integer** numbers
+- **double** (real) numbers
+- **complex** numbers
+- **character**
+- and some more, but we won't be discussing these yet.
+
+---
+
+## Logical & character
+
+.pull-left[
+**logical** - boolean values `TRUE` and `FALSE`
+
+```{r}
+typeof(TRUE)
+```
+]
+.pull-right[
+**character** - character strings
+
+```{r}
+typeof("hello")
+```
+]
+
+---
+
+## Double & integer
+
+.pull-left[
+**double** - floating point numerical values (default numerical type)
+
+```{r}
+typeof(1.335)
+typeof(7)
+```
+]
+.pull-right[
+**integer** - integer numerical values (indicated with an `L`)
+
+```{r}
+typeof(7L)
+typeof(1:3)
+```
+]
+
+---
+
+## Complex numbers
+
+R also natively supports complex numbers, which are their own type:
+.pull-left[
+```{r}
+roots_of_unity = 
+  c(1+0i, -1+0i, 0+1i, 0-1i)
+typeof(roots_of_unity)
+roots_of_unity^2
+```
+]
+.pull-right[
+```{r}
+roots_of_unity^4
+Re(roots_of_unity)
+Im(roots_of_unity)
+```
+]
+
+---
+
+## Lists
+
+**Lists** are 1d objects that can contain any combination of R objects
+
+.pull-left[
+.small[
+```{r}
+mylist = list("A", 1:4, c(TRUE, FALSE))
+mylist
+```
+]]
+
+.pull-right[
+```{r}
+str(mylist) #<<
+```
+]
+
+---
+
+# `str` is our friend
+.font130[
+*  shows the *str*ucture of the data
+
+*  `str` is *nearly* a synonym for `dplyr::glimpse`
+
+*  It shows detailed information on the composition of object. 
+
+*  You should reach for it first when you are trying to understand the low-level properties of an R object.
+]
+---
+
+## Concatenation
+
+Vectors can be constructed and **concatenated** using the `c()` function.
+.pull-left[.small[
+```{r}
+digits = c(1, 2, 3)
+hello = c("Hello", "World!")
+greet = c(c("hi", "hello"), 
+              c("bye", "jello"))
+```
+]]
+
+.pull-right[
+```{r}
+str(digits)
+str(hello)
+str(greet)
+```
+]
+
+
+---
+
+## Vector length
+
+Get the number of entries in a vector with `length(x)`.
+
+.pull-left[
+```{r}
+x = c(1, 2, 3)
+y = character(2)
+empty_dbl = numeric(0)
+empty_chr = character(0)
+```
+]
+
+.pull-right[
+```{r}
+length(x)
+length(y)
+length(empty_dbl)
+length(empty_chr)
+```
+]
+---
+
+## Concatenation
+
+Lists can also be concatenated using the `c()` function.
+
+.pull-left[
+```{r}
+list1 = list(1, 2, 3)
+list2 = list(
+  c("Hi!", "I'm a vector", 
+    "nested inside", "a list"))
+cat12 = c(list1, list2)
+```
+]
+.pull-right[
+```{r}
+str(cat12)
+```
+]
+
+Compare to `list(list1, list2)` which would nest the two lists rather than join them.
+---
+
+## length(c(x, y)) = length(x) + length(y)
+
+```{r}
+length(list1)
+length(list2)
+length(c(list1, list2))
+```
+
+.question[
+What would `length(c(list1, list2))` be when `list1 = list(c(1, 2, 3))`?
+]
+---
+
+
+## Named lists
+
+We often want to name the elements of a list (can also do this with vectors). This can make reading and accessing the list more 
+straight forward.
+
+.small[
+```{r}
+myotherlist = list(A = "hello", B = 1:4, "knock knock" = "who's there?")
+str(myotherlist)
+names(myotherlist)
+myotherlist$B
+```
+]
+
+---
+
+## unlisting
+
+Really, this should be called unnesting.  Often, it is [a code smell](https://en.wikipedia.org/wiki/Code_smell) in R, and indicates an issue with how the code was designed
+
+```{r}
+str(myotherlist)
+unlist(myotherlist, recursive = TRUE)
+```
+
+.question[What just happened to the integers in `myotherlist$B`?]
+---
+
+## Converting between types
+
+.hand[with intention...]
+
+.pull-left[
+```{r}
+x = 1:3
+x
+typeof(x)
+```
+]
+--
+.pull-right[
+```{r}
+y = as.character(x)
+y
+typeof(y)
+```
+]
+
+---
+
+## Converting between types
+
+.hand[with intention...]
+
+.pull-left[
+```{r}
+x = c(TRUE, FALSE)
+x
+typeof(x)
+```
+]
+--
+.pull-right[
+```{r}
+y = as.numeric(x)
+y
+typeof(y)
+```
+]
+
+---
+
+## Converting between types
+
+.hand[without intention...]
+
+R will happily convert between various types without complaint when different types of data are concatenated in a vector, and that's not always a great thing!
+
+.pull-left[
+```{r}
+c(1, "Hello")
+c(FALSE, 3L)
+```
+]
+--
+.pull-right[
+```{r}
+c(1.2, 3L)
+c(2L, "two")
+```
+]
+
+---
+
+## Explicit vs. implicit coercion
+
+Let's give formal names to what we've seen so far:
+
+--
+- **Explicit coercion** is when you call a function like `as.logical()`, `as.numeric()`, `as.integer()`, `as.double()`, or `as.character()`
+
+
+--
+- **Implicit coercion** happens when you use a vector in a specific context that expects a certain type of vector
+
+<!-- --- -->
+
+
+---
+
+class: middle
+
+# Special values
+
+---
+
+## Special values
+
+- `NA`: Not available
+- `NaN`: Not a number
+- `Inf`: Positive infinity
+- `-Inf`: Negative infinity
+
+--
+
+.pull-left[
+```{r}
+pi / 0
+0 / 0
+```
+]
+.pull-right[
+```{r}
+1/0 - 1/0
+1/0 + 1/0
+```
+]
+
+---
+
+## `NA`s are special `r emo::ji('snowflake')`s
+
+```{r}
+x = c(1, 2, 3, 4, NA)
+```
+
+```{r}
+mean(x)
+mean(x, na.rm = TRUE)
+summary(x)
+```
+
+---
+
+## `NA`s are, by default, logical
+
+R uses `NA` to represent missing values in its data structures.
+
+```{r}
+typeof(NA)
+```
+
+.footnote[There are also ```NA_integer_```, ```NA_real_``` and ```NA_character_```, occasionally needed to avoid warnings or errors about unplanned coercions.]
+---
+
+## Mental model for `NA`s
+
+- Unlike `NaN`, `NA`s are genuinely unknown values
+- But that doesn't mean they can't function in a logical way
+- Let's think about why `NA`s are logical...
+
+--
+
+.question[
+Why do the following give different answers?
+]
+.pull-left[
+```{r}
+# TRUE or NA
+TRUE | NA
+```
+]
+.pull-right[
+```{r}
+# FALSE or NA
+FALSE | NA
+```
+]
+
+$\rightarrow$ See next slide for answers...
+
+---
+
+- `NA` is unknown, so it could be `TRUE` or `FALSE`
+
+.pull-left[
+.midi[
+- `TRUE | NA`
+```{r}
+TRUE | TRUE  # if NA was TRUE
+TRUE | FALSE # if NA was FALSE
+```
+]
+]
+.pull-right[
+.midi[
+- `FALSE | NA`
+```{r}
+FALSE | TRUE  # if NA was TRUE
+FALSE | FALSE # if NA was FALSE
+```
+]
+]
+
+- Doesn't make sense for mathematical operations 
+- Makes sense in the context of missing data
+
+---
+
+## Vectors vs. lists
+
+.pull-left[
+.small[
+```{r, error=TRUE}
+x = c(8,4,7)
+```
+]
+.small[
+```{r}
+x[1]
+```
+]
+.small[
+```{r}
+x[[1]]
+```
+]
+]
+--
+.pull-right[
+.small[
+```{r}
+y = list(8,4,7)
+```
+]
+.small[
+```{r}
+y[2]
+```
+]
+.small[
+```{r}
+y[[2]]
+```
+]
+]
+
+--
+
+<br>
+
+<!--**Note:** When using tidyverse code you'll rarely need to refer to elements using square brackets, but it's good to be aware of this syntax, especially since you might encounter it when searching for help online.-->
+
+---
+
+## Vectors vs lists: the punchline
+
+*  Plain vectors must be flat and "atomic"--comprised of only a single base R type: `logical`, `integer`, `numeric`, `complex` or `character`.
+
+*  Lists can be arbitrarily nested and contain any R object.
+
+*  Both have length.
+
+*  Both can be named.
+
+---
+
+class: middle
+
+# R Classes and attributes
+
+---
+
+## types are elemental
+
+.pull-left[
+**R elements**
+* 
+```{r} 
+typeof(1)
+```
+* 
+```{r}
+typeof("A")
+```
+* 
+```{r}
+typeof(list(1))
+```
+]
+
+.pull-right[
+**Meatspace elements**
+* hydrogen
+<img src = "l02/img/320px-Hydrogen_discharge_tube.jpg" width = "48%">
+* carbon
+<img src = "l02/img/Graphite-and-diamond-with-scale.jpg" width = "48%">
+* uranium
+<img src = "l02/img/600px-HEUraniumC.jpg" width = "48%">
+]
+
+???
+
+These types can either be atomic (integer, character, numeric, boolean) or generic (lists).
+
+---
+class: code70
+
+## Attributes are add-on properties
+
+.pull-left[
+**R attributes**
+* 
+```{r}
+attributes(1)
+```
+* 
+.scroll-box-10[
+```{r}
+attributes(starwars)
+```
+]]
+
+.pull-right[
+**Meatspace attributes**
+* temperature
+* pH
+* pressure
+]
+
+---
+
+## classes are compounds
+
+`class` is an `attribute` that signifies a **compound type** (made up of multiple elements or compounds).
+
+`class` is a special attribute. It affects what flavor of a function is applied.  We'll discuss this in greater detail in a few weeks.
+
+---
+class: code70
+
+## Classes
+
+.pull-left[
+**R compounds**
+* 
+```{r}
+class(starwars)
+```
+* 
+```{r}
+class(1)
+```
+* 
+```{r}
+class(ggplot(starwars, aes(x = weight))+ geom_histogram())
+```
+]
+
+.pull-right[
+**Meatspace compounds**
+*  $H_2O$
+<img src = "l02/img/640px-Ice_Block.jpg" width = "50%">
+*  NaCl
+<img src = "l02/img/640px-Salt_Farmers.jpg" width = "50%">
+*  $C_8H_{10}N_4O_2$
+<img src = "l02/img/640px-A_small_cup_of_coffee.jpeg" width = "50%">
+]
+
+---
+
+class: center, middle
+
+# Factors
+
+---
+
+## Factors
+
+Factor objects are how R stores data for categorical variables (fixed numbers of discrete values).
+
+```{r}
+x = factor(c("BS", "MS", "PhD", "MS"))
+```
+
+```{r}
+attributes(x)
+```
+
+```{r}
+typeof(x)
+```
+
+---
+
+## Read data in as character strings
+
+```{r}
+str(cat_lovers)
+```
+
+---
+
+## But coerce when plotting
+
+```{r}
+ggplot(cat_lovers, mapping = aes(x = handedness)) +
+  geom_bar()
+```
+
+---
+
+# Acknowledgments
+
+This lecture contains materials adapted from  [Mine Çetinkaya-Rundel and colleagues](https://www2.stat.duke.edu/courses/Spring18/Sta199/slides/lec-slides/05b-coding-style-data-types.html#1) and [data science in a box](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d10-data-types/u2-d10-data-types.html#1)
+

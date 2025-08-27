@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>BST430 Lecture 8</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="css/lexis.css" type="text/css" />
+    <link rel="stylesheet" href="css/lexis-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: ur-title, center, middle, title-slide
+
+.title[
+# BST430 Lecture 8
+]
+.subtitle[
+## Text Analysis
+]
+.author[
+### Tanzy Love, based on the course by Andrew McDavid
+]
+.institute[
+### U of Rochester
+]
+.date[
+### 2021-09-26 (updated: 2025-08-18 by TL)
+]
+
+---
+
+  
+
+
+
+
+
+
+Here's the [R code in this lecture](l07/text-ii.R)
+
+Here's the [books](l07/data/books.csv) 
+
+*You have to have a good filepath to each dataset*
+
+
+---
+
+class: middle
+
+![](https://raw.githubusercontent.com/juliasilge/tidytext/master/man/figures/tidytext.png)
+
+Text mining using `tidytext`
+
+---
+
+## Text mining using `tidytext`
+
+Text is inherently high-dimensional and noisy data.  We could spend weeks on this. Instead, we'll have to be content to know what we don't know:
+
+*  Sampling text data and its potential ascertainment biases
+*  Handling non-Roman (ASCII) characters
+*  Parsing into tokens
+*  Filtering low-content words
+*  Dimension reduction, e.g., latent Dirichlet allocation or non-negative matrix factorization
+*  Embeddings using pre-trained neural networks
+
+Julia Silge has [one book on classical text mining](https://www.tidytextmining.com/) and [another on machine learning on text](https://smltar.com/).
+
+---
+
+## Most important functionality
+
+*  `unnest_tokens()` split a string into tokens (words, bi-grams, etc) as a data frame
+*  `bind_tf_idf` calculate term and inverse-document frequencies.
+*  `cast_sparse` convert to a (sparse) document-term matrix.
+
+---
+
+## Austen vs Kafka
+
+```r
+library(tidytext); library(stopwords); library(gutenbergr)
+book_names = tibble(gutenberg_id = c(158, 105, 5200, 7849),
+                    title = c('Emma', 'Persuasion',
+                              'Metamorphosis', 'The Trial'))
+books = gutenberg_download(book_names$gutenberg_id) %&gt;% 
+  left_join(book_names)
+table(books$title)
+```
+
+```
+## 
+##          Emma Metamorphosis    Persuasion     The Trial 
+##         16488          1872          8357          6677
+```
+
+---
+
+## Austen vs Kafka - text
+
+.scroll-box-15[
+
+```r
+books %&gt;% group_by(title) %&gt;% 
+  slice_head(n=6)
+```
+
+```
+## # A tibble: 24 × 3
+## # Groups:   title [4]
+##   gutenberg_id text             title        
+##          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;        
+## 1          158 "Emma"           Emma         
+## 2          158 ""               Emma         
+## 3          158 "by Jane Austen" Emma         
+## 4          158 ""               Emma         
+## 5          158 ""               Emma         
+## 6          158 "Contents"       Emma         
+## 7         5200 "Metamorphosis"  Metamorphosis
+## 8         5200 ""               Metamorphosis
+## # ℹ 16 more rows
+```
+]
+
+---
+
+## Get words
+
+
+```r
+book_words = unnest_tokens(books, text, output = 'word', drop = TRUE) #drops the original variable
+book_words
+```
+
+```
+## # A tibble: 351,095 × 3
+##   gutenberg_id title word    
+##          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   
+## 1          158 Emma  emma    
+## 2          158 Emma  by      
+## 3          158 Emma  jane    
+## 4          158 Emma  austen  
+## 5          158 Emma  contents
+## 6          158 Emma  volume  
+## 7          158 Emma  i       
+## 8          158 Emma  chapter 
+## # ℹ 351,087 more rows
+```
+
+---
+
+## Count words by book
+
+
+```r
+word_counts = book_words %&gt;%
+  group_by(title) %&gt;% count(title, word) %&gt;%
+  arrange(desc(n))
+word_counts %&gt;% slice_head(n = 4)
+```
+
+```
+## # A tibble: 16 × 3
+## # Groups:   title [4]
+##   title         word      n
+##   &lt;chr&gt;         &lt;chr&gt; &lt;int&gt;
+## 1 Emma          to     5238
+## 2 Emma          the    5201
+## 3 Emma          and    4896
+## 4 Emma          of     4291
+## 5 Metamorphosis the    1148
+## 6 Metamorphosis to      753
+## 7 Metamorphosis and     642
+## 8 Metamorphosis he      577
+## # ℹ 8 more rows
+```
+
+---
+
+## Remove "stop" words
+
+Stop words are common, low-semantic value words.  Sometimes useful to remove.
+
+
+```r
+word_counts %&gt;% anti_join(get_stopwords()) %&gt;% slice_head(n = 4)
+```
+
+```
+## # A tibble: 16 × 3
+## # Groups:   title [4]
+##   title         word         n
+##   &lt;chr&gt;         &lt;chr&gt;    &lt;int&gt;
+## 1 Emma          mr        1153
+## 2 Emma          emma       786
+## 3 Emma          mrs        699
+## 4 Emma          miss       599
+## 5 Metamorphosis gregor     199
+## 6 Metamorphosis room       131
+## 7 Metamorphosis gregor’s    99
+## 8 Metamorphosis father      96
+## # ℹ 8 more rows
+```
+
+---
+
+## Term frequency in Kafka vs Austen
+
+
+```r
+total_words = word_counts %&gt;%
+  group_by(title) %&gt;%
+  summarize(total = sum(n))
+word_counts = left_join(word_counts, total_words)
+word_counts
+```
+
+```
+## # A tibble: 20,761 × 4
+## # Groups:   title [4]
+##   title      word      n  total
+##   &lt;chr&gt;      &lt;chr&gt; &lt;int&gt;  &lt;int&gt;
+## 1 Emma       to     5238 161113
+## 2 Emma       the    5201 161113
+## 3 Emma       and    4896 161113
+## 4 The Trial  the    4726  84219
+## 5 Emma       of     4291 161113
+## 6 Persuasion the    3327  83707
+## 7 Emma       i      3181 161113
+## 8 Emma       a      3125 161113
+## # ℹ 20,753 more rows
+```
+
+---
+
+## Term frequency in Kafka vs Austen
+
+
+
+```r
+ggplot(word_counts, aes(x = n/total)) +
+  geom_histogram(show.legend = FALSE) +
+  xlim(NA, 0.0009) +
+  facet_wrap(~title, scales = "free_y") + 
+  theme_minimal()
+```
+
+&lt;img src="l08-text-ii_files/figure-html/plottf-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Zipf's law
+Distributions like those on the previous slide are typical in language.  A classic version of this relationship is called Zipf's law.
+
+&gt; Zipf's law states that the frequency that a word appears is inversely proportional to its rank.
+
+---
+
+## Zipf's law
+
+.panelset[
+
+.panel[.panel-name[Code]
+
+```r
+freq_by_rank = word_counts %&gt;%
+  group_by(title) %&gt;%
+  mutate(rank = row_number(),
+         `term frequency` = n/total) %&gt;%
+  ungroup()
+
+freq_by_rank %&gt;%
+  ggplot(aes(x = rank, y = `term frequency`, color = title)) +
+  geom_abline(intercept = -0.62, slope = -1,
+              color = "gray50", linetype = 2) +
+  geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) +
+  scale_x_log10() +
+  scale_y_log10() +
+  theme_minimal()
+```
+]
+.panel[.panel-name[Plot]
+&lt;img src="l08-text-ii_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+]
+---
+
+## Sentiment analysis
+
+
+```r
+sentiments
+```
+
+```
+## # A tibble: 6,786 × 2
+##   word        sentiment
+##   &lt;chr&gt;       &lt;chr&gt;    
+## 1 2-faces     negative 
+## 2 abnormal    negative 
+## 3 abolish     negative 
+## 4 abominable  negative 
+## 5 abominably  negative 
+## 6 abominate   negative 
+## 7 abomination negative 
+## 8 abort       negative 
+## # ℹ 6,778 more rows
+```
+
+---
+
+## Add sentiments to words
+
+
+```r
+word_sentiments = word_counts %&gt;%
+  mutate(counts = n) %&gt;%
+  left_join(sentiments, relationship = "many-to-many") %&gt;% 
+                                    #multiple matches here
+  filter(!is.na(sentiment)) %&gt;%     #already grouped!
+  mutate(word_collapse = fct_lump_n(word, n = 10, w = counts),) %&gt;%
+    #it needs to be told that n are the weights of these words
+    select(title, word_collapse, sentiment, counts)
+word_sentiments
+```
+
+```
+## # A tibble: 4,269 × 4
+## # Groups:   title [4]
+##   title      word_collapse sentiment counts
+##   &lt;chr&gt;      &lt;fct&gt;         &lt;chr&gt;      &lt;int&gt;
+## 1 Emma       miss          negative     599
+## 2 Emma       well          positive     401
+## 3 Emma       good          positive     359
+## 4 Emma       great         positive     264
+## 5 The Trial  like          positive     212
+## 6 Emma       like          positive     200
+## 7 Persuasion good          positive     187
+## 8 Emma       better        positive     173
+## # ℹ 4,261 more rows
+```
+
+---
+
+##  Which is more happy?
+
+
+```r
+ggplot(word_sentiments, aes(y = fct_reorder(word_collapse,  counts, .fun = sum), 
+                            x = counts, fill = sentiment)) + 
+  geom_col() + facet_wrap(~title, scales = 'free_x') + 
+  ylab("Word") + xlab("Occurrence") + theme_minimal()
+```
+
+&lt;img src="l08-text-ii_files/figure-html/sentiment_comparison-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+
+## Term frequency and inverse document frequency
+
+The inverse document frequency is
+
+`$$\text{idf}(\text{term}) = \ln{\left(\frac{n_{\text{documents}}}{n_{\text{documents containing term}}}\right)}$$`
+
+The IDF thus ranges from 0 for words that appear in every document up to `\(log(n)\)` for a word unique across documents.
+
+The term frequency is just the word counts, normalized to the number of words per text, so the popular TF-IDF&lt;sup&gt;1&lt;/sup&gt; metric is just
+
+`$$\text{tf-idf}(\text{term}) = \text{idf}(\text{term}) \times \text{tf}(\text{term})$$`
+.footnote[[1] Popular, and curiously devoid of an obvious statistical model.  [Some attempts to link to information theory](https://en.wikipedia.org/wiki/Tf%E2%80%93idf#Justification_of_idf) have been made.]
+---
+
+## Calculate TF-IDF
+
+
+
+```r
+word_counts = word_counts %&gt;% bind_tf_idf(word, title, n)
+word_counts
+```
+
+```
+## # A tibble: 20,761 × 7
+## # Groups:   title [4]
+##   title      word      n  total     tf   idf tf_idf
+##   &lt;chr&gt;      &lt;chr&gt; &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Emma       to     5238 161113 0.0325     0      0
+## 2 Emma       the    5201 161113 0.0323     0      0
+## 3 Emma       and    4896 161113 0.0304     0      0
+## 4 The Trial  the    4726  84219 0.0561     0      0
+## 5 Emma       of     4291 161113 0.0266     0      0
+## 6 Persuasion the    3327  83707 0.0397     0      0
+## 7 Emma       i      3181 161113 0.0197     0      0
+## 8 Emma       a      3125 161113 0.0194     0      0
+...
+```
+
+---
+
+## TF-IDF of Kafka and Austen
+
+This works relatively well to identify signature words -- some represent content,  some represent author style (e.g. contractions used by Kafka)
+
+&lt;img src="l08-text-ii_files/figure-html/signature_words-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Occurrence matrix
+
+Lastly, we might want to convert our counts to an occurrence matrix `\(\mathbf X = [x_{ij}]\)` where `\(x_{ij}\)` is the number of times document `\(i\)` contains term `\(j\)`.
+
+Most `\(x_{ij}\)` will be zero, reflecting Zipf's law.  We will almost always want to store it in a special format called a .alert[sparse matrix], that only stores the non-zero entries and their index in the matrix.
+
+---
+
+## `cast_sparse()`
+
+
+```r
+X = cast_sparse(word_counts, title, word, n)
+class(X)
+```
+
+```
+## [1] "dgCMatrix"
+## attr(,"package")
+## [1] "Matrix"
+```
+
+```r
+dim(X)
+```
+
+```
+## [1]     4 11476
+```
+
+```r
+sum(X&gt;0)
+```
+
+```
+## [1] 20761
+```
+
+This is useful for downstream modeling, such as latent Dirichlet allocation.
+
+---
+
+## what is `cast_sparse()`
+
+
+```r
+X[,10001:10004]
+```
+
+```
+## 4 x 4 sparse Matrix of class "dgCMatrix"
+##               nosegay noted nothings notoriety
+## Emma                .     .        .         .
+## The Trial           .     1        .         .
+## Persuasion          1     1        1         1
+## Metamorphosis       .     .        .         .
+```
+
+
+```r
+rowSums(as.matrix(X))
+```
+
+```
+##          Emma     The Trial    Persuasion Metamorphosis 
+##        161113         84219         83707         22056
+```
+
+&lt;!-- --- --&gt;
+
+&lt;!-- # Resources --&gt;
+
+&lt;!-- Julia Silge has [one book on classical text mining](https://www.tidytextmining.com/) and [another on machine learning on text](https://smltar.com/). --&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "3:2"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

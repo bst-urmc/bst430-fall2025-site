@@ -1,0 +1,234 @@
+Here's the [R code in this lecture](l02b-linear-algebra-indexing/linear-algebra-indexing.R)
+
+The only dataset is in the nycflights13 library.
+
+
+---
+## Motivation: time series
+
+Let's suppose we tabulate the average delay at the NYC airports at every hour during the month of June.
+
+```{r include=FALSE}
+library(nycflights13)
+library(tidyverse)
+knitr::opts_chunk$set(cache = FALSE, warning = FALSE)
+theme_set(theme_minimal())
+```
+
+```{r tabulate-delay}
+delay_stats = flights %>%  
+  filter(month %in% c(3, 6)) %>%
+  mutate(day = factor(day),  hour = factor(hour, levels = 0:23), 
+         origin = factor(origin),  month= factor(month)) %>%
+  group_by(day, hour, origin, month) %>% 
+  mutate(n = n(), pos_delay =  pmax(0, dep_delay)) %>%
+  group_by(day, hour, origin, month, .drop = FALSE) %>% 
+  summarize(n = n(), 
+            total_delay = ifelse(n>0, sum(pos_delay, na.rm = TRUE), NA_real_),
+            total_delay_5 = sum(dep_delay > 5, na.rm = TRUE),
+            prop_delay_5 = total_delay_5/n,
+            mean_delay = total_delay/n)%>%
+  group_by(hour, origin, month) %>%
+  mutate(residual_mean_delay = mean_delay - mean(mean_delay, na.rm = TRUE),
+         residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE)) %>% ungroup()
+
+delay_june = filter(delay_stats, month == "6") %>% 
+  select(month, day:origin, total_delay)
+```
+
+---
+
+## delay_june
+
+We show the largest total delay for each hour/origin that is not empty.  
+
+```{r}
+delay_june %>% slice_max(n = 1, order_by = total_delay)
+```
+---
+
+```{r, warning=FALSE}
+dstat = ggplot(delay_june, aes(x = as.numeric(hour), y = total_delay, color = origin)) + 
+  geom_point() + geom_smooth() 
+dstat
+```
+
+We see that flights aren't so delayed early in the day, and peak delays occur in the evening.
+
+---
+
+## Detrend
+
+```{r, warning = FALSE}
+delay_june = delay_june %>% 
+  group_by(hour, origin, month) %>%
+  mutate(residual_total_delay = total_delay - mean(total_delay, na.rm = TRUE))
+(dstat %+% delay_june) + aes(y = residual_total_delay)
+```
+
+---
+
+## Are delays contagious between airports?
+
+First, we'd need to pivot wider.
+
+```{r}
+delay_wide = delay_june %>% 
+  pivot_wider(id_cols = day:hour, 
+              names_from = origin, 
+              values_from = residual_total_delay) %>% 
+  ungroup()
+
+delay_wide %>% slice(10:15)
+```
+
+---
+
+```{r}
+airport_delay_plot = ggplot(delay_wide, aes(x = EWR, y = JFK)) + 
+  geom_point(aes(color = as.numeric(hour))) + 
+  geom_smooth() + 
+  scale_color_viridis_c() 
+airport_delay_plot + labs(title = "Resid. delay (minutes) on each hour")
+```
+
+---
+
+## Are delays contagious across time?
+.panelset[
+
+.panel[.panel-name[Code]
+```{r delay-cow, fig.show='hide', results = 'hide', warning=FALSE, message=FALSE}
+airport_delay_plot_simple = airport_delay_plot + guides(color = 'none')
+cowplot::plot_grid(
+  airport_delay_plot_simple + aes(x = JFK, y = dplyr::lag(JFK, n = 1)),
+   airport_delay_plot_simple + aes(x = JFK, y = dplyr::lag(JFK, n = 2)),
+  airport_delay_plot_simple + aes(x = JFK, y = dplyr::lag(JFK, n = 4)),
+  airport_delay_plot_simple + aes(x = JFK, y = dplyr::lag(JFK, n = 8)))
+  
+```
+]
+.panel[.panel-name[Plot]
+.pull-left[
+```{r, echo = FALSE, ref.label="delay-cow",  warning=FALSE, message=FALSE, fig.asp = 1, out.width = '500px'}
+```
+]
+.pull-right[
+Really, we'd like to examine the correlation matrix between airports, or the correlation matrix between lags at various airports...
+]
+]
+]
+---
+class: code70
+## To do this, we need the delays as a .alert[matrix.]
+
+.pull-left[
+Using `reshape2::acast` (preferred, gives sensible rownames)
+```{r, R.options=list(digits = 2)}
+library(reshape2)
+delay_matrix = acast(delay_june, day + hour ~ origin, value.var = 'residual_total_delay')
+delay_matrix
+```
+]
+.pull-right[
+Or casting with `as.matrix` (simple)
+```{r, R.options=list(digits = 2, width = 50)}
+delay_matrix2 = delay_wide %>% select(EWR:LGA) %>% as.matrix
+delay_matrix2
+```
+]
+
+---
+
+## Mind your NAs
+```
+cor(<MATRIX1>, [<MATRIX2>], use = ..., 
+method = c("pearson", "kendall", "spearman"))
+```
+
+.pull-left[
+```{r}
+cor(delay_matrix) 
+```
+]
+.pull-right[
+```{r, R.options=list(digits = 2)}
+cor(delay_matrix, use = 'complete')
+```
+
+]
+
+---
+
+## A first taste of matrix indexing
+
+```{r, error = TRUE}
+delay_matrix$EWR
+```
+
+Need to use brackets
+```{r, output.lines = 4}
+delay_matrix[,'EWR'] # or delay_matrix[,1]
+```
+
+---
+class: code70
+## A second taste 
+
+```{r}
+## 10th row, 9am
+delay_matrix[10,]
+## row titled "10_14", June 10, 2PM.
+delay_matrix["10_14",]
+## exclude first 7 rows
+delay_matrix[-(1:7),]
+```
+
+
+---
+
+## Lagged cross correlations
+
+1 hour lag
+```{r, R.options=list(digits = 2)}
+cor(delay_matrix[-nrow(delay_matrix),], 
+    delay_matrix[-1,],
+    use = 'pairwise')
+```
+
+$$\small \begin{bmatrix} 
+\text{cor}(\text{EWR}_{t-1}, \text{EWR}_{t}) & \text{cor}(\text{EWR}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{EWR}_{t-1}, \text{LGA}_{t}) \\
+\text{cor}(\text{JFK}_{t-1}, \text{EWR}_{t}) & \text{cor}(\text{JFK}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{JFK}_{t-1}, \text{LGA}_{t}) \\
+\text{cor}(\text{LGA}_{t-1}, \text{LGA}_{t}) & \text{cor}(\text{LGA}_{t-1}, \text{JFK}_{t}) &  \text{cor}(\text{LGA}_{t-1}, \text{LGA}_{t}) 
+\end{bmatrix}$$
+
+
+---
+
+## 2 hour lag
+
+```{r, R.options=list(digits = 2)}
+cor(delay_matrix[1:(nrow(delay_matrix)-2),],
+    delay_matrix[-(1:2),],
+    use = 'pairwise')
+```
+
+---
+
+## The whole ballgame:auto-correlation function
+
+```{r, fig.width = 6}
+acf_arr = acf(delay_matrix, na.action = na.pass, lag.max = 12, plot = FALSE)
+plot(acf_arr)
+```
+
+Some caveats as to why the output from acf differs slightly from the lagged correlations. [1](https://stats.stackexchange.com/questions/81754/understanding-this-acf-output) [2](https://stackoverflow.com/a/16403622/3777396).
+
+---
+
+## Motivation: programming
+
+*  dplyr is great for one-off analyses!
+*  ...but can be a hassle to program abstracted routines.  
+*  Manipulation of vectors and matrices in R is more flexible and transparent.
+*  We'll get more motivation for this when we discuss functions (next week)

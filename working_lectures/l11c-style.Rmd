@@ -1,0 +1,305 @@
+---
+title: "BST430  Lecture 11-B"
+subtitle: "Coding Style"
+author: "Tanzy Love, based on the course by Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-09-10 (updated: `r Sys.Date()` by TL)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+class: middle
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE     # for regression output
+)
+# Set dpi and height for images
+library(knitr)
+opts_chunk$set(fig.height = 2.65, dpi = 300) 
+# ggplot2 color palette with gray
+color_palette = list(gray = "#999999", 
+                      salmon = "#E69F00", 
+                      lightblue = "#56B4E9", 
+                      green = "#009E73", 
+                      yellow = "#F0E442", 
+                      darkblue = "#0072B2", 
+                      red = "#D55E00", 
+                      purple = "#CC79A7")
+# For nonsese...
+#library(emo)
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+
+# Coding style
+
+---
+
+## Wise thoughts (i)
+
+>"Good coding style is like correct punctuation: you can manage without it, butitsuremakesthingseasiertoread."
+>
+>--Hadley Wickham
+
+---
+
+## Wise thoughts (ii)
+
+>"As a pedant,  I have chosen the right profession."
+>
+>--Andrew McDavid (and professors everywhere?)
+
+---
+
+## Course style guide
+
+.hand[.light-blue[But seriously...]]
+
+Applying a sensible and consistent style:
+- reduces bugs and increases the maintainability of your code.
+- Allows a temporary illusion of control over an otherwise chaotic and indifferent universe.
+--
+
+- Style guide for this course is a fork of the Tidyverse style guide: https://urmc-bst.github.io/style/
+- There's more to it than what we'll cover now,  we'll do a recap later in the semester
+
+---
+
+## File names and code chunk labels
+
+- Do not use spaces in file names, use `-` or `_` to separate words
+- Use all lowercase letters
+
+```{r eval = FALSE}
+# Good
+ucb-admit.csv
+make-georgia-plot
+
+# Bad
+UCB Admit.csv
+make Georgia plot
+```
+
+---
+
+## Object names
+
+- Use `_` to separate words in object names
+- Use informative but short object names
+- Avoid reusing object names within an analysis
+- If you need an uninformative temporary variable, perhaps you should be using a pipeline.
+
+```{r eval = FALSE}
+# Good
+acs_employed
+
+# Bad
+acs.employed
+acs2
+acs_subset
+acs_subsetted_for_males
+```
+
+---
+
+## Spacing
+
+-  In general, put a space before and after all infix operators (=, +, -, =, etc.), and when naming arguments in function calls.
+-  Exception: when omitting a space improve clarity about order of operations.
+-  Always put a space after a comma, and never before (just like in regular English).
+
+```{r eval = FALSE}
+# Good
+average = mean(feet * 12 + inches, na.rm = TRUE)
+
+# Also OK
+average = mean(feet*12 + inches, na.rm = TRUE)
+
+# Bad
+average=mean(feet*12+inches,na.rm=TRUE)
+```
+
+---
+
+## ggplot
+
+- Always end a line with `+`
+- Always indent the next line
+
+```{r eval = FALSE}
+# Good
+ggplot(diamonds, mapping = aes(x = price)) +
+  geom_histogram()
+```
+
+---
+
+## Long lines
+
+- Limit your code to 80 characters per line. This fits comfortably on a printed page with a reasonably sized font.
+
+- Take advantage of RStudio editor's auto formatting for indentation at line breaks.
+
+---
+
+## Assignment
+
+- Use `=` not `<-` (unless you are doing something clever...and generally avoid being clever.)
+
+```{r eval = FALSE}
+# Good
+x = 2
+
+# Bad
+x <- 2
+```
+
+* This is a provocative take.
+
+---
+## `<-` Assignment
+
+.pull-left[
+.blue[###Pros]
+
+*  Allows chained and in-place assignment.
+```{r}
+x <- y <- 10
+paste0("x = ", x, " and y = ", y)
+```
+*  Could reduce confusion between `==` and 
+`=`?
+*  Looks cooler?
+]
+.pull-right[
+.orange[### Cons]
+
+*  It causes confusion:
+```{r}
+y = 0
+cube_root = function(x) return(x^(1/3))
+cube_root(y <- 8) #<<
+y
+```
+]
+
+---
+
+## More cons
+
+* `<-` is an extra keystroke
+*  If you separate the `<` from the `-` you can get a legal line of code that doesn't do want you expect
+*  Or vice versa!
+
+```{r}
+x = 10
+y = 1
+if(x<-y){ #<<
+  print("x is smaller than -y?")
+}
+```
+* [This](https://stackoverflow.com/questions/1741820/what-are-the-differences-between-and-assignment-operators-in-r) is a [matter](https://colinfay.me/r-assignment/) [of](https://win-vector.com/2013/04/23/prefer-for-assignment-in-r/) [debate](http://www.separatinghyperplanes.com/2018/02/why-you-should-use-and-never.html).
+
+---
+
+## Magic `numeric()` or string literals
+
+* Avoid repeated use of literal constants
+
+```{r, eval = FALSE}
+# bad 
+volume = 3.14159 * r^3
+area = 4/3 * 3.14159 * r^2
+
+# good
+# R knows what pi equals!
+#pi = 3.14159
+volume = pi * r^3
+area = 4/3 * pi * r^2
+```
+
+---
+
+## Convoluted logical expressions
+
+* Logical operators take the `TRUE` path when the condition evaluates to `TRUE`
+
+--
+* Corollary: never need to test `==TRUE` or `!=FALSE`.
+
+```{r}
+# Bad
+ifelse(is.na(x) == TRUE, 0, 1)
+
+# Good
+ifelse(is.na(x), 0, 1)
+```
+
+---
+
+## Naughty shadowing
+
+* Avoid shadowing common R functions: `c`, `t`, `T`, `F`
+```{r}
+c = 'uhoh'
+c("uhoh", c)
+```
+
+* Corollary: don't use the sketchy `T` and `F` shortcuts for `TRUE` and `FALSE`:
+
+```{r}
+F = TRUE
+if(F) print("This shouldn't happen. I have broken the universe.")
+```
+
+---
+
+### Labeling R code chunks
+
+* I expect you to label your code chunks
+* It helps to tell the story
+* It names the figures that get made so you can find them more easily
+
+```
+``{r load-packages-data, message = FALSE, eval = TRUE}
+library(tidyverse)
+library(lubridate)
+library(vroom)
+``
+```
+
+---
+
+<!-- class: middle -->
+
+<!-- <img src="https://media1.giphy.com/media/3o7abA4a0QCXtSxGN2/giphy.gif?cid=ecf05e47sgk0h030uln8hkxkyg8tsgtmuk0bajy04l5tt7wj&rid=giphy.gif&ct=g" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/futurama-professor-farnsworth-good-news-everyone-3o7abA4a0QCXtSxGN2">via GIPHY</a></p> -->
+
+<!-- --- -->
+
+<!-- ### Implications for you -->
+
+<!-- *Try to follow these style guides in your code. -->
+<!-- *  Your labs and homeworks will have "lint" (commentary based on the style guide) provided automatically via the (dark) magic of github Actions. -->
+<!-- *  Possibly, in the future, having lint-free (or as close as practical) at the time of final submission will be a part of your grade. -->
+<!-- * This will only happen if I can get it to work and think it's useful. -->
+<!-- * Much of the linting can be handled by Rstudio -> Code -> Reformat code! -->
+
+<!-- --- -->
+
+### Acknowledgments
+
+[Data science in a box](https://www2.stat.duke.edu/courses/Spring18/Sta199/slides/lec-slides/05b-coding-style-data-types.html#1)

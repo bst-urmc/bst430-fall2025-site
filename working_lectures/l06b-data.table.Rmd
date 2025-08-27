@@ -1,0 +1,33 @@
+---
+title: "BST430  Lecture 06-B"
+subtitle: "data.table"
+author: "Seong-Hwan jun"
+institute: "U of Rochester"
+date: "2021-08-18"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+class: middle
+
+```{r child = "setup.Rmd"}
+```
+```{r, include = FALSE}
+library(data.table)
+```
+
+.hand[# Memory efficient approach to data wrangling]
+
+---
+

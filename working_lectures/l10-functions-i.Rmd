@@ -1,0 +1,833 @@
+---
+title: "BST430  Lecture 10"
+subtitle: "Functions (i)"
+author: "Tanzy Love, based on the course by Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-10-13 (updated: `r Sys.Date()` by TL)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+  
+```{r child = "setup.Rmd"}
+```
+
+```{r links, child="l10/links.md"}
+```
+
+```{r, include=FALSE}
+library(tidyverse)
+library(rvest)
+library(lubridate)
+theme_set(theme_minimal())
+
+#knitr::opts_chunk$set(warning = FALSE)
+```
+
+  
+# Motivation
+
+*  Logic (and data...) should live in only one place
+
+*  Abstraction and isolation
+
+*  Clarity
+
+--
+
+*  As an interpreted, interactive language, the __process__ for writing functions is as important as the laws and syntax of R 
+
+
+Here's the [R code in this lecture](l10/functions-i.R)
+
+no data used
+---
+
+## Load the Gapminder data
+
+[Gapminder](https://www.gapminder.org/about/) is a Swedish foundation that combats misconceptions about global development.  These are just a tiny exerpt of the full data available there -- containing populaton, life expectancy, deflated GDP per capita in $USD.
+
+```{r start_func1, warning=TRUE}
+library(gapminder)
+glimpse(gapminder)
+```
+
+---
+
+```{r}
+ggplot( gapminder, aes(x = year, y = lifeExp, color = continent))  + 
+  geom_line( aes(group = country), alpha = .5) + 
+  scale_color_brewer(type = 'qual') + 
+  geom_boxplot( aes(group = interaction(year,continent)), 
+    data = filter(gapminder, year %in% seq(from=1952, to = 2002, by = 20)), 
+    fill = 'grey', width = 8, outlier.shape = NA, position = 'dodge') 
+```
+
+---
+
+## Max - min
+
+You've got a numeric vector--`lifeExp` or `pop` or `gdpPercap` -- and you want to compute the difference between its max and min. Perhaps you want to do this after you  slice up the Gapminder data by year, country, continent, or combinations thereof.
+
+---
+
+## Get something that works
+
+First, develop some working .alert[code for interactive use, using a representative input], say `lifeExp`.
+
+R functions that will be useful: `min()`, `max()`, `range()`:
+
+```{r}
+min(gapminder$lifeExp)
+max(gapminder$lifeExp)
+range(gapminder$lifeExp)
+```
+
+---
+
+## Some natural solutions
+
+```{r}
+max(gapminder$lifeExp) - min(gapminder$lifeExp)
+range(gapminder$lifeExp)[2] - range(gapminder$lifeExp)[1]
+range(gapminder[['lifeExp']])[2] - range(gapminder[['lifeExp']])[1]
+diff(range(gapminder$lifeExp))
+```
+
+Remember this, notice departures from this.
+
+---
+
+### Skateboard $\gg$ perfectly formed rear-view mirror
+
+.pull-left[
+
+Build [that skateboard](https://en.wikipedia.org/wiki/Minimum_viable_product) before you build the car or some fancy car part. A limited-but-functioning thing is useful to learn the dimensions of a problem.
+
+This is related to the [Telescope Rule](https://wiki.c2.com/?TelescopeRule)
+
+> It is faster to make a four-inch mirror then a six-inch mirror than to make a six-inch mirror.
+
+]
+.pull-right[
+```{r spotify-howtobuildmvp, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("l10/img/spotify-howtobuildmvp.jpg")
+```
+.small[[From your ultimate guide to Minimum Viable Product ](https://blog.fastmonkeys.com/2014/06/18/minimum-viable-product-your-ultimate-guide-to-mvp-great-examples). Image attributed to the Spotify team]
+
+]
+
+---
+
+## Turn the working interactive code into a function
+
+Add NO new functionality! Just write your very first R function.
+
+```{r}
+max_minus_min = function(x){
+  max(x) - min(x)
+}
+max_minus_min(gapminder$lifeExp)
+```
+
+Check that you're getting the same answer as you did with your interactive code. Test it eyeball-o-metrically at this point.
+
+---
+
+## Test your function
+
+### Test on new inputs
+
+Pick some new artificial inputs where you know (at least approximately) what your function should return.
+
+```{r}
+max_minus_min(1:10)
+max_minus_min(runif(1000))
+```
+
+I know that 10 minus 1 is 9. I know that random uniform [0, 1] variates will be between 0 and 1. Therefore max - min should be less than 1. If I take LOTS of them, max - min should be pretty close to 1.
+
+It is intentional that I tested on integer input as well as floating point. Likewise, I like to use valid-but-random data for this sort of check.
+
+---
+
+### Test on real data but *different* real data
+
+Back to the real world now. Two other quantitative variables are lying around: `gdpPercap` and `pop`. Let's have a go.
+
+```{r}
+max_minus_min(gapminder$gdpPercap)
+max_minus_min(gapminder$pop)
+```
+
+Either check these results "by hand" or apply the "does that even make sense?" test.
+
+---
+
+### Test on weird stuff
+
+Don't get truly diabolical (yet). Just make the kind of mistakes you can imagine making at 2am when, 3 years from now, you rediscover this useful function you wrote.
+
+```{r error = TRUE}
+max_minus_min(gapminder) ## hey sometimes things "just work" on data.frames!
+max_minus_min(gapminder$country) ## factors are kind of like integer vectors?
+max_minus_min("eggplants are purple") ## i have no excuse for this one
+```
+
+---
+
+How happy are you with those error messages? You must imagine that some entire __script__ has failed and that you were hoping to just knit it without re-reading it. If a colleague or future you encountered these errors, how hard is it to pinpoint the usage problem?
+
+<!-- --- -->
+
+<!-- ### Application exercise -->
+
+<!-- Browse to [rstudio cloud](https://rstudio.cloud/spaces/162296/project/3099211) and take a few minutes with a partner to try to break `max_minus_min`. -->
+
+
+---
+
+### I will scare you now
+
+Here are some great examples students in UBC's STAT545 devised where the function __should break but it does not.__
+
+```{r}
+max_minus_min(gapminder[c('lifeExp', 'gdpPercap', 'pop')])
+max_minus_min(c(TRUE, TRUE, FALSE, TRUE, TRUE))
+```
+
+In the first case, a data.frame containing just the quantitative variables is eventually coerced into numeric vector. The second case is less odious -- a logical vector is converted to zeroes and ones.
+
+---
+
+## Check the validity of arguments
+
+For functions that will be used again -- which is not all of them! -- it is good to check the validity of arguments. This implements a rule from [the Unix philosophy](https://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html):
+
+> Rule of Repair: When you must fail, fail noisily and as soon as possible.
+
+---
+
+### `stopifnot()`
+
+I use it here to make sure the input `x` is a numeric vector.
+
+```{r error = TRUE}
+max_minus_min = function(x) {
+  stopifnot(is.numeric(x))
+  max(x) - min(x)
+}
+max_minus_min(gapminder)
+max_minus_min(gapminder$country)
+max_minus_min("eggplants are purple")
+```
+
+---
+
+```{r error = TRUE}
+max_minus_min(gapminder[c('lifeExp', 'gdpPercap', 'pop')])
+max_minus_min(c(TRUE, TRUE, FALSE, TRUE, TRUE))
+```
+
+And we see that it catches all of the self-inflicted damage we would like to avoid.
+
+---
+
+### if then stop
+
+`stopifnot()` doesn't provide a very good error message. The next approach is very widely used. Put your validity check inside an `if()` statement and call `stop()` yourself, with a custom error message, in the body.
+
+```{r error = TRUE}
+max_minus_min = function(x) {
+  if(!is.numeric(x)) {
+    stop('I am so sorry, but this function only works for numeric input!\n',
+         'You have provided an object of class: ', class(x)[1])
+  }
+  max(x) - min(x)
+}
+max_minus_min(gapminder)
+```
+
+---
+
+## Error checking
+
+In addition to a gratuitous apology, the error raised also contains two pieces of helpful info:
+  
+* *Which* function threw the error.
+* Hints on how to fix things: expected class of input vs actual class.
+
+If it is easy to do so, I highly recommend this template: "you gave me THIS, but I need THAT".
+
+The tidyverse style guide has a very useful [chapter on how to construct error messages](https://style.tidyverse.org/error-messages.html).
+
+---
+
+### `if()`: a first taste of flow control
+
+```
+if( <BOOLEAN 1> ){
+  <STATEMENT 1>
+} else if ( <BOOLEAN 2> ) {
+  <STATEMENT 2>
+} 
+... # else if
+else{
+  <FINAL STATEMENT>
+}
+```
+
+lets us alter the program behavior depending on conditions.  We'll see more other examples
+of flow control when we discuss iteration with `for`, `while`, and `repeat`.
+
+---
+
+###Define functions that make displays
+
+```{r}
+work_without_question = function(condition){
+  print(str_c("Good capitalistic worker bee ", emo::ji("honey_pot")))
+}
+
+life_crisis = function(condition){
+  warning("Joining a commune.")
+}
+```
+
+---
+
+###If life is good then work, else join a commune
+
+```{r}
+life = function(condition) {
+  good_things = c("skiing", "cats", "health",
+                  "wilderness", "coffee")
+  if (sum(condition %in% good_things) >= 3) {
+    condition = work_without_question(condition)
+  } else{
+    condition = life_crisis(condition)
+  }
+}
+```
+
+```{r}
+life(c("cats", "health"))
+life(c("cats", "skiing", "health"))
+```
+
+---
+
+### `if` vs `ifelse`/`if_else`/`case_when`
+
+*  Use `if_else`/`ifelse` or `case_when` selectively alter portions of a vector
+*  Use `if` to change program logic depending on a **length one boolean**
+   -  length > 1 will trigger a warning that you should treat as an error 
+*  Rule of thumb: use `case_when`/`if_else`/`ifelse` in a `mutate` statement.  Otherwise think.
+
+---
+
+## Assertions: not just for functions!
+
+Also use `stopifnot` and other types of .alert[assertions] for checks in data analytical scripts! E.g.:
+
+-  No duplicates in primary keys: `stopifnot(all(!duplicated(data$primary_key)))`
+-  Data are of the correct type (numeric not character): `stopifnot(is.numeric(data$column))`
+-  Same number of rows after joining on primary keys: `stopifnot(nrow(data)==nrow(data_join))`
+
+
+---
+class: middle
+
+.hand[Another example of an R function]
+
+---
+
+## Read page for 23 Oct speech
+
+```{r eval=TRUE}
+url = "https://www.gov.scot/publications/coronavirus-covid-19-update-first-ministers-speech-23-october/"
+speech_page = read_html(url)
+```
+
+```{r include=FALSE, eval=FALSE}
+url = "https://www.gov.scot/publications/coronavirus-covid-19-update-first-ministers-speech-23-october/"
+speech_page = read_html("l10/data/oct-23.html")
+```
+
+```{r}
+speech_page
+```
+
+
+```{r echo=FALSE, out.width="75%"}
+knitr::include_graphics("l10/img/fm-speech-oct-23.png")
+```
+
+
+---
+
+## Extract components of 23 Oct speech
+
+```{r}
+title = speech_page %>%
+  html_node("title") %>%
+  html_text()
+
+# date = speech_page %>%
+#   html_node(".content-data__list:nth-child(1) strong") %>%
+#   html_text() %>%
+#   dmy()
+# 
+# location = speech_page %>%
+#   html_node(".content-data__list+ .content-data__list strong") %>%
+#   html_text()
+# 
+# abstract = speech_page %>%
+#   html_node(".leader--first-para p") %>%
+#   html_text()
+
+text = speech_page %>%
+  html_nodes("#preamble p") %>%
+  html_text() %>%
+  list()
+```
+
+---
+
+## Put it all in a data frame
+
+```{r}
+oct_23_speech = tibble(
+  title    = title,
+  # date     = date,
+  # location = location,
+  # abstract = abstract,
+  text     = text,
+  url      = url
+)
+
+oct_23_speech
+```
+
+---
+
+## When should you write a function?
+
+--
+.pull-left[
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("l10/img/funct-all-things.png")
+```
+]
+--
+.pull-right[
+When you’ve copied and pasted a block of code more than twice.
+]
+
+
+---
+## Turn your code into a function
+
+- Pick a short but informative **name**, preferably a verb.
+
+<br>
+<br>
+<br>
+<br>
+
+```{r eval=FALSE}
+scrape_speech = 
+  
+  
+  
+  
+  
+  
+```
+
+---
+
+## Turn your code into a function
+
+- Pick a short but evocative **name**, preferably a verb.
+- List inputs, or **arguments**, to the function inside `function`. If we had more the call would look like `function(x, y, z)`.
+
+<br>
+
+```{r eval=FALSE}
+scrape_speech = function(x){
+  
+  
+  
+  
+  
+}  
+```
+
+---
+
+## Turn your code into a function
+
+- Pick a short but informative **name**, preferably a verb.
+- List inputs, or **arguments**, to the function inside `function`. If we had more the call would look like `function(x, y, z)`.
+- Place the **code** you have developed in body of the function, a `{` block that immediately follows `function(...)`.
+
+```{r eval=FALSE}
+scrape_speech = function(url){
+
+  # code we developed earlier to scrape info 
+  # on single article goes here
+  
+}
+```
+
+---
+class: code50
+
+## `scrape_speech()`
+
+```{r}
+scrape_speech = function(url) {
+  
+  speech_page = read_html(url)
+
+  title = speech_page %>%
+    html_node(".article-header__title") %>%
+    html_text()
+
+  date = speech_page %>%
+    html_node(".content-data__list:nth-child(1) strong") %>%
+    html_text() %>%
+    dmy()
+
+  location = speech_page %>%
+    html_node(".content-data__list+ .content-data__list strong") %>%
+    html_text()
+
+  abstract = speech_page %>%
+    html_node(".leader--first-para p") %>%
+    html_text()
+
+  text = speech_page %>%
+    html_nodes("#preamble p") %>%
+    html_text() %>%
+    list()
+
+  tibble(
+    title = title, date = date, location = location,
+    abstract = abstract, text = text, url = url
+  )
+}
+```
+
+
+---
+
+class: middle
+
+# Writing functions
+
+---
+
+## What goes in / what comes out?
+
+- They take input(s) defined in the function definition
+
+```{r eval=FALSE}
+function([inputs separated by commas]){
+  # what to do with those inputs
+}
+```
+
+- By default they return the last value computed in the function
+
+```{r eval=FALSE}
+scrape_page = function(x){
+  # do bunch of stuff with the input...
+  
+  # return a tibble
+  tibble(...)
+}
+```
+
+- You can define more outputs to be returned in a list as well as nice print methods (but we won't go there for now...)
+
+---
+
+.question[
+What is going on here?
+]
+
+```{r}
+add_2 = function(x){
+  x + 2
+  1000
+}
+```
+
+```{r}
+add_2(3)
+add_2(10)
+```
+
+---
+
+## Naming functions
+
+> "There are only two hard things in Computer Science: cache invalidation and naming things." - Phil Karlton
+
+---
+
+## Naming functions
+
+- Names should be short but clearly evoke what the function does
+
+--
+- Names should be verbs, not nouns
+
+--
+- Multi-word names should be separated by underscores (`snake_case` as opposed to `camelCase`)
+
+--
+- A family of functions should be named similarly (`scrape_page()`, `scrape_speech()` OR `str_remove()`, `str_replace()` etc.)
+
+--
+- Avoid overwriting existing (especially widely used) functions
+
+```{r eval=FALSE}
+# JUST DON'T
+mean = function(x){ 
+  x * 3 
+  }
+```
+
+---
+## Wrap-up and what's next?
+
+*  Wrote an R function to compute the difference between the max and min of a numeric vector. 
+*  Validated the function's only argument
+*  Informally, we verified that it worked OK.
+
+Now, we generalize this function, learn more technical details about R functions, and set default values for some arguments.
+
+---
+
+## Recall our function:
+
+```{r}
+max_minus_min = function(x) {
+  if(!is.numeric(x)) {
+    stop('I am so sorry, but this function only works for numeric input!\n',
+         'You have provided an object of class: ', class(x)[1])
+  }
+  max(x) - min(x)
+}
+```
+
+---
+
+## Generalize our function to other quantiles
+
+The max and the min are special cases of a __quantile__. Here are other special cases you may have heard of:
+
+* median = 0.5 quantile
+* 1st quartile = 0.25 quantile
+* 3rd quartile = 0.75 quantile
+
+In [box plots][wiki-boxplot], the rectangle typically runs from the 1st--3rd quartile, with a line at the median.
+
+If $q$ is the $p$-th quantile of a set of $n$ observations, approximately $pn$ of the observations are less than $q$ and $(1 - p)n$ are greater than $q$. Yeah, you need to worry about rounding to an integer and less/greater than or equal to...
+
+Let's generalize our function to take the difference between any two quantiles,  min and max being **quantile 0** and **quantile 1** respectively.
+
+---
+
+## Get something that works, again
+
+The eventual inputs to our new function will be the data `x` and two probabilities.
+
+First, play around with the `quantile()` function. Convince yourself you know how to use it, for example, by cross-checking your results with other built-in functions.
+
+---
+
+```{r}
+library(gapminder)
+quantile(gapminder$lifeExp)
+quantile(gapminder$lifeExp, probs = 0.5)
+median(gapminder$lifeExp)
+mean(gapminder$lifeExp < median(gapminder$lifeExp))
+```
+
+---
+
+Now write a code snippet that takes the difference between two quantiles.
+
+```{r}
+probs=c(0.25,0.75)
+the_quantiles = quantile(x = gapminder$lifeExp, probs = probs)
+max(the_quantiles) - min(the_quantiles)
+the_quantiles[2] - the_quantiles[1]
+```
+
+---
+
+## Turn the working interactive code into a function, again
+
+I'll use `qdiff` as the base of our function's name. I copy the overall structure from our previous "max minus min" work but replace the guts of the function with the more general code we just developed.
+
+```{r}
+qdiff1 = function(x, probs) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x = x, probs = probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+```
+
+---
+
+```{r}
+qdiff1(gapminder$lifeExp, probs = c(0.25, 0.75))
+IQR(gapminder$lifeExp) # hey, we've reinvented IQR
+qdiff1(gapminder$lifeExp, probs = c(0, 1))
+max_minus_min(gapminder$lifeExp)
+```
+
+Again we do some informal tests against familiar results and external implementations.
+
+---
+
+## Argument names: freedom and conventions
+
+I want you to understand the importance of argument names.
+
+I can name my arguments almost anything I like. Proof:
+
+```{r}
+qdiff2 = function(zeus, hera) {
+  stopifnot(is.numeric(zeus))
+  the_quantiles = quantile(x = zeus, probs = hera)
+  max(the_quantiles) - min(the_quantiles)
+}
+qdiff2(zeus = gapminder$lifeExp, hera = 0:1)
+```
+
+While I can name my arguments after Greek gods, it's usually a bad idea. Take all opportunities to make things more self-explanatory via meaningful names.
+
+---
+
+## Argument names: freedom and conventions
+
+*  If you are going to pass along the arguments of your function to another built-in function, consider copying the argument names. 
+*  Unless you have a good reason to do your own thing (some argument names are bad!)
+*  The similarity or equivalence of the formal names of the function arguments  __accomplishes nothing__ as far as R is concerned; it is solely for the benefit of humans reading, writing, and using the code. 
+*  Which is very important!
+
+---
+
+## What a function returns
+
+By default, a function returns the result of the last line of the body. I am just letting that happen with the line `max(the_quantiles) - min(the_quantiles)`. However, there is an explicit function for this: `return()`. I could just as easily make this the last line of my function's body:
+
+```{r eval = FALSE}
+return(max(the_quantiles) - min(the_quantiles))
+```
+
+You absolutely must use `return()` if you want to return early based on some condition, i.e. before execution gets to the last line of the body. Otherwise, you can decide your own conventions about when you use `return()` and when you don't -- I find it less bug-prone to explicitly return, and this is the course style guide.
+
+---
+
+## Default values: freedom to NOT specify the arguments
+
+What happens if we call our function but neglect to specify the probabilities?
+
+```{r error = TRUE}
+qdiff1(gapminder$lifeExp)
+```
+
+Oops! At the moment, this causes a fatal error. It can be nice to provide some reasonable default values for certain arguments. In our case, it would be crazy to specify a default value for the primary input `x`, but very kind to specify a default for `probs`.
+
+---
+
+## Default values: freedom to NOT specify the arguments
+
+We started by focusing on the max and the min, so I think those make reasonable defaults. Here's how to specify that in a function definition.
+
+```{r}
+qdiff3 = function(x, probs = c(0, 1)) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x, probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+```
+
+---
+
+Again we check how the function works, in old examples and new, specifying the `probs` argument and not.
+
+```{r}
+qdiff3(gapminder$lifeExp)
+max_minus_min(gapminder$lifeExp)
+qdiff3(gapminder$lifeExp, c(0.1, 0.9))
+```
+
+<!-- --- -->
+
+<!-- ## Check the validity of arguments, again -->
+
+<!-- __Exercise:__ upgrade our argument validity checks in light of the new argument `probs`. -->
+
+<!-- Application exercise -- browse [rstudio cloud](https://rstudio.cloud/spaces/162296/project/3099211) and complete part II. -->
+
+---
+
+## Wrap-up and what's next?
+
+Here's the function we've written so far:
+
+```{r end_func2}
+qdiff3
+```
+
+---
+
+What we've accomplished:
+
+* We've generalized our first function to take a difference between arbitrary quantiles.
+* We've specified default values for the probabilities that set the quantiles.
+
+
+---
+
+
+## Resources / reading
+
+Reading:
+[R4ds Functions](https://r4ds.hadley.nz/functions.html)
+
+<!--[Advanced R][adv-r] [defensive programming][adv-r-defensive-programming]-->
+
+
+Packages for runtime assertions (the last 3 seem to be under more active development than `assertthat`):
+
+* assertthat on [CRAN][assertthat-cran] and [GitHub][assertthat-github] - *the Tidyverse option*
+* ensurer on [CRAN][ensurer-cran] and [GitHub][ensurer-github] - *general purpose, pipe-friendly*
+* assertr on [CRAN][assertr-cran] and [GitHub][assertr-github] - *explicitly data pipeline oriented*
+* assertive on [CRAN][assertive-cran] and [Bitbucket][assertive-bitbucket] - *rich set of built-in functions*
+
+
+---
+
+# Acknowledgments
+
+Adapted from Jenny Bryan's STAT545 https://stat545.com/functions-part1.html and [data science in a box](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d21-functions/u2-d21-functions.html#1)

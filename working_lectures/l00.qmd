@@ -1,0 +1,57 @@
+---
+title: "BST430 Lecture 0: Introduction"
+author: "Seong-Hwan Jun based on notes of Andrew McDavid"
+institute: "U of Rochester"
+date: today
+format: 
+  revealjs: 
+    theme: simple
+    slide-number: true
+---
+
+## Administrivia
+
+Class website:  junseonghwan.github.io/teaching/bst430_fall25/
+
+-  Instructor email: seonghwan_jun@urmc.rochester.edu
+-  For assignments, you are encouraged to use github issues (to be discussed).
+-  For private matters (grading disputes, etc), use email.
+
+## Textbooks
+
+All materials are available freely online.
+
+-  [Wickham  & Grolemund “R for Data Science (2e)”](https://r4ds.hadley.nz/): Excellent starter textbook. Be aware: there is a first edition of this book with very similar URL.
+-  [Wickham “Advanced R”](https://adv-r.hadley.nz/): for deeper understanding of the internals of R.
+-  [Holmes & Huber "Modern Statistics for Modern Biology"](https://www.huber.embl.de/msmb/): biostatistics and bioinformatics applications.
+-  [Wickham “R Packages (2e)”](https://r-pkgs.org/): developing a package for reusability.
+
+## Overview
+
+Part I: R and reproducible programming. 75% of the grades will come from Part I.
+
+-  4 Homework Assignments (40%): to be completedindependently, out-of-class.
+-  10 Labs (20%): in-class and may be completed in groups.
+-  Participation (10%): in-class quizzes and exercises.
+-  Take-home final (30%): an open book, no-collaboration-permitted final to be assigned on November 4, and will be due 24 hours later.
+
+Part II: SAS programming accounts for the remaining 25%.
+
+## Academic honesty and programming
+
+1.  You may generally discuss problems with each other.
+2.  You may generally use google, but cite your sources.
+3.  Write your own solutions and *own code*.  **This generally means no copy-paste and no AI generated solutions!**  Refer to the syllabus on the course website for complete details.
+4.  Exception: labs, which will be marked as such, are collaborative within each group.
+5. No discussion allowed for take-home final.
+
+## Code of conduct
+
+Respect each other: [Student handbook](http://www.rochester.edu/college/cscm/assets/pdf/standards_studentconduct.pdf).
+
+[The UR harassment and discrimination policy](https://www.rochester.edu/policies/policy/discrimination-harassment/).
+
+## Course outline
+
+See [course outline](http://localhost:4000/teaching/bst430_fall25/Syllabus.pdf) for more details.
+

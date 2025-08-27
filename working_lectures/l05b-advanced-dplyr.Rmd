@@ -1,0 +1,377 @@
+---
+title: "BST430  Lecture 05-B"
+subtitle: "dplyr ii"
+author: "Tanzy Love, based on the course by Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-09-12 (updated: `r Sys.Date()` by TL)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+class: middle
+
+```{r child = "setup.Rmd"}
+```
+```{r, include = FALSE}
+library(tidyverse)
+```
+
+.hand[# A lil' bit more dplyr]
+
+---
+
+## Agenda
+
+* grouping by multiple variables
+* empty groups and summarizing
+* ungrouping
+* grouped mutates and filters
+* special selection operators
+* repeating operations on multiple columns with `across`
+<!-- * row names and row numbers-->
+
+Here's the [R code in this lecture](l05/l05b-advanced-dplyr.R)
+---
+class: code70
+
+## grouping
+
+As we saw in lecture 3 by adding `group_by()` to a pipeline, we stratify by a categorical variable when we `summarize()`:
+.pull-left[
+**Grand margin**
+```{r, warning=FALSE}
+library(nycflights13)
+ontime = flights %>% 
+  mutate(ontime = arr_delay <= 0)  
+ontime %>% 
+  summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100)
+```
+]
+
+.pull-right[
+**stratified by carrier**
+```{r}
+ontime %>% group_by(carrier) %>% 
+  summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100) #<<
+```
+]
+
+---
+
+## `group_by()` multiple variables
+
+It's easy to group by multiple variables:
+
+```r
+flights %>% group_by(<var_1>, <var_2>, ..., <var_n>) %>%
+   summarize()
+```
+
+---
+
+## `group_by()` caveat
+
+Be aware that this only returns the combinations of var_1, var_2, ... that exist in the data. This can lead to erroneous calculations if you are joining tables downstream. To get the Cartesian product:
+
+1.  Convert `var1`, `var2`, ... to factors with `factor`.<sup>1</sup>
+2.  Set  `group_by(..., .drop = FALSE)`.
+
+.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail next week.]
+
+<!-- [2] If you are a masochist. -->
+
+---
+
+## Nonsense from dropping
+
+.panelset[
+
+.panel[.panel-name[Code]
+```{r hourly-departures-drop, fig.show='hide'}
+departures = flights %>% group_by(carrier, hour) %>% summarize(n_departures = n())
+ggplot(departures, aes(x = hour, y = n_departures)) + 
+  geom_line() + 
+  facet_wrap(~carrier, scales = 'free_y') #<<
+```
+]
+
+.panel[.panel-name[Plot]
+```{r ref.label="hourly-departures-drop", echo = FALSE, out.width="75%"}
+```
+]
+]
+
+---
+
+## Keep (wacky factors)
+
+.panelset[
+
+.panel[.panel-name[Code]
+```{r hourly-departures-keep, fig.show='hide'}
+departures2 = flights %>% 
+  mutate(carrier = factor(carrier), hour = factor(hour)) %>% #<<
+  group_by(carrier, hour, .drop = FALSE) %>% #<<
+  summarize(n_departures = n())
+plt = ggplot(departures2, aes(x = hour, y = n_departures, group = carrier)) + 
+  geom_line() + 
+  facet_wrap(~carrier, scales = 'free_y')
+plt
+```
+]
+
+.panel[.panel-name[Plot]
+```{r ref.label="hourly-departures-keep", echo = FALSE, out.width="75%"}
+```
+]
+]
+
+---
+
+## Keep (preserve original)
+
+.panelset[
+
+.panel[.panel-name[Code]
+```{r hourly-departures-keep-hour, fig.show='hide', message = TRUE}
+departures3 = flights %>% 
+  mutate(carrier = factor(carrier), hourf = factor(hour)) %>%
+  group_by(carrier, hourf, .drop = FALSE) %>%
+  summarize(n_departures = n()) %>%
+  mutate(hour = as.numeric(as.character(hourf))) #<<
+(plt %+% departures3) + aes(x = hour) #<<
+```
+]
+
+.panel[.panel-name[Plot]
+```{r ref.label="hourly-departures-keep-hour", echo = FALSE, out.width="75%"}
+```
+]
+]
+
+---
+
+## grouping is contagious
+
+Note the message:
+
+>  `summarise()` has grouped output by 'carrier'. You can override using the `.groups` argument.
+
+This is telling us that by default, the output will be grouped if we use it in another pipeline.
+
+To save screen real estate, I'm going to turn off this message going forward:
+```{r}
+options(dplyr.summarise.inform = FALSE)
+```
+
+In general you should set `.groups` explicitly.
+
+---
+
+## `ungroup()` to remove grouping variables.
+
+.pull-left[
+Default
+```{r}
+ontime_drop = ontime %>% group_by(carrier, dest) %>% summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100)
+ontime_drop %>% summarize(n_dest = n_distinct(dest))
+```
+]
+
+.pull-right[
+ungrouped
+```{r}
+ontime_drop %>% ungroup() %>% #<<
+  summarize(n_dest = n_distinct(dest))
+```
+]
+---
+
+## `group_by() filter()`
+
+We can combine group_by with filter, mutate or arrange to evaluate these verbs on each group.
+
+```{r}
+ontime_1500 = ontime %>% group_by(dest) %>% filter(n() > 1500) %>%
+  mutate(n_flights_dest = n(), .after = 1)
+
+ontime_1500 %>% arrange(n_flights_dest)
+
+```
+
+---
+
+## Carrier performance by destination
+
+```{r, fig.width = 10, fig.asp=.5}
+ontime_drop = ontime_1500 %>% group_by(dest, carrier) %>%  
+  summarize(ontime_pct = mean(ontime, na.rm  = TRUE)*100)
+ggplot(ontime_drop, aes(y = ontime_pct, x = dest)) + geom_point() + coord_flip() + theme_minimal(base_size = 8)
+```
+
+.question[What's with the carriers with 0% or 100% ontime percentages for a destination?]
+
+---
+
+## The "law" of small numbers
+
+```{r}
+ontime_drop = ontime_1500 %>% group_by(dest, carrier) %>%  
+  summarize(ontime_pct = mean(ontime, na.rm  = TRUE)*100,
+            n_departed = sum(!is.na(ontime)))
+
+ggplot(ontime_drop, aes(y = ontime_pct, x = dest, color = n_departed<10)) + geom_point() + coord_flip() + theme_minimal(base_size = 8)
+```
+
+.question[What are some statistical fixes to this issue?]
+---
+
+## Without small numbers
+
+```{r}
+ontime_drop_10 = filter(ontime_drop, n_departed >= 10)
+ggplot(ontime_drop_10, aes(y = ontime_pct, x = dest)) + geom_boxplot() + 
+  coord_flip()  + theme_minimal(base_size = 8)
+```
+
+Better...but it's hard to see the rank order of routes.
+
+---
+
+## A sensible plot order
+
+```{r}
+ ontime_drop_10 = ontime_drop_10 %>% ungroup() %>% 
+  mutate(dest = forcats::fct_reorder(dest, ontime_pct)) #<<
+ggplot(ontime_drop_10, aes(x = dest, y = ontime_pct)) + geom_boxplot() + 
+  coord_flip()  + theme_minimal(base_size = 8)
+```
+
+We'll discuss the `fct_reorder` business in greater detail next week.
+
+---
+
+## `select()` 
+<!-- 201 -->
+
+`select()`, `pivot_wider()`, `pivot_longer()`, and friends use [tidy-select](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html), which is a meta-language to select columns from a data frame. There are several helper functions you can use within `select()`:
+
+-   `starts_with("abc")`: matches names that begin with "abc",
+-   `ends_with("xyz")`: matches names that end with "xyz",
+-   `contains("ijk")`: matches names that contain "ijk",
+-   `num_range("x", 1:3)`: matches `x1`, `x2` and `x3`,
+-   `last_col(offset = 0)`: last column, minus offset,
+-   `where(<function>)`: columns where `<function>` returns `TRUE`,
+-   `:` range, `c` concatenate, `!` negate, `&` intersect
+-   ...and a few others.
+---
+
+## select delay columns
+
+```{r}
+flights %>% select(ends_with('delay'))
+```
+---
+
+## everything except columns containing "time"
+
+```{r}
+flights %>% select(!contains('time'))
+```
+---
+
+## character columns
+
+```{r}
+flights %>% select(where(is.character))
+```
+
+---
+
+## Columns with no missing values
+
+```{r}
+flights %>% select(where(~!any(is.na(.x))))
+```
+The above uses a tidyverse way to define an **anonymous function** and is equivalent to 
+```
+none_na = function(x) !any(is.na(x))
+```
+
+---
+class: middle
+
+.hand[# Repeating an operation with `across`]
+
+---
+
+## `across()`
+
+If you need to repeat the same operation on multiple columns, you can avoid many keystrokes by using across.
+
+It's syntax is a bit idiomatic, but in general, it looks something like
+```r
+verb(across(.cols = <tidy selection>, 
+            .funs = list(<fun1>, <fun2>, ...)))
+```
+where `verb` is `summarize`,  `mutate`, and a few others where unquoted columns are provided to a transformation.
+
+---
+
+## NYC AirBNB data
+
+```{r, include = FALSE}
+nycbnb = read_csv("https://urmc-bst.github.io/bst430-fall2021-site/hw_lab_instruction/hw-01-airbnb/data/nylistings.csv")
+```
+
+```{r}
+nycbnb
+```
+
+---
+
+## Nights
+
+.panelset[
+
+.panel[.panel-name[Code]
+```{r nights-plot, fig.show='hide'}
+availability = nycbnb %>% group_by(neighborhood) %>% 
+  summarize(across(c(maximum_nights, minimum_nights, availability_90), median)) #<<
+ggplot(availability, 
+       aes(x = neighborhood, 
+           ymin = minimum_nights,  
+           y = availability_90, 
+           ymax = maximum_nights)) + 
+  geom_pointrange() + coord_flip() + theme_minimal() +  
+  labs(x = NULL, y = 'Availability (minimum, 90 day, maximum)')
+```
+]
+
+.panel[.panel-name[Plot]
+```{r, ref.label='nights-plot',  echo = FALSE, out.width="75%"}
+```
+]
+]
+---
+
+## Transform by variable type
+
+This can be very powerful:
+```{r}
+median_mad = nycbnb %>% group_by(neighborhood) %>% 
+  summarise(across(where(is.numeric), #<<
+                   list(median = median, mad = mad))) #<<
+glimpse(median_mad)
+```

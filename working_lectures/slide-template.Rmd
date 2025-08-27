@@ -1,0 +1,26 @@
+---
+title: "BST430  Lecture XXX"
+author: "Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-XX-XX (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+  
+```{r child = "setup.Rmd"}
+```
+
+  
+# Slide 1

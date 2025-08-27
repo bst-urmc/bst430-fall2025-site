@@ -1,0 +1,667 @@
+---
+title: "BST430  Lecture 11-A"
+subtitle: "Functions (ii) and Iteration"
+author: "Tanzy Love, based on the course by Andrew McDavid"
+institute: "U of Rochester"
+date: "2021-10-23 (updated: `r Sys.Date()` by TL)"
+output:
+  xaringan::moon_reader:
+    css:
+      - default
+      - css/lexis.css
+      - css/lexis-fonts.css
+    lib_dir: libs
+    seal: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ['ur-title', 'center', 'middle']
+      ratio: "3:2"
+---
+  
+```{r child = "setup.Rmd"}
+```
+
+```{r, include = FALSE}
+library(tidyverse)
+library(gapminder)
+```
+
+
+<!--Original content: https://stat545.com/block011_write-your-own-function-03.html-->
+
+## Where were we? Where are we going?
+
+
+In this part, we tackle `NA`s, the special argument `...` and formal testing.
+Let's keep our previous function around as a baseline.
+
+```{r}
+qdiff3 = function(x, probs = c(0, 1)) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x, probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+```
+
+Here's the [R code in this lecture](l10/functions-ii.R)
+
+---
+class: code70
+
+## Be proactive about `NA`s
+
+The Gapminder data is a fairly kind data set. In real life, missing data will make your life a living hell. Let's see how `quantile()` handles `NA`s:
+
+```{r error = TRUE}
+z = gapminder$lifeExp
+z[3] = NA
+quantile(z)
+quantile(z, na.rm = TRUE)
+```
+
+So `quantile()` simply will not operate in the presence of `NA`s unless `na.rm = TRUE`. How shall we modify our function?
+
+---
+
+If we wanted to hardwire `na.rm = TRUE`, we could. Focus on our call to `quantile()` inside our function definition.
+
+```{r}
+qdiff4 = function(x, probs = c(0, 1)) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x, probs, na.rm = TRUE)
+  max(the_quantiles) - min(the_quantiles)
+}
+qdiff4(gapminder$lifeExp)
+qdiff4(z)
+```
+
+This works but it is dangerous to invert the default behavior of a well-known built-in function and to provide the user with no way to override this.
+
+---
+
+We could add an `na.rm =` argument to our own function. We might even enforce our preferred default -- but at least we're giving the user a way to control the behavior around `NA`s.
+
+```{r error = TRUE}
+qdiff5 = function(x, probs = c(0, 1), na.rm = TRUE) {
+  stopifnot(is.numeric(x))
+  the_quantiles = quantile(x, probs, na.rm = na.rm)
+  max(the_quantiles) - min(the_quantiles)
+}
+qdiff5(gapminder$lifeExp)
+qdiff5(z)
+qdiff5(z, na.rm = FALSE)
+```
+
+---
+
+###  You could have lived a long and happy life without knowing there are [at least 9 different algorithms][rdocs-quantile] for computing quantiles. 
+
+The practical significance of `quatile(x, type =)` in the Gapminder data is virtually nonexistent. But thanks to [@wrathematics][twitter-wrathematics], here's a small example where we can detect a difference due to `type`.
+
+```{r}
+set.seed(1234)
+z = rnorm(10)
+quantile(z, type = 1)
+quantile(z, type = 4)
+```
+
+---
+
+If a quantile is not unambiguously equal to an observed data point, you must somehow average two data points. You can weight this average different ways, depending on the rest of the data, and `type =` controls this.
+
+```{r}
+sort(z)
+quantile(z, type = 1)
+quantile(z, type = 4)
+```
+---
+
+## The useful but mysterious `...` argument
+
+But let's say we want flexibility to specify how the quantiles are computed, but don't want to clutter the function's interface with this. This calls for the special `...`  ("ellipsis").
+
+```{r}
+qdiff6 = function(x, probs = c(0, 1), na.rm = TRUE, ...) {
+  the_quantiles = quantile(x = x, probs = probs, na.rm = na.rm, ...)
+  max(the_quantiles) - min(the_quantiles)
+}
+```
+
+---
+
+Now we can call our function, requesting that quantiles be computed in different ways.
+
+```{r}
+qdiff6(z, probs = c(0.25, 0.75), type = 1)
+qdiff6(z, probs = c(0.25, 0.75), type = 4)
+```
+
+Marvel at the fact that we have passed `type = 1` through to `quantile()` *even though it was not a formal argument of our own function*.
+
+---
+
+### Notes on `...`
+
+In short, `...` is a catch-all, passing arbitrary arguments down to another function. You will  encounter `...` in many built-in functions: see [`c()`][rdocs-c] or [`list()`][rdocs-list].
+
+There are also downsides to `...`:
+-  In a package, it's harder to create informative documentation for your user. 
+-  The quiet, absorbent properties of `...` mean it can  silently swallow other named arguments, when the user has a typo in the name.
+-  The [ellipsis package](https://ellipsis.r-lib.org) provides tools that help package developers use `...` more safely. 
+
+
+---
+
+### Functional scope
+
+In R and in many languages, variables defined inside the function are local (private) to the function.
+
+```{r}
+a = 10
+my_function = function(a, x){
+  a = 5
+  a*x
+}
+```
+
+
+```{r}
+my_function(1, 2)
+print(a)
+```
+
+---
+
+```{r}
+my_function(a, 2)
+print(a)
+```
+
+```{r}
+a = 3
+my_function(a, 2)
+print(a)
+```
+
+---
+
+### Unbound variables are searched for in the enclosing environments
+
+However, R uses something known as **lexical scope** to resolve conflicting variable names, and functions define what is technically called an enclosure.
+<!-- <sup>1</sup> -->
+
+```{r}
+a = -5
+my_function2 = function(x){
+  a*x
+}
+
+my_function2(2)
+
+```
+
+R looks at the enclosing environments of a function (what was being executed when it was defined) to resolve a binding. 
+
+<!-- .footnote[[1] Here, and its S3 object orientation system, R often seems rather bizarre.  It will make more sense if you consume your preferred toxicant, and read up about LISP in the 1980s. Perhaps.] -->
+
+---
+
+### This can lead to very frustating errors
+
+```{r}
+data = dplyr::starwars
+
+process_data = function(dta){
+  region_summary = filter(dta, !is.na(result)) %>% 
+    group_by(region) %>%
+    summarize(mean = mean(result))
+  # do some other stuff
+  left_join(data, region_summary) #Uhoh!  This should have been dta! #<<
+}
+```
+
+You may lose an entire day to this.
+
+---
+
+### Current environment is preferred.
+
+```{r}
+a = -5
+my_function3 = function(x){
+  a = 1e9
+  a*x
+}
+my_function3(2)
+print(a)
+```
+
+
+---
+
+### Functions are first-class citizens in R
+
+A function is another type of object -- this means you can pass a function as an argument to a function!
+
+```{r}
+quartic_eq = function(x) 3*x^4 - 10*x^3 - 20*x^2 + 10*x - 5
+class(quartic_eq)
+body(quartic_eq)
+formals(quartic_eq); args(quartic_eq)
+```
+
+You can display a function's source by typing its name into the Console (without parentheses or arguments).
+---
+
+```{r}
+curve(quartic_eq, from = -5, to = 5)
+optimize(quartic_eq, interval = c(-5, 5))
+```
+
+
+---
+class: middle
+
+.hand[Iteration]
+
+---
+
+## Flow control: iteration
+
+It's a testament to the tidyverse that we have made it this far into the semester using purely `group_by` or vectorization<sup>1</sup> to accomplish our iteration -- applying an function to varying subsets of "the data."  But sometimes you just gotta loop.
+
+.footnote[[1] If you don't know what that means, I have done my job `r emo::ji("smile_cat")`.]
+
+---
+
+.pull-left[
+### Ways to explicitly iterate
+
+*  `for`- iterate a **code block** over a vector
+*  `while` - iterate a **code block** until a boolean is TRUE
+]
+.pull-right[
+### Ways to implicitly iterate
+
+*  `lapply` - iterate a **function** over a vector or list
+*  `purrr` - iterate a **function** over a vector, but carefully
+*  `apply` - iterate a **function** over an array
+*  vectorized functions
+*  `group_by`
+*  recursion
+]
+
+
+---
+
+### `for()`
+
+A `for()` loop increments a **counter** variable along a vector. It repeatedly runs a code block, called the  **body** of the loop, with the counter set at its current value, until it runs through the vector
+
+```
+for( <COUNTER> in <VECTOR> ){
+  <BODY>
+}
+```
+where `<BODY>` contains a sequence of R expressions, as well as the keywords `break` or `next`.
+
+---
+
+```{r}
+n = 5
+log.vec = NA
+for (i in seq_len(n)) {
+  log.vec[i] = log(i)
+}
+log.vec
+```
+
+Here `i` is the counter and the vector we are iterating over is `1:n`. The body is the code in between the braces.
+
+---
+
+### `1:n` is my own personal devil
+
+Note that rather than using `1:n`, which when `n = 0` equals `1 0`  we use `seq_len`, which protects us when the index isn't guaranteed to be positive:
+
+.pull-left[
+```{r}
+x = sort(runif(5))
+n_negative = sum(x<0)
+for (i in 1:n_negative){
+  print(x[i])
+}
+cat("Exited loop.")
+```
+]
+.pull-right[
+```{r}
+x = sort(runif(5))
+n_negative = sum(x<0)
+for (i in seq_len(n_negative)){
+  print(x[i])
+}
+cat("Exited loop.")
+```
+]
+
+Also see `seq_along`.
+
+---
+class: code70
+
+### Breaking from the loop
+
+We can **break** out of a `for()` loop early (before the counter has been iterated over the whole vector), using `break`
+
+```{r}
+n = 5
+log.vec = NA
+for (i in 1:n) {
+  if (log(i) > 2) {
+    cat("I'm outta here. I don't like numbers bigger than 2\n")
+    break
+  }
+  log.vec[i] = log(i)
+}
+log.vec
+```
+
+---
+class: code70
+
+### miss some loops
+
+`next` skips the remainder of the body of a `for()` loop, returning to the top of the body and incrementing the counter. 
+
+```{r}
+n = 5
+log.vec = NULL
+for (i in 1:n) {
+  if (log(i) > 1 & log(i) <= 1.5) {
+    cat("I want to skip iteration",i,"\n")
+    next
+  }
+  log.vec[i] = log(i)
+}
+log.vec
+```
+
+---
+class: code70
+
+### don't add some loops
+
+when `next` skips the counter still grows, but not necessarily the results. 
+
+```{r}
+n = 5
+log.vec = NULL
+for (i in 1:n) {
+  if (log(i) > 1 & log(i) <= 1.5) {
+    cat("I want to skip iteration",i,"\n")
+    next
+  }
+  log.vec = c(log.vec, log(i) )
+}
+log.vec
+```
+
+---
+
+### Variations on standard `for()` loops
+
+Many different variations on standard `for()` are possible. Two common ones:
+
+- Nonnumeric counters: counter variable always gets iterated over a vector, but it doesn't have to be numeric
+- Nested loops: body of the `for()` loop can contain another `for()` loop (or several others)
+
+```{r}
+for (str in c("Tatoosh", "Infimum", "McGrindleCat")) {
+  print(glue::glue("Free (OBO): {str}, one gently used cat."))
+}
+```
+
+<!-- .footnote[[1] Just kidding, Tatoosh, we love you.] -->
+
+---
+
+### Nested `for()` loops --  working with pairs
+
+```{r}
+for (i in seq_len(4)) {
+  for (j in i:4) {
+    cat(paste(j,""))
+  }
+  cat("\n")
+}
+```
+
+---
+
+### `while()`
+
+A `while()` loop repeatedly runs a code block, again called the **body**, until some condition is no longer true.
+
+---
+
+### Roll your own linear regression
+
+```{r}
+X = filter(starwars, !is.na(height) & !is.na(mass)) %>% pull(mass) %>% scale
+X = cbind(1, X)
+y = filter(starwars, !is.na(height) & !is.na(mass)) %>% pull(height)
+beta = matrix(0, nrow = ncol(X))
+beta_new = matrix(1, nrow = ncol(X))
+epsilon = 1e-4
+i = 0
+while (mean((beta - beta_new)^2) > epsilon) {
+ print(glue::glue("At i = {i}, beta = ({beta[1]}, {beta[2]})"))
+ beta = beta_new
+ beta_new = beta + 0.02 * crossprod(X, y -  X%*%beta)
+ i = i + 1
+}
+```
+
+---
+
+### Compare to `lm`
+
+```{r}
+lm(height ~ scale(mass), data = dplyr::starwars)
+```
+
+---
+
+### `for()` versus `while()`
+
+- `for()` is better when the number of times to repeat (values to iterate over) is clear in advance
+
+- `while()` is better when you can recognize when to stop once you're there, even if you can't guess it to begin with
+
+- `while()` is more general, in that every `for()` could be replaced with a `while()` (but not vice versa)
+-  Can also use `while(TRUE)`. Repeat the body indefinitely, until something causes the flow to break (like `break`!).  Useful if you don't want to check the termination condition until you've run `<BODY>` at least once.
+
+All of these require bookkeeping about the output (its length, how its indices map to the input data, etc).  When possible use implicit iteration, which handles the bookkeeping for you.
+
+---
+
+## Implicit iteration
+
+`lapply`, `purrr::map_*`, and `apply` all iterate a function over slices of data.  `lapply` and `purrr::map_*` work over vectors (both atomic and list), while `apply` works over matrices / arrays.
+
+Sometimes, you might combine `lapply` and friends with `split`, which chops a vector or data frame into a list of vectors by some discrete factor.  However, you can often get the desired effect with a `group_by` + `summarize`.
+
+---
+
+### lapply
+
+.pull-left[
+```{r}
+weird_list = list(rnorm(5), stringr::fruit, TRUE, starwars)
+lapply(weird_list, length)
+```
+]
+.pull-right[
+```{r}
+lapply(weird_list, class)
+```
+]
+
+---
+
+### purrr::map_dfr
+
+This applies a function, which must return a data frame, to each element of a list, and binds the rows together.
+I reach for this often.
+
+```{r}
+purrr::map_dfr(weird_list, function(x){
+  tibble(length = length(x), class = class(x)[1])
+}, .id = 'item')
+```
+
+This uses an **anonymous** function -- defined but not named.  
+
+<!-- In purrr, you can also create anonymous functions using [`~ .x`](https://purrr.tidyverse.org/articles/other-langs.html) syntax to save a few keystrokes.  I mostly prefer to be explicit, because it makes it easier to debug. -->
+
+---
+
+### apply - for matricies and arrays
+
+```{r}
+(A = matrix(1:18, nrow = 3))
+count_odd = function(x) sum(x %% 2 > 0)
+apply(A, 1, count_odd)
+apply(A, 2, count_odd)
+```
+
+
+---
+
+### Recursion
+
+Recursion and (tail) iteration, in theory and in some languages, are equivalent<sup>1</sup>.  R is a bit fussy about recursion, however, and you can overflow the stack if you aren't careful.  It's also less performant.
+
+The Collatz function is the recursion
+$$
+f(n) = 
+\begin{cases}
+\text{stop} & n = 1 \\
+n/2 & n \equiv 0 (\mod 2), \\
+3n + 1 & n \equiv 1 (\mod 2).
+\end{cases}
+$$
+and $a_i = f(a_{i-1})$.
+
+
+.footnote[[1] Though recursion makes my brain hurt more.]
+
+---
+
+### Collatz recursion
+
+```{r}
+collatz = function(n){
+  cat(n)
+  if(n == 1) return(invisible(1))
+  cat("->")
+  if(n %% 2 == 1){ # odd
+    return(collatz(3*n + 1))
+  } else{ # even
+    return(collatz(n /2))
+  }
+}
+```
+
+
+---
+
+```{r}
+collatz(10)
+```
+
+```{r}
+collatz(101)
+```
+
+```{r}
+collatz(837799)
+```
+
+
+---
+
+class: middle
+
+.hand[Formal unit tests]
+
+---
+
+## Use testthat for formal unit tests
+
+Until now, we've relied on informal tests of our evolving function. 
+If you are going to use a function a lot, or you keep finding bugs using informal tests, you'll save a lot of time an effort with formal unit tests.  My rules of thumb:
+*  Once I have found the second bug, it's time to write the unit tests.  It will be much quicker to fix the second bug, and it will provide me with assurance that I might actually find the third bug.
+*  No bug exists until you have the failing unit test isolating it.
+
+The [testthat][testthat-web] package provides excellent facilities for this, with a distinct emphasis on automated unit testing of entire packages. However, it works even with our one measly function.
+
+---
+
+We will construct a test with `test_that()` and, within it, we put one or more *expectations* that check actual against expected results. You can simply your informal, interactive tests into formal unit tests. Here are some examples of tests and indicative expectations.
+
+```{r eval = TRUE, warning = FALSE, error = TRUE}
+library(testthat)
+test_that('invalid args are detected', {
+  expect_error(qdiff6("eggplants are purple"))
+  expect_error(qdiff6(iris))
+})
+test_that('NA handling works', {
+  expect_error(qdiff6(c(1:5, NA), na.rm = FALSE))
+  expect_equal(qdiff6(c(1:5, NA)), 4)
+})
+```
+
+No news is good news!
+
+---
+
+ Let's see what test failure would look like. Let's revert to a version of our function that does no `NA` handling, then test for proper `NA` handling. We can watch it fail.
+
+```{r end_func3, eval = TRUE, error = TRUE}
+qdiff_no_NA = function(x, probs = c(0, 1)) {
+  the_quantiles = quantile(x = x, probs = probs)
+  max(the_quantiles) - min(the_quantiles)
+}
+test_that('NA handling works', {
+  expect_that(qdiff_no_NA(c(1:5, NA)), equals(4))
+})
+```
+
+---
+
+## Resources
+
+Hadley Wickham's book [Advanced R][adv-r] [-@wickham2015a]:
+
+* Section on [function arguments][adv-r-fxn-args]
+* Section on [return values][adv-r-return-values]
+* Tidyverse principles guide provides further guidance on the design of functions that take `...` in [Data, dots, details](https://principles.tidyverse.org/dots-position.html).
+
+---
+
+# Acknowledgments
+
+Adapted from Jenny Bryan's STAT545:
+
+https://stat545.com/functions-part2.html 
+https://stat545.com/functions-part3.html
+
+And from Ryan Tibshirani's Statistics 36-350:
+https://www.stat.cmu.edu/~ryantibs/statcomp/lectures/iteration.html
+
+```{r links, child="l10/links.md"}
+```
