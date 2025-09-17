@@ -3,7 +3,7 @@
   <head>
     <title>BST430 Lecture 05-B</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
+    <meta name="author" content="Seong-Hwan Jun, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
@@ -24,13 +24,13 @@ class: ur-title, center, middle, title-slide
 ## dplyr ii
 ]
 .author[
-### Tanzy Love, based on the course by Andrew McDavid
+### Seong-Hwan Jun, based on the course by Andrew McDavid
 ]
 .institute[
 ### U of Rochester
 ]
 .date[
-### 2021-09-12 (updated: 2025-08-18 by TL)
+### 2021-09-12 (updated: 2025-09-09 by TL)
 ]
 
 ---
@@ -56,13 +56,13 @@ class: middle
 * repeating operations on multiple columns with `across`
 &lt;!-- * row names and row numbers--&gt;
 
-Here's the [R code in this lecture](l05/l05b-advanced-dplyr.R)
+Here's the [R code in this lecture](https://github.com/seonghwanjun/bst430-fall2025-l05/blob/main/advanced-dplyr.R)
 ---
 class: code70
 
 ## grouping
 
-As we saw in lecture 3 by adding `group_by()` to a pipeline, we stratify by a categorical variable when we `summarize()`:
+By adding `group_by()` to a pipeline, we stratify by a categorical variable when we `summarize()`:
 .pull-left[
 **Grand margin**
 
@@ -122,7 +122,7 @@ Be aware that this only returns the combinations of var_1, var_2, ... that exist
 1.  Convert `var1`, `var2`, ... to factors with `factor`.&lt;sup&gt;1&lt;/sup&gt;
 2.  Set  `group_by(..., .drop = FALSE)`.
 
-.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail next week.]
+.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail.]
 
 &lt;!-- [2] If you are a masochist. --&gt;
 
@@ -348,7 +348,7 @@ ggplot(ontime_drop_10, aes(x = dest, y = ontime_pct)) + geom_boxplot() +
 
 &lt;img src="l05b-advanced-dplyr_files/figure-html/unnamed-chunk-15-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
-We'll discuss the `fct_reorder` business in greater detail next week.
+We'll discuss the `fct_reorder` business in greater detail in the coming weeks.
 
 ---
 
@@ -462,7 +462,7 @@ class: middle
 
 If you need to repeat the same operation on multiple columns, you can avoid many keystrokes by using across.
 
-It's syntax is a bit idiomatic, but in general, it looks something like
+The syntax is a bit idiomatic, but in general, it looks something like
 ```r
 verb(across(.cols = &lt;tidy selection&gt;, 
             .funs = list(&lt;fun1&gt;, &lt;fun2&gt;, ...)))

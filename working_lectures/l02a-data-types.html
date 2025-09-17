@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>BST430 Lecture 2</title>
+    <title>BST430 Lecture 02-A</title>
     <meta charset="utf-8" />
     <meta name="author" content="Seong-Hwan Jun, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -27,7 +27,7 @@
 class: ur-title, center, middle, title-slide
 
 .title[
-# BST430 Lecture 2
+# BST430 Lecture 02-A
 ]
 .subtitle[
 ## Data types in R
@@ -39,7 +39,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-09-01 (updated: 2025-08-18)
+### 2021-09-01 (updated: 2025-08-29)
 ]
 
 ---
@@ -82,10 +82,6 @@ cat_lovers
 ## # ℹ 56 more rows
 ```
 
-Here's the [R code in this lecture](l02/data-types-i.R)
-
-Here's the [datafile](data/cat-lovers.csv)
-*You have to have a good filepath to the dataset*
 ---
 
 ## Oh why won't you work?!
@@ -952,7 +948,7 @@ typeof(NA)
 ## [1] "logical"
 ```
 
-.footnote[There are also ```NA_integer_```, ```NA_real_``` and ```NA_character_```, occasionally needed to avoid warnings or errors about unplanned coercions.]
+.footnote[There are also `NA\_integer\_`, `NA\_real\_` and `NA\_character\_`, occasionally needed to avoid warnings or errors about unplanned coercions.]
 ---
 
 ## Mental model for `NA`s
@@ -1347,16 +1343,6 @@ ggplot(cat_lovers, mapping = aes(x = handedness)) +
 
 &lt;img src="l02a-data-types_files/figure-html/unnamed-chunk-63-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
----
-
-## Recap
-
-- Be careful about data types / classes
-    + Sometimes `R` makes silly assumptions about your data class 
-        + Think about your data in context
-    + If a plot/output is not behaving the way you expect, first
-    investigate the data class with `str`
-        
 ---
 
 # Acknowledgments

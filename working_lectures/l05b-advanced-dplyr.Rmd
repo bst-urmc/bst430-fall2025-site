@@ -1,7 +1,7 @@
 ---
 title: "BST430  Lecture 05-B"
 subtitle: "dplyr ii"
-author: "Tanzy Love, based on the course by Andrew McDavid"
+author: "Seong-Hwan Jun, based on the course by Andrew McDavid"
 institute: "U of Rochester"
 date: "2021-09-12 (updated: `r Sys.Date()` by TL)"
 output:
@@ -41,13 +41,13 @@ library(tidyverse)
 * repeating operations on multiple columns with `across`
 <!-- * row names and row numbers-->
 
-Here's the [R code in this lecture](l05/l05b-advanced-dplyr.R)
+Here's the [R code in this lecture](https://github.com/seonghwanjun/bst430-fall2025-l05/blob/main/advanced-dplyr.R)
 ---
 class: code70
 
 ## grouping
 
-As we saw in lecture 3 by adding `group_by()` to a pipeline, we stratify by a categorical variable when we `summarize()`:
+By adding `group_by()` to a pipeline, we stratify by a categorical variable when we `summarize()`:
 .pull-left[
 **Grand margin**
 ```{r, warning=FALSE}
@@ -87,7 +87,7 @@ Be aware that this only returns the combinations of var_1, var_2, ... that exist
 1.  Convert `var1`, `var2`, ... to factors with `factor`.<sup>1</sup>
 2.  Set  `group_by(..., .drop = FALSE)`.
 
-.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail next week.]
+.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail.]
 
 <!-- [2] If you are a masochist. -->
 
@@ -258,7 +258,7 @@ ggplot(ontime_drop_10, aes(x = dest, y = ontime_pct)) + geom_boxplot() +
   coord_flip()  + theme_minimal(base_size = 8)
 ```
 
-We'll discuss the `fct_reorder` business in greater detail next week.
+We'll discuss the `fct_reorder` business in greater detail in the coming weeks.
 
 ---
 
@@ -320,7 +320,7 @@ class: middle
 
 If you need to repeat the same operation on multiple columns, you can avoid many keystrokes by using across.
 
-It's syntax is a bit idiomatic, but in general, it looks something like
+The syntax is a bit idiomatic, but in general, it looks something like
 ```r
 verb(across(.cols = <tidy selection>, 
             .funs = list(<fun1>, <fun2>, ...)))

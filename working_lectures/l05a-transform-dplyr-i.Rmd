@@ -1,7 +1,7 @@
 ---
-title: "BST430 Lecture 05-A"
+title: "BST430 Lecture 05"
 subtitle: "Data transformation with dplyr"
-author: "Tanzy Love, based on the course by Andrew McDavid"
+author: "Seong-Hwan Jun, based on the course by Andrew McDavid"
 institute: "U of Rochester"
 date: "2021-08-31 (updated: `r Sys.Date()` by TL)"
 output:
@@ -67,10 +67,12 @@ dev.off <- function(){
 
 ## Announcements
 
-- HW1 assigned, due next Monday 5pm.
-- Reminder: lab 1 due Wednesday 5pm. 
-- TJ will have office hours Friday, in the TA office.
-- Send me an email if you need help.
+- HW1 assigned, due next Wednesday 5pm.
+- Reminder: lab 2 due at 5pm. 
+- TA office hours are posted on class website.
+  + Hanwen: Thursday 1 - 2 pm.
+  + Abby: 12:15 - 1:15 pm.
+- I don't have office hour but email me if you need to talk to me.
 
 ---
 
@@ -79,7 +81,13 @@ dev.off <- function(){
 - The pipe
 - Manipulating data frames.
 - Calculating summary statistics.
-- Using the basic functions of dplyr
+- Using the basic functions of `dplyr`
+- grouping by multiple variables
+- empty groups and summarizing
+- ungrouping
+- grouped mutates and filters
+- special selection operators
+- repeating operations on multiple columns with `across`
 
 ---
 class: center, middle
@@ -141,6 +149,25 @@ starwars %>%
   lm(mass ~ height, data = .)
 ```
 
+---
+
+## Useful tips
+
+- Shortcut for piping: cmd/ctrl + shift + M.
+- Since R 4.1, there is also a native pipe operator `|>` in base R. Enable this `Tools-> Global Options -> Code -> Use R native pipe operator`. 
+- It is always available even when you are not using `tidyverse`.
+
+---
+
+## Useful tips
+
+- `|>` behaves similarly, but not identically to magrittr's `%>%`.
+  + To send results to a function argument other than first one or to use the previous result for multiple arguments, use `_` instead of `.`.
+
+```{r}
+starwars |> lm(mass ~ height, data = _) 
+```
+
 <!-- --- -->
 
 <!-- ## The pipe vs ggplot2 layers -->
@@ -169,7 +196,7 @@ This data frame contains all `r format(nrow(nycflights13::flights), big.mark = "
 ---
 # Want to follow along?
 
-Here's the [R code in this lecture](l05/transform-dplyr-i.R)
+Here's the [R code in this lecture](https://github.com/seonghwanjun/bst430-fall2025-l05/blob/main/transform-dplyr-i.R)
 
 <!-- Go to RStudio Cloud and make a copy of "Lecture 3 - dplyr" -->
 
@@ -203,9 +230,9 @@ Single data frame functions / verbs:
 * `rename`: rename specific columns
 * `arrange`: reorder rows
 * `mutate`: add new variables
-* `transmute`: create new data frame with variables
+* <s>`transmute`: create new data frame with variables</s> superseded by `mutate(.keep="none")`
 * `distinct`: filter for unique rows
-* `sample_n` / `sample_frac`: randomly sample rows
+* <s>`sample_n` / `sample_frac`: randomly sample rows</s> superseded by `slice_sample()`
 * `summarise`: reduce variables to values
 * `group_by`: run an operation by levels of a categorical variable
 * ... (many more)
@@ -221,7 +248,7 @@ Single data frame functions / verbs:
 3. Always return a new `data.frame` 
 4. Doesn't modify in place
 
-.footnote[[1] Or `tibble`, the tidyverse version of a `data.frame`.  These are mostly interchangable, but with a few differences we'll consider in a couple weeks.]
+.footnote[[1] Or `tibble`, the tidyverse version of a `data.frame`.]
 ---
 
 ## Filter rows with `filter`
@@ -286,6 +313,18 @@ filter(flights, month == 11 | month == 12)
 The order of operations doesn't work like English. You can't write `filter(flights, month == (11 | 12))`, to mean "find all flights that departed in November or December."
 - Instead, this would find all months that equal `11 | 12`, an expression that evaluates to `TRUE`.
 - In a numeric context (like here), `TRUE` is coerced to `1`, so this finds all flights in January, not November or December. This *is* quite confusing!
+
+---
+
+## Boolean expressions
+
+But this works:
+
+```{r}
+filter(flights, month %in% c(11,12))
+```
+
+Saves a bit of typing.
 
 ---
 class: code70, font120
@@ -409,10 +448,11 @@ operator    | definition                   || operator     | definition
 
 ## Check your understanding 
 
+Using the `flights` data frame from the `nycflights13` package, write code to do the following tasks:
+
 1. .question[Extract the January LGA flights and the December JFK flights.]
-4. .question[Extract flights whose `dep_time` was `NA`.]
-2. .question[Extract flights that left in November or December.]
-3. .question[Extract flights that left in November or December using the `%in%` operator.]
+2. .question[Extract flights whose `dep_time` was `NA`.]
+3. .question[Extract flights that left in odd months (i.e., 1, 3, 5, 7, 9, 11).]
 
 ---
 
@@ -427,11 +467,7 @@ flights %>% filter(is.na(dep_time))
 ```
 
 ```
-flights %>% filter(month == 11 | month == 12)
-```
-
-```
-nov_dec = filter(flights, month %in% c(11, 12))
+flights %>% filter(month %in% seq(1, 11, 2))
 ```
 
 ---
@@ -455,6 +491,13 @@ temp=flights %>% mutate(gain = dep_delay - arr_delay,
                  speed = distance / air_time * 60,
                  .before = year) #add before `year` variable
 colnames(temp)
+```
+
+---
+class: code70
+
+## `mutate` to add new variables
+```{r}
 temp[,c("gain","speed")]
 ```
 
@@ -462,7 +505,7 @@ temp[,c("gain","speed")]
 
 ## Converting to minutes since midnight
 
-- **Exercise**: (RDS 5.2.1) `dep_time` is convenient to look at, but hard to compute with because it's not a continuous value:
+- **Exercise**: `dep_time` is convenient to look at, but hard to compute with because it's not a continuous value:
 
 ```{r, warning = FALSE}
 ggplot(flights, aes(x = dep_time)) + geom_histogram(binwidth = 10)
@@ -501,7 +544,19 @@ flights %>%
                 gain_per_hour = gain / hours)
 ```
 
-You'll use this much less often than `mutate` but when you need it, you need it.
+This function has been superseded now by `mutate(.keep="none")`.
+
+---
+
+## Only preserving new variables
+
+```{r}
+flights %>%
+      mutate(gain = dep_delay - arr_delay,
+             hours = air_time / 60,
+             gain_per_hour = gain / hours, 
+             .keep = "none")
+```
 
 ---
 ## Useful mutation functions
@@ -682,7 +737,7 @@ These are flights that were cancelled!  So in the same way, the `dep_delay` is i
 *  support: `min()`, `max()`.
 *  index:  `first()`, `nth(x, 2)`, `last()`<sup>1</sup>
 *  counts: `n()`, `sum()`, `sum(!is.na(x))` (count non-missing), `n_distinct()` (count distinct)
-.footnote[[1] These probably only make sense in `group_by` summaries.  They could make could sense in an ungrouped mutates, though!]
+.footnote[[1] These probably only make sense in `group_by` summaries.  They could make sense in an ungrouped mutates, though!]
 --
 
 *  Most of these are going to taste better with `na.rm = TRUE`
@@ -738,12 +793,32 @@ dim(flights_perc20)
 
 ---
 
+## Subsample rows with `slice_sample`
+
+`sample_n` and `sample_frac` are soft-deprecated.  Use `slice_sample` instead.
+
+```{r}
+flights_n5 <- flights %>%
+  slice_sample(n=5, replace = FALSE)
+dim(flights_n5)
+```
+
+```{r}
+flights_perc20 = flights %>%
+  slice_sample(prop=0.2, replace = FALSE)
+dim(flights_perc20)
+```
+
+---
+
 ## `arrange` to sort a `data.frame` on its values
 
 What flights departed earliest before their scheduled time?
 ```{r}
 flights %>% arrange(dep_delay) %>% relocate(dep_delay)
 ```
+
+`relocate` moves column to the front -- can pass in `.after` or `.before` argument to specify location to place column(s).
 
 ---
 
@@ -789,7 +864,7 @@ Compare to
 flights %>% slice_head(n = 5) %>% select(dest)
 ```
 
-.question[What is similar and what is different in the return value between these two?]
+<!--.question[What is similar and what is different in the return value between these two?]-->
 ---
 
 ## The two `pull`s in your lives
@@ -813,7 +888,7 @@ class: middle, center
 
 ## group_by()
 
-We'll discuss this in much greater detail next week.  But to whet your appetite, how might we calculate the carrier with the worst on-time percentage?
+How might we calculate the carrier with the worst on-time percentage?
 
 ```{r}
 ontime = flights %>% mutate(ontime = arr_delay <= 0)  
@@ -842,16 +917,378 @@ ontime %>%
 ![F9 is Frontier](https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Frontier_Airlines_logo.svg/375px-Frontier_Airlines_logo.svg.png)
 ]
 
---
+---
 
-FL is Airtran, F9 is Frontier
+## grouping
+
+By adding `group_by()` to a pipeline, we stratify by a categorical variable when we `summarize()`:
+.pull-left[
+**Grand margin**
+```{r, warning=FALSE}
+library(nycflights13)
+ontime = flights %>% 
+  mutate(ontime = arr_delay <= 0)  
+ontime %>% 
+  summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100)
+```
+]
+
+.pull-right[
+**stratified by carrier**
+```{r}
+ontime %>% group_by(carrier) %>% 
+  summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100) #<<
+```
+]
+
+---
+
+## `group_by()` multiple variables
+
+It's easy to group by multiple variables:
+
+```r
+flights %>% group_by(<var_1>, <var_2>, ..., <var_n>) %>%
+   summarize()
+```
+
+---
+
+## `group_by()` caveat
+
+Be aware that this only returns the combinations of var_1, var_2, ... that exist in the data. This can lead to erroneous calculations if you are joining tables downstream. To get the Cartesian product:
+
+1.  Convert `var1`, `var2`, ... to factors with `factor`.<sup>1</sup>
+2.  Set  `group_by(..., .drop = FALSE)`.
+
+Default: Drop groups formed by factor levels that don't appear in the data. `.drop=FALSE` is needed to preserve all group levels.
+
+.footnote[[1] We'll discuss the pain and pleasure of factors in greater detail.]
+
+<!-- [2] If you are a masochist. -->
+
+---
+
+## Nonsense from dropping
+
+```{r eval=FALSE}
+departures = flights %>% group_by(carrier, hour) %>% summarize(n_departures = n())
+ggplot(departures, aes(x = hour, y = n_departures)) + 
+  geom_line() + 
+  facet_wrap(~carrier, scales = 'free_y')
+```
+
+---
+
+## Nonsense from dropping
+
+```{r echo=FALSE}
+departures = flights %>% group_by(carrier, hour) %>% summarize(n_departures = n())
+ggplot(departures, aes(x = hour, y = n_departures)) + 
+  geom_line() + 
+  facet_wrap(~carrier, scales = 'free_y') #<<
+```
+
+---
+
+## Keep (wacky factors)
+
+```{r eval=FALSE}
+departures2 = flights %>% 
+  mutate(carrier = factor(carrier), hour = factor(hour)) %>% #<<
+  group_by(carrier, hour, .drop = FALSE) %>% #<<
+  summarize(n_departures = n())
+plt = ggplot(departures2, aes(x = hour, y = n_departures, group = carrier)) + 
+  geom_line() + 
+  facet_wrap(~carrier, scales = 'free_y')
+plt
+```
+
+---
+
+## Keep (wacky factors)
+
+```{r echo=FALSE}
+departures2 = flights %>% 
+  mutate(carrier = factor(carrier), hour = factor(hour)) %>% #<<
+  group_by(carrier, hour, .drop = FALSE) %>% #<<
+  summarize(n_departures = n())
+plt = ggplot(departures2, aes(x = hour, y = n_departures, group = carrier)) + 
+  geom_line() + 
+  facet_wrap(~carrier, scales = 'free_y')
+plt
+```
+
+---
+
+## Keep (preserve original)
+
+```{r eval=FALSE}
+departures3 = flights %>% 
+  mutate(carrier = factor(carrier), hourf = factor(hour)) %>%
+  group_by(carrier, hourf, .drop = FALSE) %>%
+  summarize(n_departures = n()) %>%
+  mutate(hour = as.numeric(as.character(hourf))) #<<
+(plt %+% departures3) + aes(x = hour) #<<
+```
+
+---
+
+## Keep (preserve original)
+
+```{r echo = FALSE}
+departures3 = flights %>% 
+  mutate(carrier = factor(carrier), hourf = factor(hour)) %>%
+  group_by(carrier, hourf, .drop = FALSE) %>%
+  summarize(n_departures = n()) %>%
+  mutate(hour = as.numeric(as.character(hourf))) #<<
+(plt %+% departures3) + aes(x = hour) #<<
+```
+
+---
+
+By the way, `summarize` seems to group the output only by `carrier`? what about `hour`?
+
+```{r}
+departures = flights %>% group_by(carrier, hour) %>% summarize(n_departures = n())
+```
+
+When you call `summarize` it requires computing a summary over a group of values -- by default, `summarize` achieves this by dropping the last group (`hour` in this case). 
+
+---
+
+## grouping is contagious
+
+>  `summarise()` has grouped output by 'carrier'. You can override using the `.groups` argument.
+
+This is telling us that by default, the output will be grouped if we use it in another pipeline.
+
+To save screen real estate, I'm going to turn off this message going forward:
+```{r}
+options(dplyr.summarise.inform = FALSE)
+```
+
+In general you should set `.groups` explicitly.
+
+---
+
+## `ungroup()` to remove grouping variables.
+
+.pull-left[
+Default
+```{r}
+ontime_drop = ontime %>% group_by(carrier, dest) %>% summarize(ontime_pct = mean(ontime, na.rm = TRUE)*100)
+ontime_drop %>% summarize(n_dest = n_distinct(dest))
+```
+]
+
+.pull-right[
+ungrouped
+```{r}
+ontime_drop %>% ungroup() %>% #<<
+  summarize(n_dest = n_distinct(dest))
+```
+]
+---
+
+## `group_by() filter()`
+
+We can combine group_by with filter, mutate or arrange to evaluate these verbs on each group.
+
+```{r}
+ontime_1500 = ontime %>% group_by(dest) %>% filter(n() > 1500) %>%
+  mutate(n_flights_dest = n(), .after = 1)
+
+ontime_1500 %>% arrange(n_flights_dest)
+
+```
+
+---
+
+## Carrier performance by destination
+
+```{r}
+ontime_drop = ontime_1500 %>% group_by(dest, carrier) %>%  
+  summarize(ontime_pct = mean(ontime, na.rm  = TRUE)*100)
+ggplot(ontime_drop, aes(y = ontime_pct, x = dest)) + geom_point() + coord_flip() + theme_minimal(base_size = 8)
+```
+
+---
+
+## The "law" of small numbers
+
+.question[What's with the carriers with 0% or 100% ontime percentages for a destination?]
+
+---
+
+## The "law" of small numbers
+
+```{r}
+ontime_drop = ontime_1500 %>% group_by(dest, carrier) %>%  
+  summarize(ontime_pct = mean(ontime, na.rm  = TRUE)*100,
+            n_departed = sum(!is.na(ontime)))
+
+ggplot(ontime_drop, aes(y = ontime_pct, x = dest, color = n_departed<10)) + geom_point() + coord_flip() + theme_minimal(base_size = 8)
+```
+
+.question[What are some statistical fixes to this issue?]
+---
+
+## Without small numbers
+
+```{r}
+ontime_drop_10 = filter(ontime_drop, n_departed >= 10)
+ggplot(ontime_drop_10, aes(y = ontime_pct, x = dest)) + geom_boxplot() + 
+  coord_flip()  + theme_minimal(base_size = 8)
+```
+
+Better...but it's hard to see the rank order of routes.
+
+---
+
+## A sensible plot order
+
+```{r}
+ ontime_drop_10 = ontime_drop_10 %>% ungroup() %>% 
+  mutate(dest = forcats::fct_reorder(dest, ontime_pct)) #<<
+ggplot(ontime_drop_10, aes(x = dest, y = ontime_pct)) + geom_boxplot() + 
+  coord_flip()  + theme_minimal(base_size = 8)
+```
+
+We'll discuss the `fct_reorder` business in the coming weeks.
+
+---
+
+## `select()` 
+<!-- 201 -->
+
+`select()` (as well as `pivot_wider()`, `pivot_longer()`, and friends) use [tidy-select](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html), which is a meta-language to select columns from a data frame. There are several helper functions you can use within `select()`:
+
+-   `starts_with("abc")`: matches names that begin with "abc",
+-   `ends_with("xyz")`: matches names that end with "xyz",
+-   `contains("ijk")`: matches names that contain "ijk",
+-   `num_range("x", 1:3)`: matches `x1`, `x2` and `x3`,
+-   `last_col(offset = 0)`: last column, minus offset,
+-   `where(<function>)`: columns where `<function>` returns `TRUE`,
+-   `:` range, `c` concatenate, `!` negate, `&` intersect
+-   ...and a few others.
+---
+
+## select delay columns
+
+```{r}
+flights %>% select(ends_with('delay'))
+```
+---
+
+## everything except columns containing "time"
+
+```{r}
+flights %>% select(!contains('time'))
+```
+---
+
+## character columns
+
+```{r}
+flights %>% select(where(is.character))
+```
+
+---
+
+## Columns with no missing values
+
+```{r}
+flights %>% select(where(~!any(is.na(.x))))
+```
+The above uses a tidyverse way to define an **anonymous function** and is equivalent to 
+```
+none_na = function(x) !any(is.na(x))
+```
+
+---
+class: middle
+
+.hand[# Repeating an operation with `across`]
+
+---
+
+## `across()`
+
+If you need to repeat the same operation on multiple columns, you can avoid many keystrokes by using across.
+
+The syntax is a bit idiomatic, but in general, it looks something like
+```r
+verb(across(.cols = <tidy selection>, 
+            .funs = list(<fun1>, <fun2>, ...)))
+```
+where `verb` is `summarize`,  `mutate`, and a few others where unquoted columns are provided to a transformation.
+
+---
+
+## NYC AirBNB data
+
+```{r, include = FALSE}
+nycbnb = read_csv("https://urmc-bst.github.io/bst430-fall2021-site/hw_lab_instruction/hw-01-airbnb/data/nylistings.csv")
+```
+
+```{r}
+nycbnb
+```
+
+---
+
+## Nights
+
+```{r eval=FALSE}
+availability = nycbnb %>% group_by(neighborhood) %>% 
+  summarize(across(c(maximum_nights, minimum_nights, availability_90), median)) #<<
+ggplot(availability, 
+       aes(x = neighborhood, 
+           ymin = minimum_nights,  
+           y = availability_90, 
+           ymax = maximum_nights)) + 
+  geom_pointrange() + coord_flip() + theme_minimal() +  
+  labs(x = NULL, y = 'Availability (minimum, 90 day, maximum)')
+```
+
+---
+
+## Nights
+
+```{r echo=FALSE, height=10}
+availability = nycbnb %>% group_by(neighborhood) %>% 
+  summarize(across(c(maximum_nights, minimum_nights, availability_90), median)) #<<
+ggplot(availability, 
+       aes(x = neighborhood, 
+           ymin = minimum_nights,  
+           y = availability_90, 
+           ymax = maximum_nights)) + 
+  geom_pointrange() + coord_flip() + theme_minimal() +  
+  labs(x = NULL, y = 'Availability (minimum, 90 day, maximum)')
+```
+
+---
+
+## Transform by variable type
+
+This can be very powerful:
+```{r}
+median_mad = nycbnb %>% group_by(neighborhood) %>% 
+  summarise(across(where(is.numeric), #<<
+                   list(median = median, mad = mad))) #<<
+glimpse(median_mad)
+```
+
 ---
 
 # Resources
 
-- Chapter 5 of [RDS](https://r4ds.had.co.nz/)
+- [Chapter 3 R4DS](https://r4ds.hadley.nz/data-transform.html)
+- [Chapter 12 R4DS](https://r4ds.hadley.nz/logicals.html)
+- [Chapter 13 R4DS](https://r4ds.hadley.nz/numbers.html)
 - [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf).
-- [Dplyr Overview](https://dplyr.tidyverse.org/).
+- [`dplyr` Overview](https://dplyr.tidyverse.org/).
 
 ---
 

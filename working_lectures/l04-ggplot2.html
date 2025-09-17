@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>BST430 Lecture 2</title>
+    <title>BST430 Lecture 04</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Tanzy Love, based on the notes of Andrew McDavid" />
+    <meta name="author" content="Seong-Hwan Jun, based on the notes of Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
@@ -16,19 +16,19 @@
 class: ur-title, center, middle, title-slide
 
 .title[
-# BST430 Lecture 2
+# BST430 Lecture 04
 ]
 .subtitle[
 ## ggplot (i)
 ]
 .author[
-### Tanzy Love, based on the notes of Andrew McDavid
+### Seong-Hwan Jun, based on the notes of Andrew McDavid
 ]
 .institute[
 ### U of Rochester
 ]
 .date[
-### 2021-08-29 (updated: 2025-08-18)
+### 2021-08-29 (updated: 2025-09-05)
 ]
 
 ---
@@ -96,7 +96,8 @@ library(tidyverse)
 ggplot + 
   geom_xxx
 ```
-or, more precisely
+where geoms (geometric objects) describe the type of plot produced. Example:
+
 .small[
 
 ```r
@@ -105,7 +106,6 @@ ggplot(data = [dataset], mapping = aes(x = [x-variable], y = [y-variable])) +
    other options
 ```
 ]
-- Geoms, geometric objects, describe the type of plot produced
 
 ---
 
@@ -114,10 +114,47 @@ ggplot(data = [dataset], mapping = aes(x = [x-variable], y = [y-variable])) +
 - ggplot2 is the name of the package
 - The `gg` in "ggplot2" stands for Grammar of Graphics
 - Inspired by the book **Grammar of Graphics** by Leland Wilkinson
-- `ggplot()` is the main function in ggplot2
-- For help with the ggplot2, see http://ggplot2.tidyverse.org/
+- The main idea is to build plots in a structured manner by layering components.
 
+---
+
+## Layering
+
+- Start with data that you want to generate plots from.
+- Specify the aesthetics, typically these are variables (columns) in your data.
+- Specify the geometric objects, points, lines, bars, boxplots, etc.
+- Add scales, facets, themes, color scales, labels, etc.
+
+---
+
+## Layering
+
+
+```r
+ggplot(data = &lt;DATA&gt;) + 
+  &lt;GEOM_FUNCTION&gt;(
+     mapping = aes(&lt;MAPPINGS&gt;),
+     stat = &lt;STAT&gt;, 
+     position = &lt;POSITION&gt;
+  ) +
+  &lt;COORDINATE_FUNCTION&gt; +
+  &lt;FACET_FUNCTION&gt;`
+```
+
+- `ggplot()` is the main function in ggplot2
+- Every geom has different mapping available.
+- For full reference of the geoms and mappings, see http://ggplot2.tidyverse.org/
 - Note the "+" at the end of the line lets ggplot know when to stop adding components
+
+---
+
+## Back in the days of base R graphics...
+
+- Plots are built in an ad-hoc manner.
+- No fixed data set or aesthetics -- data to be plotted are passed in externally.
+- Requires more work to polish the figure and generating multi-panel figures (faceted plots).
+- Most often require different syntax and code (poor reproducibility)
+- One of the lab questions will ask you to produce a plot using base R graphics and ggplot2.
 
 ---
 
@@ -240,7 +277,7 @@ glimpse(Starwars)
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'Starwars' not found
+## Error: object 'Starwars' not found
 ```
 
 --
@@ -262,7 +299,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
 ## (`geom_point()`).
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -291,7 +328,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
 How would you describe this relationship? What other variables would help us understand data points that don't follow the overall trend? Who is the not so tall but really chubby character?
 &lt;/div&gt;
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -309,13 +346,20 @@ starwars$name[starwars$mass&gt;1000&amp;!is.na(starwars$mass)]
 
 ---
 
+## Mass vs. height: your turn
+
+- Load `dplyr` and the `starwars` data. 
+- Plot mass vs height without Jabba.
+
+---
+
 ## Additional variables
 
 The scatter plot shows two (continuous) variables.
 
 We can display additional variables with
 
-- aesthetics (like shape, colour, size), or
+- aesthetics (shape, colour, size), or
 - faceting (small multiples displaying different subsets)
 
 ---
@@ -339,7 +383,7 @@ class: center, middle
 - ...and some lesser used ones: `fill`, `stroke`
 
 --
-- ...and `group`.  This one isn't really an aesthetic, but modifies other aesthetics.
+- ...and `group`.  This one is most useful in settings where you have multiple observations from the same group (e.g., repeated measurements from an individual and want to make a line plot).
 
 ---
 
@@ -347,18 +391,16 @@ class: center, middle
 
 
 ```r
-ggplot(data = starwars, mapping = aes(x = height, y = mass, color = gender)) +
+starwars_wo_jabba &lt;- starwars[!grepl("Jabba", starwars$name),]
+ggplot(data = starwars_wo_jabba, mapping = aes(x = height, y = mass, color = gender)) +
   geom_point()
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
 
 ---
 
 ## Aesthetics summary
-
-- Continuous variable are measured on a continuous scale
-- Discrete variables are measured (or often counted) on a discrete scale
 
 aesthetics    | discrete     | continuous
 ------------- | ------------ | ------------
@@ -392,7 +434,7 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
   geom_point()
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -406,6 +448,8 @@ how the code relates to the output.
 
 ---
 
+## Code 1
+
 
 ```r
 ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
@@ -413,9 +457,15 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
   facet_grid(gender ~ .)
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+---
+
+## Plot 1
+
+![](l04-ggplot2_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 
 ---
+
+## Code 2
 
 
 ```r
@@ -424,9 +474,15 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
   facet_grid(. ~ gender)
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+---
+
+## Plot 2
+
+![](l04-ggplot2_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 ---
+
+## Code 3
 
 
 ```r
@@ -435,7 +491,11 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
   facet_wrap(~ eye_color)
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+---
+
+## Plot 3
+
+![](l04-ggplot2_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -444,30 +504,6 @@ ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
 - `facet_grid()`: 2d grid, `rows ~ cols`, `.` if only using one variable.
 
 - `facet_wrap()`: 1d ribbon wrapped into 2d
-
----
-
-## Height vs. mass, take 2
-
-&lt;div class="question"&gt;
-How are these plots similar? How are they different?
-&lt;/div&gt;
-
-![](l04-ggplot2_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
-
----
-
-## `geom_smooth`
-
-
-```r
-ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
-  geom_smooth(se = FALSE) +
-  xlim(80, 250) +
-  ylim(0, 1400)
-```
-
-![](l04-ggplot2_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -521,7 +557,7 @@ ggplot(data = starwars, mapping = aes(x = height)) +
   geom_histogram(binwidth = 10)
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -535,7 +571,7 @@ ggplot(data = starwars, mapping = aes(x = height)) +
   geom_density()
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -549,7 +585,21 @@ ggplot(data = starwars, mapping = aes(y = height, x = gender)) +
   geom_boxplot()
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+]
+
+---
+
+## Side-by-side &lt;s&gt;box&lt;/s&gt; violin plots
+
+.small[
+
+```r
+ggplot(data = starwars, mapping = aes(y = height, x = gender)) +
+  geom_violin()
+```
+
+![](l04-ggplot2_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -569,7 +619,7 @@ ggplot(data = starwars, mapping = aes(x = gender)) +
   geom_bar()
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -583,7 +633,7 @@ ggplot(data = starwars, mapping = aes(x = gender, fill = hair_color)) +
   geom_bar()
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -598,7 +648,7 @@ ggplot(data = starwars, mapping = aes(x = gender, fill = hair_color)) +
   labs(y = "proportion")
 ```
 
-![](l04-ggplot2_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+![](l04-ggplot2_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -610,16 +660,20 @@ Which of the previous two bar plots is a more useful representation for visualiz
 &lt;/div&gt;
 
 ---
-class:middle, center
-
-## On to Lab 1!
-
-
----
 
 # Acknowledgments
 
 These materials are adapted from [Mine Çetinkaya-Rundel and colleagues](https://github.com/Sta199-S18/website/blob/master/static/slides/lec-slides/02a-fund-data-viz.Rmd).
+
+---
+
+# Quizzz
+
+- Accept the quiz: https://classroom.github.com/a/1DSPY_t2.
+- Clone the repo. Create `quiz1.qmd` file in the repo.
+- Answer Exercise 1.2.5 questions 1-8, 10 from R4DS:  &lt;https://r4ds.hadley.nz/data-visualize.html#exercises&gt;
+- Commit and push `quiz1.qmd`.
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

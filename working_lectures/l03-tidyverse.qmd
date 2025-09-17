@@ -1,0 +1,119 @@
+---
+title: "BST430 Lecture 03-A"
+subtitle: "Intro to Tidyverse"
+author: "Seong-Hwan Jun"
+institute: "U of Rochester"
+date: today
+format: revealjs
+---
+
+## Tidyverse
+
+Statistical and data analysis commonly involves the following steps:
+
+1. Import data (`readr`).
+2. Tidy your data (`tidyr`).
+3. Transform the data (`dplyr`).
+4. Process the data (`purrr`/`stringr`/`forcats`/`lubridate`).
+5. Visualize the data (`ggplot2`).
+
+The main data structure for tidyverse is a "tibble", an extension of `data.frame` that complains a lot when you are not explicit. 
+
+## `tibble`
+
+The idea is to make it harder to make a mistake in your code by requiring you to be explicit. This helps to identify logical errors early.
+
+Any operation that can be performed on `data.frame` can be performed on `tibble` because it extends `data.frame`.
+
+## `tibble`
+
+- It does not convert column names without your permission -- `data.frame` does.
+- It does not convert character vectors to factors without your permission -- `data.frame` does unless you set `stringsAsFactors=FALSE`.
+- No row names -- row names should be a variable in a column.
+- It does not recycle except for length 1 vectors.
+- It has a refined print method.
+
+## Data import: `readr`
+
+-  `readr` package provides functions to read rectangular data.
+- It returns a `tibble` instead of `data.frame`.
+- Use accompanying package `readxl` for importing Excel files.
+
+## Reshape your data: `tidyr`
+
+`tidyr` package provides functions to "tidy" your data. This is typically one of the very first steps in data analysis.
+
+Definition of tidy data:
+
+1. Each variable forms a column.
+2. Each observation forms a row.
+3. Each value in a cell.
+
+Two forms: long vs wide.
+
+`tidyr` provides functionalities to reshape data into desired forms -- essential for visualization.
+
+## Clean your data: `janitor`
+
+Not officially part of `tidyverse`, but `janitor` package provides useful functions for examining and cleaning data.
+
+For example, making clean column names.
+
+## Visualize your data: `ggplot2`
+
+:::{.incremental}
+- `ggplot2` package provides a powerful and flexible way to create data visualizations.
+- Creating visualizations is an essential part of exploratory data analysis and communicating results.
+- `ggplot2` allows creation of publication quality graphics with a consistent and coherent system.
+:::
+
+::: {.fragment}
+There are many extensions that build on `ggplot2`. See [gallary](https://exts.ggplot2.tidyverse.org/gallery/).
+:::
+
+## Data wrangling: `dplyr`
+
+`dplyr` package provides a grammar of data manipulation.
+
+- The raw data does not always contain the information you need. 
+- Example: compute the groupwise mean and standard deviation and derive p-values to compare differences in mean across groups.
+- `dplyr` provides a set of verbs that correspond to common data manipulation tasks.
+
+## Text data processing: `stringr`
+
+`stringr` package provides a cohesive set of functions designed to make working with strings as easy as possible.
+
+Example use cases:
+
+:::{.incremental}
+- convert string to lowercase;
+- search if a pattern exists in a strin;
+- extract a substring;
+- replace a substring;
+- split a string by a delimiter;
+- concatenate strings and so on.
+:::
+
+## Factors: `forcats` 
+
+:::{.incremental}
+- `forcats` package provides tools for working with categorical variables.
+- The most common operation is to convert strings to factors and reordering levels (for visualization).
+:::
+
+## Date times: `lubridate`
+
+:::{.incremental}
+- Dates and times are a bit frustrating to work with because there are many formats (e.g., MMM-DD-YYYY, YYYY-MM-DD, DD-MMM-YYYY, etc).
+- There's also many timezones and granularities (e.g., year, month, day, hour, minute, second, millisecond, etc).
+- `lubridate` package makes it easier to work with date-times and time-spans by providing convenient functions for converting across timezones and extracting information such as duration or intervals between two date/time points.
+:::
+
+## Functional programming: `purrr`
+
+:::{.incremental}
+- R is a functional programming language by design -- it stems from Lisp.
+- Functions as first-class citizens: functions can be assigned to variables, passed as arguments, and returned as values.
+- `purrr` package makes it easier to work with functions and vectors providing features such as map-reduce, effectively replacing for-loops.
+:::
+

@@ -1,7 +1,7 @@
 ---
-title: "BST430  Lecture 03"
+title: "BST430  Lecture 03-B"
 subtitle: "Data from files"
-author: "Don Harrington, based on slides by Andrew McDavid"
+author: "Seong-Hwan Jun, based on slides by Andrew McDavid"
 institute: "U of Rochester"
 date: "2021-09-24 (updated: `r Sys.Date()`)"
 output:
@@ -34,7 +34,7 @@ class: middle
 
 # Reading rectangular data into R
 
-Here's the [R code in this lecture](l03/data-from-files.R) (also in the repo)
+The R code and data are provided in Github repo (see website for link).
 
 ---
 
@@ -111,22 +111,6 @@ read_csv("l03/data/df.csv")
 
 ---
 
-### .hand[Your turn!]
-
-- Clone the repository from the webpage invitation.
-- open `nobels-csv.Rmd` and knit.
-- Read in the `nobels.csv`.
-- Split into two (STEM and non-STEM): 
-  - Create a new data frame, `nobel_stem`, that filters for the STEM fields 
-(Physics, Medicine, Chemistry, and Economics).
-  - Create another data frame, `nobel_nonstem`, that filters for the remaining 
-fields.  
-- Write out the two data frames to `nobel-stem.csv` and `nobel-nonstem.csv`, 
-respectively, to `data/`.
-
-
----
-
 class: middle
 
 # Variable names
@@ -171,8 +155,8 @@ names(edibnb_col_names)
 ## Option 2 - Format text to snake_case
 
 ```{r warning=FALSE}
-edibnb_clean_names = read_csv("l03/data/edibnb-badnames.csv") %>%
-  janitor::clean_names()
+edibnb_bad_names <- read_csv("l03/data/edibnb-badnames.csv")
+edibnb_clean_names = janitor::clean_names(edibnb_bad_names)
 
 names(edibnb_clean_names)
 ```
@@ -186,7 +170,8 @@ class: middle
 ---
 
 .question[
-Which type is `x`? Why?
+Which type is `x`? Why? 
+(coercion order: character → double → integer → logical.)
 ]
 
 .pull-left[
@@ -266,6 +251,18 @@ read_csv("l03/data/df-na.csv", col_types = list(col_double(),
 ]
 
 ---
+
+Difference between `col_number()` and `col_numeric()`:
+
+```{r include=TRUE}
+readr::parse_number(c("1,234,567", "$100.00", "90%"))
+```
+
+```{r include=TRUE}
+readr::parse_double(c("1,234,567", "$100.00", "90%"))
+```
+
+---
 class: code70
 .question[
 Wondering where you remember these from?
@@ -281,6 +278,8 @@ spec(data)
 class:middle
 
 # Case study: Favorite foods
+
+Preview of what's to come.
 
 ---
 
@@ -471,36 +470,6 @@ class: middle
 
 ---
 
-### .hand[Your turn!]
-- open `sales-excel.Rmd`. 
-- Load the `sales.xlsx` file from the `data-raw/` folder, using appropriate arguments for the `read_excel()` function such that it looks like the output on the left.
-- **Stretch goal:** Manipulate the sales data such that it looks like the output on the right.
-
-.pull-left[
-```{r echo=FALSE}
-sales = read_excel("l03/data/sales.xlsx", skip = 3, col_names = c("id", "n"))
-sales
-```
-]
-.pull-right[
-```{r echo=FALSE}
-sales %>%
-  mutate(
-    is_brand_name = str_detect(id, "Brand"),
-    brand = if_else(is_brand_name, id, NA_character_)
-  ) %>%
-  fill(brand) %>%
-  filter(!is_brand_name) %>%
-  select(brand, id, n) %>%
-  mutate(
-    id = as.numeric(id),
-    n = as.numeric(n)
-  )
-```
-]
-
----
-
 ## File organization and rstudio cloud
 
 -  Picking a sensible and consistent way to organize raw and processed data will save many headaches!
@@ -515,4 +484,4 @@ sales %>%
 
 ## Acknowledgments
 
-[Data science in a box](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d12-data-import/u2-d12-data-import.html#4)
+[Data science in a box](https://datasciencebox.org/course-materials/_slides/u2-d12-data-import/u2-d12-data-import#1)

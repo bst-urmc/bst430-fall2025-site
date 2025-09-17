@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>BST430 Lecture 03</title>
+    <title>BST430 Lecture 03-B</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Don Harrington, based on slides by Andrew McDavid" />
+    <meta name="author" content="Seong-Hwan Jun, based on slides by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
@@ -18,19 +18,19 @@
 class: ur-title, center, middle, title-slide
 
 .title[
-# BST430 Lecture 03
+# BST430 Lecture 03-B
 ]
 .subtitle[
 ## Data from files
 ]
 .author[
-### Don Harrington, based on slides by Andrew McDavid
+### Seong-Hwan Jun, based on slides by Andrew McDavid
 ]
 .institute[
 ### U of Rochester
 ]
 .date[
-### 2021-09-24 (updated: 2025-08-18)
+### 2021-09-24 (updated: 2025-09-02)
 ]
 
 ---
@@ -45,7 +45,7 @@ class: middle
 
 # Reading rectangular data into R
 
-Here's the [R code in this lecture](l03/data-from-files.R) (also in the repo)
+The R code and data are provided in Github repo (see website for link).
 
 ---
 
@@ -143,22 +143,6 @@ read_csv("l03/data/df.csv")
 
 ---
 
-### .hand[Your turn!]
-
-- Clone the repository from the webpage invitation.
-- open `nobels-csv.Rmd` and knit.
-- Read in the `nobels.csv`.
-- Split into two (STEM and non-STEM): 
-  - Create a new data frame, `nobel_stem`, that filters for the STEM fields 
-(Physics, Medicine, Chemistry, and Economics).
-  - Create another data frame, `nobel_nonstem`, that filters for the remaining 
-fields.  
-- Write out the two data frames to `nobel-stem.csv` and `nobel-nonstem.csv`, 
-respectively, to `data/`.
-
-
----
-
 class: middle
 
 # Variable names
@@ -192,7 +176,7 @@ ggplot(edibnb_badnames, aes(x = Number of bathrooms, y = Price)) +
 ```
 
 ```
-## Error: &lt;text&gt;:1:40: unexpected symbol
+## Error in parse(text = input): &lt;text&gt;:1:40: unexpected symbol
 ## 1: ggplot(edibnb_badnames, aes(x = Number of
 ##                                            ^
 ```
@@ -229,8 +213,8 @@ names(edibnb_col_names)
 
 
 ```r
-edibnb_clean_names = read_csv("l03/data/edibnb-badnames.csv") %&gt;%
-  janitor::clean_names()
+edibnb_bad_names &lt;- read_csv("l03/data/edibnb-badnames.csv")
+edibnb_clean_names = janitor::clean_names(edibnb_bad_names)
 
 names(edibnb_clean_names)
 ```
@@ -252,7 +236,8 @@ class: middle
 ---
 
 .question[
-Which type is `x`? Why?
+Which type is `x`? Why? 
+(coercion order: character → double → integer → logical.)
 ]
 
 .pull-left[
@@ -368,6 +353,43 @@ read_csv("l03/data/df-na.csv", col_types = list(col_double(),
 ]
 
 ---
+
+Difference between `col_number()` and `col_numeric()`:
+
+
+```r
+readr::parse_number(c("1,234,567", "$100.00", "90%"))
+```
+
+```
+## [1] 1234567     100      90
+```
+
+
+```r
+readr::parse_double(c("1,234,567", "$100.00", "90%"))
+```
+
+```
+## Warning: 3 parsing failures.
+## row col               expected    actual
+##   1  -- no trailing characters 1,234,567
+##   2  -- a double               $100.00  
+##   3  -- no trailing characters 90%
+```
+
+```
+## [1] NA NA NA
+## attr(,"problems")
+## # A tibble: 3 × 4
+##     row   col expected               actual   
+##   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                  &lt;chr&gt;    
+## 1     1    NA no trailing characters 1,234,567
+## 2     2    NA a double               $100.00  
+## 3     3    NA no trailing characters 90%
+```
+
+---
 class: code70
 .question[
 Wondering where you remember these from?
@@ -405,6 +427,8 @@ spec(data)
 class:middle
 
 # Case study: Favorite foods
+
+Preview of what's to come.
 
 ---
 
@@ -687,42 +711,6 @@ class: middle
 
 ---
 
-### .hand[Your turn!]
-- open `sales-excel.Rmd`. 
-- Load the `sales.xlsx` file from the `data-raw/` folder, using appropriate arguments for the `read_excel()` function such that it looks like the output on the left.
-- **Stretch goal:** Manipulate the sales data such that it looks like the output on the right.
-
-.pull-left[
-
-```
-## # A tibble: 9 × 2
-##   id      n    
-##   &lt;chr&gt;   &lt;chr&gt;
-## 1 Brand 1 n    
-## 2 1234    8    
-## 3 8721    2    
-## 4 1822    3    
-## # ℹ 5 more rows
-```
-]
-.pull-right[
-
-```
-## # A tibble: 7 × 3
-##   brand      id     n
-##   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
-## 1 Brand 1  1234     8
-## 2 Brand 1  8721     2
-## 3 Brand 1  1822     3
-## 4 Brand 2  3333     1
-## 5 Brand 2  2156     3
-## 6 Brand 2  3987     6
-## 7 Brand 2  3216     5
-```
-]
-
----
-
 ## File organization and rstudio cloud
 
 -  Picking a sensible and consistent way to organize raw and processed data will save many headaches!
@@ -737,11 +725,7 @@ class: middle
 
 ## Acknowledgments
 
-[Data science in a box](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d12-data-import/u2-d12-data-import.html#4)
-
-## Other reading
-
-[R4DS chapter 11](https://r4ds.had.co.nz/data-import.html#data-import)
+[Data science in a box](https://datasciencebox.org/course-materials/_slides/u2-d12-data-import/u2-d12-data-import#1)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

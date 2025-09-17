@@ -30,7 +30,7 @@ class: ur-title, center, middle, title-slide
 ### U of Rochester
 ]
 .date[
-### 2021-09-27 (updated: 2025-08-21)
+### 2021-09-27 (updated: 2025-08-28)
 ]
 
 ---
@@ -928,17 +928,17 @@ Let's make a simple matrix and give it decent row and column names, which we kno
 ```r
 ## don't worry if the construction of this matrix confuses you; 
 ## just focus on the product
-j_mat = outer(as.character(1:4), as.character(1:4),
+j_mat = outer(as.character(1:4), as.character(1:5),
               function(x, y)  paste0('x', x, y) )
 j_mat
 ```
 
 ```
-##      [,1]  [,2]  [,3]  [,4] 
-## [1,] "x11" "x12" "x13" "x14"
-## [2,] "x21" "x22" "x23" "x24"
-## [3,] "x31" "x32" "x33" "x34"
-## [4,] "x41" "x42" "x43" "x44"
+##      [,1]  [,2]  [,3]  [,4]  [,5] 
+## [1,] "x11" "x12" "x13" "x14" "x15"
+## [2,] "x21" "x22" "x23" "x24" "x25"
+## [3,] "x31" "x32" "x33" "x34" "x35"
+## [4,] "x41" "x42" "x43" "x44" "x45"
 ```
 
 
@@ -947,7 +947,7 @@ str(j_mat)
 ```
 
 ```
-##  chr [1:4, 1:4] "x11" "x21" "x31" "x41" "x12" "x22" "x32" ...
+##  chr [1:4, 1:5] "x11" "x21" "x31" "x41" "x12" "x22" "x32" ...
 ```
 
 ---
@@ -960,7 +960,7 @@ dim(j_mat)
 ```
 
 ```
-## [1] 4 4
+## [1] 4 5
 ```
 
 ```r
@@ -968,7 +968,7 @@ length(j_mat)
 ```
 
 ```
-## [1] 16
+## [1] 20
 ```
 
 ```r
@@ -984,7 +984,7 @@ ncol(j_mat)
 ```
 
 ```
-## [1] 4
+## [1] 5
 ```
 
 ---
@@ -1011,7 +1011,7 @@ dimnames(j_mat) # also useful for assignment
 ## [1] "row1" "row2" "row3" "row4"
 ## 
 ## [[2]]
-## [1] "col1" "col2" "col3" "col4"
+## [1] "col1" "col2" "col3" "col4" "col5"
 ```
 
 ```r
@@ -1019,11 +1019,11 @@ j_mat
 ```
 
 ```
-##      col1  col2  col3  col4 
-## row1 "x11" "x12" "x13" "x14"
-## row2 "x21" "x22" "x23" "x24"
-## row3 "x31" "x32" "x33" "x34"
-## row4 "x41" "x42" "x43" "x44"
+##      col1  col2  col3  col4  col5 
+## row1 "x11" "x12" "x13" "x14" "x15"
+## row2 "x21" "x22" "x23" "x24" "x25"
+## row3 "x31" "x32" "x33" "x34" "x35"
+## row4 "x41" "x42" "x43" "x44" "x45"
 ```
 
 ---
@@ -1044,8 +1044,8 @@ j_mat[2, ] # getting row 2
 ```
 
 ```
-##  col1  col2  col3  col4 
-## "x21" "x22" "x23" "x24"
+##  col1  col2  col3  col4  col5 
+## "x21" "x22" "x23" "x24" "x25"
 ```
 
 ```r
@@ -1096,9 +1096,9 @@ j_mat[-c(2, 3), c(TRUE, TRUE, FALSE, FALSE)] # wacky but possible
 ```
 
 ```
-##      col1  col2 
-## row1 "x11" "x12"
-## row4 "x41" "x42"
+##      col1  col2  col5 
+## row1 "x11" "x12" "x15"
+## row4 "x41" "x42" "x45"
 ```
 
 ---
@@ -1139,11 +1139,11 @@ j_mat
 ```
 
 ```
-##      col1  col2  col3  col4 
-## row1 "x11" "x12" "x13" "x14"
-## row2 "x21" "x22" "x23" "x24"
-## row3 "x31" "x32" "x33" "x34"
-## row4 "x41" "x42" "x43" "x44"
+##      col1  col2  col3  col4  col5 
+## row1 "x11" "x12" "x13" "x14" "x15"
+## row2 "x21" "x22" "x23" "x24" "x25"
+## row3 "x31" "x32" "x33" "x34" "x35"
+## row4 "x41" "x42" "x43" "x44" "x45"
 ```
 
 How to understand this: start counting in the upper left corner, move down the column, continue  from the top of column 2 and you'll land on the element "x32" when you get to 7.
@@ -1160,11 +1160,11 @@ j_mat
 ```
 
 ```
-##      col1  col2   col3            col4 
-## row1 "x11" "HEY!" "THIS IS NUTS!" "x14"
-## row2 "x21" "x22"  "x23"           "x24"
-## row3 "x31" "x32"  "x33"           "x34"
-## row4 "x41" "x42"  "x43"           "x44"
+##      col1  col2   col3            col4  col5 
+## row1 "x11" "HEY!" "THIS IS NUTS!" "x14" "x15"
+## row2 "x21" "x22"  "x23"           "x24" "x25"
+## row3 "x31" "x32"  "x33"           "x34" "x35"
+## row4 "x41" "x42"  "x43"           "x44" "x45"
 ```
 
 ---

@@ -1,0 +1,226 @@
+---
+title: "BST430 Lecture 02-C"
+subtitle: "Memory and Environments in R"
+author: "Seong-Hwan Jun"
+institute: "U of Rochester"
+date: today
+format: 
+  revealjs: 
+    theme: simple
+    slide-number: true
+---
+
+## Namespace
+
+- Sometimes there are name clashes. For example, `filter()` exists in both `dplyr` and `stats`.
+- In such cases, we can specify the package name using `::` operator.
+
+## Namespace
+
+```{r, echo=TRUE}
+stats::filter
+```
+
+## Namespace
+
+```{r, echo=TRUE}
+dplyr::filter
+```
+
+## Global environment
+
+- When you start R, the global environment is created automatically.
+- You can see the objects in your global environment using `ls()`.
+- You can remove objects from your global environment using `rm()`.
+- The global environment is the top-level environment in R, and it has no parent environment.
+
+## Local environment 
+
+- Most typically created when a function is called.
+- Variables declared within a local environment is only accessible within that environment.
+- When a function is called, R creates a new local environment for that function call.
+- When the function exits, the local environment is destroyed.
+- Local environments can access variables in the global environment (parent environment), but not vice versa.
+
+## Names and values
+
+```{r, echo=TRUE}
+x <- c(1, 2, 3)
+```
+
+This line allocates a space in memory for the vector `c(1, 2, 3)` and assigns the name `x` to that space.
+
+`x` is a reference to an actual object, in this case, vector `c(1, 2, 3)`.
+
+## Names and values
+
+```{r, echo=TRUE}
+y <- x
+```
+
+This will create another name, `y`, that also binds to the existing vector `c(1, 2, 3)`.
+
+## Names and values
+
+Print their memory addresses:
+
+```{r, echo=TRUE}
+print(lobstr::obj_addr(x))
+print(lobstr::obj_addr(y))
+```
+
+They point to the same object.
+
+## Names and values
+
+By the way, functions also have names and values.
+
+```{r, echo=TRUE}
+print(lobstr::obj_addr(mean))
+```
+
+Functions are also objects in R.
+
+- `mean` is a name that points to a function object.
+- The name `mean` is just a reference to that object. The actual function object or definition is stored in memory.
+
+## Copy-on-modify
+
+R employs a copy-on-modify strategy to manage memory efficiently.
+
+When you modify an object, R creates a copy of the object only if it is necessary (i.e., if there are multiple references to the same object).
+
+## Copy-on-modify
+
+We will use `tracemem` function, which tracks when an object is copied in memory.
+
+```{r, echo=TRUE}
+xxx <- c(1, 2, 3)
+tracemem(xxx)
+yyy <- xxx # Copy does not occur here.
+print(lobstr::obj_addr(xxx))
+print(lobstr::obj_addr(yyy))
+```
+
+## Copy-on-modify
+
+```{r, echo=TRUE}
+yyy[1] <- 100 # copy occurs here!
+print(xxx)
+print(yyy)
+print(lobstr::obj_addr(xxx))
+print(lobstr::obj_addr(yyy))
+```
+
+## What happens if you modify `xxx`?
+
+```{r, echo=TRUE}
+xxx[1] <- -100
+print(xxx)
+print(lobstr::obj_addr(xxx))
+```
+
+:::{.incremental}
+- What happened to the original object `c(1, 2, 3)`?
+
+- It is still in memory, but now there are no names pointing to it, so it will be garbage collected if you run out of space.
+:::
+
+## Copy on function calls?
+
+```{r, echo=TRUE}
+f <- function(a) {
+  lobstr::obj_addr(a)
+  return(a)
+}
+xyz <- c(1, 10, 100)
+lobstr::obj_addr(xyz)
+ret_obj <- f(xyz)
+lobstr::obj_addr(ret_obj)
+```
+
+No copy takes place because `xyz` is not modified inside function `f`.
+
+## Where does copy take place?
+
+```{r, echo=TRUE}
+f <- function(a) {
+  lobstr::obj_addr(a)
+  a[1] <- -1
+  return(a)
+}
+xyz <- c(1, 10, 100)
+lobstr::obj_addr(xyz)
+ret_obj <- f(xyz)
+lobstr::obj_addr(ret_obj)
+```
+
+## Modify-in-place
+
+If only a single reference exists for an object, then modifying is to occur in place (no copy is made) -- but this is nearly impossible to check.
+
+- When we call `tracemem(x)`, R seems to create a new reference to the object `x`, so now there are two references.
+- Even when references are removed, the way R keeps track of references is complex, so it is hard to be sure how many references there are.
+
+An exception: environments. These are a special type of object and always modified in place.
+
+## Performance implications
+
+Why is frequent copying harmful for performance?
+
+:::{.incremental}
+- Copying large objects takes time and memory.
+- Frequent copying can lead to increased memory usage and slower performance.
+:::
+
+## Shallow vs Deep copy
+
+- Shallow copy: creates a new object that references the same memory as the original object.
+- Deep copy: creates a new object with its own copy of the data in memory.
+
+## Lists: `list`
+
+```{r, echo=TRUE}
+l1 <- list(1, 2, 3)
+```
+
+- Each element of the list is a reference to an object.
+- e.g., `l1[[1]]` is a reference to object `1` stored in memory and `l1[[2]]` is a reference to object `2` and so on.
+
+## Lists: `list`
+
+```{r, echo=TRUE}
+l2 <- l1 # Shallow copy here.
+lobstr::ref(l1)
+
+l2[[3]] <- 4
+lobstr::ref(l2)
+```
+
+:::{.incremental}
+- `l2[[1]]` and `l2[[2]]` still point to the same object as `l1[[1]]` and `l1[[2]]`.
+- `l2[[3]]` now points to a new object `4` in memory.
+:::
+
+## Data frames: `data.frame`
+
+- Data frame is a list of vectors -- each column points to a vector stored in memory.
+- What happens if you modify a column? a row? -> Find out in the lab.
+
+## Character vectors
+
+```{r, echo=TRUE}
+x <- c("hi", "hello", "a", "b", "hi")
+```
+
+The first and the last element should point to distinct objects both containing the string "hi"... right?
+
+## Character vectors
+
+```{r, echo=TRUE}
+x <- c("hi", "hello", "a", "b", "hi")
+lobstr::ref(x, character = TRUE)
+```
+
+R uses a global pool of strings to avoid storing multiple copies of the same string in memory.
+

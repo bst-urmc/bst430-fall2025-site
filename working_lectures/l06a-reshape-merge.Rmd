@@ -48,16 +48,16 @@ customers = read_csv("l05/data/sales/customers.csv")
 prices = read_csv("l05/data/sales/prices.csv")
 ```
 
-Here's the [R code in this lecture](l05/l05-reshape-merge.R)
+Here's the [R code in this lecture](https://github.com/seonghwanjun/bst430-fall2025-l05/blob/main/reshape-merge.R)
 
-Here's the [customers](l05/data/sales/customers.csv),
- [prices](l05/data/sales/prices.csv),
- [biden](l05/data/trump/biden.csv),
- [professions](l05/data/scientists/professions.csv),
- [dates](l05/data/scientists/dates.csv),
- [works](l05/data/scientists/works.csv),
- [enrollment](l05/data/students/enrolment.csv),
- [survey](l05/data/students/survey.csv)
+Here's the [customers](https://github.com/seonghwanjun/bst430-fall2025-l05/tree/main/data/sales/customers.csv),
+ [prices](https://github.com/seonghwanjun/bst430-fall2025-l05/tree/main/data/sales/prices.csv),
+ [biden](https://github.com/seonghwanjun/bst430-fall2025-l05/tree/main/data/trump/biden.csv),
+ [professions](https://github.com/seonghwanjun/bst430-fall2025-l05/tree/main/data/scientists/professions.csv),
+ [dates](https://github.com/seonghwanjun/bst430-fall2025-l05/tree/main/data/scientists/dates.csv),
+ [works](https://github.com/seonghwanjun/bst430-fall2025-l05/tree/main/data/scientists/works.csv),
+ [enrollment](https://github.com/seonghwanjun/bst430-fall2025-l05/tree/main/data/students/enrolment.csv),
+ [survey](https://github.com/seonghwanjun/bst430-fall2025-l05/tree/main/data/students/survey.csv)
 
 
 *You have to have a good filepath to the dataset*
@@ -452,10 +452,66 @@ Reshape this so that you can plot the year vs the case count with ggplot.
 
 ## Other tidyr functionality
 
-* `nest()` and `unnest()` let you embed or expand list columns in a data frame.  .alert[This can be extremely powerful.] But it best illustrated with an example...in a couple weeks.
+* `nest()` and `unnest()` let you embed or expand list columns in a data frame. 
 *  `fill()` imputes missing values by carrying observations down or up in a data frame
 *  `complete()` makes implicit missing combinations of variables explicit.  Sometimes useful when building contingency tables.
 *  `separate()` and `separate_rows()` can fix some issues with multiple values packed into the same cell of a table.
+
+---
+
+## `nest()`
+
+```{r}
+library(gapminder)
+gapminder |> nest(data = -continent)
+```
+
+---
+
+## `nest()`
+
+By multiple variables,
+
+```{r}
+gapminder |>
+  mutate(gdp_level = if_else(gdpPercap > 30000, "High GDP", "Low GDP")) |> 
+  nest(data = -c(continent, gdp_level))
+```
+
+---
+
+## `nest()`
+
+How does `nest` differ from `group_by`? Go over the vignette: [here](https://tidyr.tidyverse.org/articles/nest.html).
+
+- `group_by` is implicit -- it adds an attribute to manage grouping.
+- `nest` explicitly splits the data.
+
+---
+
+## `nest()`
+
+Useful with `group_by()`:
+
+```{r}
+gapminder |>
+  mutate(gdp_level = if_else(gdpPercap > 30000, "High GDP", "Low GDP")) |> 
+  group_by(continent, gdp_level) |>
+  nest()
+```
+
+- We will later see powerful use cases of `nest`.
+
+---
+
+## `unnest`
+
+```{r}
+nested_data <- gapminder |> nest(data=-continent)
+nested_data
+
+nested_data |> unnest(cols = data)
+```
 
 ---
 
@@ -1118,7 +1174,8 @@ Each relation always concerns a pair of tables.
 ---
 ## Full solution
 
-[code](l05/flights_join.R)
+
+[code](https://github.com/seonghwanjun/bst430-fall2025-l05/blob/main/flights_join.R)
 
 ---
 ## Keys
@@ -1214,7 +1271,7 @@ If a table lacks a primary key, it's often useful to add one with `mutate()` and
 # Acknowledgments
 
 Adapted from Data science in a box: 
-[1](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d09-tidying/u2-d09-tidying.html#1)
-[2](https://rstudio-education.github.io/datascience-box/course-materials/slides/u2-d08-multi-df/u2-d08-multi-df.html#1)
+[1](https://datasciencebox.org/course-materials/_slides/u2-d09-tidying/u2-d09-tidying#1)
+[2](https://datasciencebox.org/course-materials/_slides/u2-d08-multi-df/u2-d08-multi-df#1)
 
 

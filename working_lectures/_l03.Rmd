@@ -1,0 +1,43 @@
+
+### .hand[Your turn!]
+
+- Clone the repository from the course webpage
+- Read in the `nobels.csv`.
+- Split into two (STEM and non-STEM):
+  - Create a new data frame, `nobel_stem`, that filters for the STEM fields
+(Physics, Medicine, Chemistry, and Economics).
+  - Create another data frame, `nobel_nonstem`, that filters for the remaining
+fields.
+- Write out the two data frames to `nobel-stem.csv` and `nobel-nonstem.csv`,
+respectively, to `data/`.
+
+
+### .hand[Your turn!]
+- open `sales-excel.Rmd`. 
+- Load the `sales.xlsx` file from the `data-raw/` folder, using appropriate arguments for the `read_excel()` function such that it looks like the output on the left.
+- **Stretch goal:** Manipulate the sales data such that it looks like the output on the right.
+
+.pull-left[
+```{r echo=FALSE}
+sales = read_excel("l03/data/sales.xlsx", skip = 3, col_names = c("id", "n"))
+sales
+```
+]
+.pull-right[
+```{r echo=FALSE}
+sales %>%
+  mutate(
+    is_brand_name = str_detect(id, "Brand"),
+    brand = if_else(is_brand_name, id, NA_character_)
+  ) %>%
+  fill(brand) %>%
+  filter(!is_brand_name) %>%
+  select(brand, id, n) %>%
+  mutate(
+    id = as.numeric(id),
+    n = as.numeric(n)
+  )
+```
+]
+
+---

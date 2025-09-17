@@ -1,0 +1,32 @@
+## Height vs. mass, take 2
+
+<div class="question">
+  How are these plots similar? How are they different?
+  </div>
+  
+  ```{r echo = FALSE, message=FALSE, warning=FALSE}
+p1 <- ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
+  geom_point() +
+  xlim(80, 250) +
+  ylim(0, 1400)
+p2 <- ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
+  geom_smooth(se = FALSE) +
+  xlim(80, 250) +
+  ylim(0, 1400)
+suppressMessages(suppressWarnings(require(gridExtra)))
+grid.arrange(p1, p2, ncol = 2)
+```
+
+---
+  
+  ## `geom_smooth`
+  
+  ```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=3}
+ggplot(data = starwars, mapping = aes(x = height, y = mass)) +
+  geom_smooth(se = FALSE) +
+  xlim(80, 250) +
+  ylim(0, 1400)
+```
+
+---
+  

@@ -47,10 +47,6 @@ cat_lovers = read_csv("data/cat-lovers.csv")
 cat_lovers
 ```
 
-Here's the [R code in this lecture](l02/data-types-i.R)
-
-Here's the [datafile](data/cat-lovers.csv)
-*You have to have a good filepath to the dataset*
 ---
 
 ## Oh why won't you work?!
@@ -535,7 +531,7 @@ R uses `NA` to represent missing values in its data structures.
 typeof(NA)
 ```
 
-.footnote[There are also ```NA_integer_```, ```NA_real_``` and ```NA_character_```, occasionally needed to avoid warnings or errors about unplanned coercions.]
+.footnote[There are also `NA\_integer\_`, `NA\_real\_` and `NA\_character\_`, occasionally needed to avoid warnings or errors about unplanned coercions.]
 ---
 
 ## Mental model for `NA`s

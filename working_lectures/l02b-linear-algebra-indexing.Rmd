@@ -427,7 +427,7 @@ Let's make a simple matrix and give it decent row and column names, which we kno
 ```{r}
 ## don't worry if the construction of this matrix confuses you; 
 ## just focus on the product
-j_mat = outer(as.character(1:4), as.character(1:4),
+j_mat = outer(as.character(1:4), as.character(1:5),
               function(x, y)  paste0('x', x, y) )
 j_mat
 ```

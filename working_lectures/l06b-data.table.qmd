@@ -1,0 +1,101 @@
+---
+title: "BST430 Lecture 06-B"
+subtitle: "Reference based data manipulation with data.table"
+author: "Seong-Hwan Jun"
+format: revealjs
+---
+
+## R objects are immutable
+
+- When we modify a `data.frame` (or `tibble`), a copy is made.
+- This is inefficient for large datasets.
+- We may want to pass around the data structure to functions where it modifies in place without making a copy.
+
+## Enter `data.table`
+
+- `data.table` is an R package that provides an enhanced version of `data.frame`.
+- I started using it because I wanted to do *reference-based* data manipulation.
+
+What is reference-based data manipulation?
+
+## Modify in place via `:=`
+
+`:=` is a special operator in `data.table` that allows you to modify data by reference.
+
+```{r echo=TRUE}
+library(data.table)
+DT = data.table(x = 1:5, y = letters[1:5])
+tracemem(DT)
+DT[,y:= toupper(y)]
+DT
+```
+
+No memory copy.
+
+## What about `data.frame`?
+
+```{r echo=TRUE}
+DF = data.frame(x = 1:5, y = letters[1:5])
+tracemem(DF)
+DF$y <- toupper(DF$y)
+```
+
+## Passing by reference
+
+Pass data tables to functions and modify them in place without making a copy.
+
+```{r echo=TRUE}
+set.seed(123)
+num_elements <- 10000
+DT = data.table(x = sample(letters, num_elements, replace = TRUE), y = sample(letters, num_elements, replace = TRUE))
+DT
+```
+
+## Passing by reference
+
+```{r echo=TRUE}
+modify_DT = function(DT) {
+  DT[x == 'i' & y == 'j', y := "ij"]
+}
+tracemem(DT)
+modify_DT(DT) # Does not return anything.
+DT[x=='i' & y == 'ij']
+```
+
+## Passing by reference
+
+```{r echo=TRUE}
+lobstr::obj_addr(DT)
+```
+
+## Modifying a subset of rows
+
+```{r echo=TRUE}
+DF = data.frame(x = sample(letters, num_elements, replace = TRUE), y = sample(letters, num_elements, replace = TRUE))
+tracemem(DF)
+DF[DF$x=='i' & DF$y == 'i','y'] <- "ij"
+lobstr::obj_addr(DF)
+```
+
+## Delete a column
+
+```{r echo=TRUE}
+DT[, y := NULL]
+DT
+```
+
+## Input and output
+
+```{r echo=TRUE}
+DT <- fread("l05/data/trump/approval_polllist.csv")
+temp <- DT[,.(avg_approval=mean(approve)),by=.(population)]
+fwrite(temp, "l05/data/trump/approval_by_population.csv")
+```
+
+Their input and output functions are pretty versatile and just "works" in most cases.
+
+## Primary keys
+
+- `data.table` supports primary keys for fast subsetting.
+- Set a key using `setkey()`.
+
