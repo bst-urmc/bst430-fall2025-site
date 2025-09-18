@@ -1,7 +1,7 @@
 ---
 title: "BST430  Lecture 02-B"
 subtitle: "Vectors, matrices and linear algebra"
-author: "Seong-Hwan Jun, based on the course by Andrew McDavid"
+author: "Seong-Hwan Jun, based on the course by Andrew McDavid and Tanzy Love"
 institute: "U of Rochester"
 date: "2021-09-27 (updated: `r Sys.Date()`)"
 output:

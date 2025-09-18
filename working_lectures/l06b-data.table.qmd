@@ -11,16 +11,18 @@ format: revealjs
 - This is inefficient for large datasets.
 - We may want to pass around the data structure to functions where it modifies in place without making a copy.
 
-## Enter `data.table`
+## `data.frame` example
 
-- `data.table` is an R package that provides an enhanced version of `data.frame`.
-- I started using it because I wanted to do *reference-based* data manipulation.
+```{r echo=TRUE}
+DF = data.frame(x = 1:5, y = letters[1:5])
+DF
+tracemem(DF) # This will print memory address of DF when it is copied.
+DF$y <- toupper(DF$y)
+```
 
-What is reference-based data manipulation?
+## `data.table` and `:=` operator
 
-## Modify in place via `:=`
-
-`:=` is a special operator in `data.table` that allows you to modify data by reference.
+An R package that provides an enhanced version of `data.frame`; it allows modify in place.
 
 ```{r echo=TRUE}
 library(data.table)
@@ -32,22 +34,15 @@ DT
 
 No memory copy.
 
-## What about `data.frame`?
-
-```{r echo=TRUE}
-DF = data.frame(x = 1:5, y = letters[1:5])
-tracemem(DF)
-DF$y <- toupper(DF$y)
-```
-
 ## Passing by reference
 
-Pass data tables to functions and modify them in place without making a copy.
+`data.table` can be passed to functions that perform modification in place.
 
 ```{r echo=TRUE}
 set.seed(123)
 num_elements <- 10000
-DT = data.table(x = sample(letters, num_elements, replace = TRUE), y = sample(letters, num_elements, replace = TRUE))
+DT = data.table(x = sample(letters, num_elements, replace = TRUE), 
+                y = sample(letters, num_elements, replace = TRUE))
 DT
 ```
 
@@ -63,6 +58,8 @@ DT[x=='i' & y == 'ij']
 ```
 
 ## Passing by reference
+
+Check that the memory address of DT remains the same after modification.
 
 ```{r echo=TRUE}
 lobstr::obj_addr(DT)
@@ -98,4 +95,18 @@ Their input and output functions are pretty versatile and just "works" in most c
 
 - `data.table` supports primary keys for fast subsetting.
 - Set a key using `setkey()`.
+- This allows fast subsetting via binary search `O(log n)` instead of `O(n)`.
 
+## Notes
+
+Fully supports features needed for data manipulation:
+
+- table joins.
+- reshaping (longer and wider).
+- can be used with `dplyr` and `ggplot2` -- much of what we learned for `tibble` applies to `data.table`
+
+`tidyverse` yields more readable code. `data.table` syntax is a bit more terse and cryptic.
+
+## References
+
+- `data.table` vignettes: <https://rdatatable.gitlab.io/data.table/index.html>

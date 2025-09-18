@@ -3,11 +3,11 @@
   <head>
     <title>BST430 Lecture 06-A</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Tanzy Love, based on the course by Andrew McDavid" />
+    <meta name="author" content="Seong-Hwan Jun, based on the course by Andrew McDavid" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
-    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <link href="libs/panelset/panelset.css" rel="stylesheet" />
     <script src="libs/panelset/panelset.js"></script>
     <link rel="stylesheet" href="css/lexis.css" type="text/css" />
@@ -24,13 +24,13 @@ class: ur-title, center, middle, title-slide
 ## Reshaping and combining data frames
 ]
 .author[
-### Tanzy Love, based on the course by Andrew McDavid
+### Seong-Hwan Jun, based on the course by Andrew McDavid
 ]
 .institute[
 ### U of Rochester
 ]
 .date[
-### 2021-09-06 (updated: 2025-09-16 by TL)
+### 2021-09-06 (updated: 2025-09-18 by TL)
 ]
 
 ---
@@ -591,6 +591,13 @@ Reshape this so that you can plot the year vs the case count with ggplot.
 
 ```r
 library(gapminder)
+```
+
+```
+## Warning: package 'gapminder' was built under R version 4.3.3
+```
+
+```r
 gapminder |&gt; nest(data = -continent)
 ```
 
@@ -902,6 +909,18 @@ class: middle
 Information on 10 women in science who changed the world
 
 .small[
+
+```
+## Warning: 'xfun::attr()' is deprecated.
+## Use 'xfun::attr2()' instead.
+## See help("Deprecated")
+
+## Warning: 'xfun::attr()' is deprecated.
+## Use 'xfun::attr2()' instead.
+## See help("Deprecated")
+```
+
+
 
 |name               |
 |:------------------|
@@ -2073,10 +2092,10 @@ Adapted from Data science in a box:
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "3:2"
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "3:2"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

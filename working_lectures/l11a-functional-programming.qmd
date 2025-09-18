@@ -1,0 +1,7 @@
+---
+title: "BST430 Lecture 11A"
+subtitle: "Functional programming"
+author: "Seong-Hwan Jun"
+format: revealjs
+---
+

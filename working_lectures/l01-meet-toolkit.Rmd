@@ -1,7 +1,7 @@
 ---
 title: "BST430  Lecture 01"
 subtitle: "Meet the toolkit"
-author: "Seong-Hwan Jun, based on the notes of Andrew McDavid"
+author: "Seong-Hwan Jun, based on the notes of Andrew McDavid and Tanzy Love"
 institute: "U of Rochester"
 date: "2021-08-17 (updated: `r Sys.Date()`)"
 output:

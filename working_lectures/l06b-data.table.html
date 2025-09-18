@@ -212,26 +212,42 @@ Seong-Hwan Jun
 <li>We may want to pass around the data structure to functions where it modifies in place without making a copy.</li>
 </ul>
 </section>
-<section id="enter-data.table" class="slide level2">
-<h2>Enter <code>data.table</code></h2>
-<ul>
-<li><code>data.table</code> is an R package that provides an enhanced version of <code>data.frame</code>.</li>
-<li>I started using it because I wanted to do <em>reference-based</em> data manipulation.</li>
-</ul>
-<p>What is reference-based data manipulation?</p>
-</section>
-<section id="modify-in-place-via" class="slide level2">
-<h2>Modify in place via <code>:=</code></h2>
-<p><code>:=</code> is a special operator in <code>data.table</code> that allows you to modify data by reference.</p>
+<section id="data.frame-example" class="slide level2">
+<h2><code>data.frame</code> example</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a><span class="fu">library</span>(data.table)</span>
-<span id="cb1-2"><a href=""></a>DT <span class="ot">=</span> <span class="fu">data.table</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">y =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span>
-<span id="cb1-3"><a href=""></a><span class="fu">tracemem</span>(DT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>DF <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">y =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span>
+<span id="cb1-2"><a href=""></a>DF</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "&lt;0x7fe1f60d7600&gt;"</code></pre>
+<pre><code>  x y
+1 1 a
+2 2 b
+3 3 c
+4 4 d
+5 5 e</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>DT[,y<span class="sc">:</span><span class="er">=</span> <span class="fu">toupper</span>(y)]</span>
-<span id="cb3-2"><a href=""></a>DT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a><span class="fu">tracemem</span>(DF) <span class="co"># This will print memory address of DF when it is copied.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "&lt;0x7fa70c8cf408&gt;"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>DF<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">toupper</span>(DF<span class="sc">$</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tracemem[0x7fa70c8cf408 -&gt; 0x7fa70c98a648]: eval eval withVisible withCallingHandlers eval eval with_handlers doWithOneRestart withOneRestart withRestartList doWithOneRestart withOneRestart withRestartList withRestarts &lt;Anonymous&gt; evaluate in_dir in_input_dir eng_r block_exec call_block process_group.block process_group withCallingHandlers withCallingHandlers handle_error process_file &lt;Anonymous&gt; &lt;Anonymous&gt; execute .main 
+tracemem[0x7fa70c98a648 -&gt; 0x7fa70c98a608]: $&lt;-.data.frame $&lt;- eval eval withVisible withCallingHandlers eval eval with_handlers doWithOneRestart withOneRestart withRestartList doWithOneRestart withOneRestart withRestartList withRestarts &lt;Anonymous&gt; evaluate in_dir in_input_dir eng_r block_exec call_block process_group.block process_group withCallingHandlers withCallingHandlers handle_error process_file &lt;Anonymous&gt; &lt;Anonymous&gt; execute .main </code></pre>
+</div>
+</div>
+</section>
+<section id="data.table-and-operator" class="slide level2">
+<h2><code>data.table</code> and <code>:=</code> operator</h2>
+<p>An R package that provides an enhanced version of <code>data.frame</code>; it allows modify in place.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="fu">library</span>(data.table)</span>
+<span id="cb7-2"><a href=""></a>DT <span class="ot">=</span> <span class="fu">data.table</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">y =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span>
+<span id="cb7-3"><a href=""></a><span class="fu">tracemem</span>(DT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "&lt;0x7fa70b536200&gt;"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>DT[,y<span class="sc">:</span><span class="er">=</span> <span class="fu">toupper</span>(y)]</span>
+<span id="cb9-2"><a href=""></a>DT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       x      y
    &lt;int&gt; &lt;char&gt;
@@ -244,29 +260,15 @@ Seong-Hwan Jun
 </div>
 <p>No memory copy.</p>
 </section>
-<section id="what-about-data.frame" class="slide level2">
-<h2>What about <code>data.frame</code>?</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>DF <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">y =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span>
-<span id="cb5-2"><a href=""></a><span class="fu">tracemem</span>(DF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "&lt;0x7fe1eefbf148&gt;"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>DF<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">toupper</span>(DF<span class="sc">$</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>tracemem[0x7fe1eefbf148 -&gt; 0x7fe1f89d1248]: eval eval withVisible withCallingHandlers eval eval with_handlers doWithOneRestart withOneRestart withRestartList doWithOneRestart withOneRestart withRestartList withRestarts &lt;Anonymous&gt; evaluate in_dir in_input_dir eng_r block_exec call_block process_group.block process_group withCallingHandlers withCallingHandlers handle_error process_file &lt;Anonymous&gt; &lt;Anonymous&gt; execute .main 
-tracemem[0x7fe1f89d1248 -&gt; 0x7fe1f89d1208]: $&lt;-.data.frame $&lt;- eval eval withVisible withCallingHandlers eval eval with_handlers doWithOneRestart withOneRestart withRestartList doWithOneRestart withOneRestart withRestartList withRestarts &lt;Anonymous&gt; evaluate in_dir in_input_dir eng_r block_exec call_block process_group.block process_group withCallingHandlers withCallingHandlers handle_error process_file &lt;Anonymous&gt; &lt;Anonymous&gt; execute .main </code></pre>
-</div>
-</div>
-</section>
 <section id="passing-by-reference" class="slide level2">
 <h2>Passing by reference</h2>
-<p>Pass data tables to functions and modify them in place without making a copy.</p>
+<p><code>data.table</code> can be passed to functions that perform modification in place.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb9-2"><a href=""></a>num_elements <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
-<span id="cb9-3"><a href=""></a>DT <span class="ot">=</span> <span class="fu">data.table</span>(<span class="at">x =</span> <span class="fu">sample</span>(letters, num_elements, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="at">y =</span> <span class="fu">sample</span>(letters, num_elements, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb9-4"><a href=""></a>DT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb11-2"><a href=""></a>num_elements <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb11-3"><a href=""></a>DT <span class="ot">=</span> <span class="fu">data.table</span>(<span class="at">x =</span> <span class="fu">sample</span>(letters, num_elements, <span class="at">replace =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb11-4"><a href=""></a>                <span class="at">y =</span> <span class="fu">sample</span>(letters, num_elements, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb11-5"><a href=""></a>DT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            x      y
        &lt;char&gt; &lt;char&gt;
@@ -287,15 +289,15 @@ tracemem[0x7fe1f89d1248 -&gt; 0x7fe1f89d1208]: $&lt;-.data.frame $&lt;- eval eva
 <section id="passing-by-reference-1" class="slide level2">
 <h2>Passing by reference</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>modify_DT <span class="ot">=</span> <span class="cf">function</span>(DT) {</span>
-<span id="cb11-2"><a href=""></a>  DT[x <span class="sc">==</span> <span class="st">'i'</span> <span class="sc">&amp;</span> y <span class="sc">==</span> <span class="st">'j'</span>, y <span class="sc">:</span><span class="er">=</span> <span class="st">"ij"</span>]</span>
-<span id="cb11-3"><a href=""></a>}</span>
-<span id="cb11-4"><a href=""></a><span class="fu">tracemem</span>(DT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a>modify_DT <span class="ot">=</span> <span class="cf">function</span>(DT) {</span>
+<span id="cb13-2"><a href=""></a>  DT[x <span class="sc">==</span> <span class="st">'i'</span> <span class="sc">&amp;</span> y <span class="sc">==</span> <span class="st">'j'</span>, y <span class="sc">:</span><span class="er">=</span> <span class="st">"ij"</span>]</span>
+<span id="cb13-3"><a href=""></a>}</span>
+<span id="cb13-4"><a href=""></a><span class="fu">tracemem</span>(DT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "&lt;0x7fe1f7943600&gt;"</code></pre>
+<pre><code>[1] "&lt;0x7fa70859cc00&gt;"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a><span class="fu">modify_DT</span>(DT) <span class="co"># Does not return anything.</span></span>
-<span id="cb13-2"><a href=""></a>DT[x<span class="sc">==</span><span class="st">'i'</span> <span class="sc">&amp;</span> y <span class="sc">==</span> <span class="st">'ij'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a><span class="fu">modify_DT</span>(DT) <span class="co"># Does not return anything.</span></span>
+<span id="cb15-2"><a href=""></a>DT[x<span class="sc">==</span><span class="st">'i'</span> <span class="sc">&amp;</span> y <span class="sc">==</span> <span class="st">'ij'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         x      y
     &lt;char&gt; &lt;char&gt;
@@ -320,37 +322,38 @@ tracemem[0x7fe1f89d1248 -&gt; 0x7fe1f89d1208]: $&lt;-.data.frame $&lt;- eval eva
 </section>
 <section id="passing-by-reference-2" class="slide level2">
 <h2>Passing by reference</h2>
+<p>Check that the memory address of DT remains the same after modification.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a>lobstr<span class="sc">::</span><span class="fu">obj_addr</span>(DT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href=""></a>lobstr<span class="sc">::</span><span class="fu">obj_addr</span>(DT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0x7fe1f7943600"</code></pre>
+<pre><code>[1] "0x7fa70859cc00"</code></pre>
 </div>
 </div>
 </section>
 <section id="modifying-a-subset-of-rows" class="slide level2">
 <h2>Modifying a subset of rows</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href=""></a>DF <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">sample</span>(letters, num_elements, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="at">y =</span> <span class="fu">sample</span>(letters, num_elements, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb17-2"><a href=""></a><span class="fu">tracemem</span>(DF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href=""></a>DF <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">sample</span>(letters, num_elements, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="at">y =</span> <span class="fu">sample</span>(letters, num_elements, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb19-2"><a href=""></a><span class="fu">tracemem</span>(DF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "&lt;0x7fe1f8e86e08&gt;"</code></pre>
+<pre><code>[1] "&lt;0x7fa7085b4408&gt;"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href=""></a>DF[DF<span class="sc">$</span>x<span class="sc">==</span><span class="st">'i'</span> <span class="sc">&amp;</span> DF<span class="sc">$</span>y <span class="sc">==</span> <span class="st">'i'</span>,<span class="st">'y'</span>] <span class="ot">&lt;-</span> <span class="st">"ij"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href=""></a>DF[DF<span class="sc">$</span>x<span class="sc">==</span><span class="st">'i'</span> <span class="sc">&amp;</span> DF<span class="sc">$</span>y <span class="sc">==</span> <span class="st">'i'</span>,<span class="st">'y'</span>] <span class="ot">&lt;-</span> <span class="st">"ij"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>tracemem[0x7fe1f8e86e08 -&gt; 0x7fe1f8f36888]: eval eval withVisible withCallingHandlers eval eval with_handlers doWithOneRestart withOneRestart withRestartList doWithOneRestart withOneRestart withRestartList withRestarts &lt;Anonymous&gt; evaluate in_dir in_input_dir eng_r block_exec call_block process_group.block process_group withCallingHandlers withCallingHandlers handle_error process_file &lt;Anonymous&gt; &lt;Anonymous&gt; execute .main 
-tracemem[0x7fe1f8f36888 -&gt; 0x7fe1f8f367c8]: [&lt;-.data.frame [&lt;- eval eval withVisible withCallingHandlers eval eval with_handlers doWithOneRestart withOneRestart withRestartList doWithOneRestart withOneRestart withRestartList withRestarts &lt;Anonymous&gt; evaluate in_dir in_input_dir eng_r block_exec call_block process_group.block process_group withCallingHandlers withCallingHandlers handle_error process_file &lt;Anonymous&gt; &lt;Anonymous&gt; execute .main </code></pre>
+<pre><code>tracemem[0x7fa7085b4408 -&gt; 0x7fa7085b5f08]: eval eval withVisible withCallingHandlers eval eval with_handlers doWithOneRestart withOneRestart withRestartList doWithOneRestart withOneRestart withRestartList withRestarts &lt;Anonymous&gt; evaluate in_dir in_input_dir eng_r block_exec call_block process_group.block process_group withCallingHandlers withCallingHandlers handle_error process_file &lt;Anonymous&gt; &lt;Anonymous&gt; execute .main 
+tracemem[0x7fa7085b5f08 -&gt; 0x7fa7085b5e48]: [&lt;-.data.frame [&lt;- eval eval withVisible withCallingHandlers eval eval with_handlers doWithOneRestart withOneRestart withRestartList doWithOneRestart withOneRestart withRestartList withRestarts &lt;Anonymous&gt; evaluate in_dir in_input_dir eng_r block_exec call_block process_group.block process_group withCallingHandlers withCallingHandlers handle_error process_file &lt;Anonymous&gt; &lt;Anonymous&gt; execute .main </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href=""></a>lobstr<span class="sc">::</span><span class="fu">obj_addr</span>(DF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href=""></a>lobstr<span class="sc">::</span><span class="fu">obj_addr</span>(DF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0x7fe1f8f367c8"</code></pre>
+<pre><code>[1] "0x7fa7085b5e48"</code></pre>
 </div>
 </div>
 </section>
 <section id="delete-a-column" class="slide level2">
 <h2>Delete a column</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href=""></a>DT[, y <span class="sc">:</span><span class="er">=</span> <span class="cn">NULL</span>]</span>
-<span id="cb23-2"><a href=""></a>DT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href=""></a>DT[, y <span class="sc">:</span><span class="er">=</span> <span class="cn">NULL</span>]</span>
+<span id="cb25-2"><a href=""></a>DT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            x
        &lt;char&gt;
@@ -368,19 +371,37 @@ tracemem[0x7fe1f8f36888 -&gt; 0x7fe1f8f367c8]: [&lt;-.data.frame [&lt;- eval eva
 </div>
 </div>
 </section>
-<section id="data-import" class="slide level2">
-<h2>Data import</h2>
+<section id="input-and-output" class="slide level2">
+<h2>Input and output</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href=""></a>DT <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"l05/data/trump/approval_polllist.csv"</span>)</span>
-<span id="cb25-2"><a href=""></a>temp <span class="ot">&lt;-</span> DT[,.(<span class="at">avg_approval=</span><span class="fu">mean</span>(approve)),by<span class="ot">=</span>.(population)]</span>
-<span id="cb25-3"><a href=""></a><span class="fu">fwrite</span>(temp, <span class="st">"l05/data/trump/approval_by_population.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href=""></a>DT <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"l05/data/trump/approval_polllist.csv"</span>)</span>
+<span id="cb27-2"><a href=""></a>temp <span class="ot">&lt;-</span> DT[,.(<span class="at">avg_approval=</span><span class="fu">mean</span>(approve)),by<span class="ot">=</span>.(population)]</span>
+<span id="cb27-3"><a href=""></a><span class="fu">fwrite</span>(temp, <span class="st">"l05/data/trump/approval_by_population.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Their input and output functions are pretty versatile and just “works” in most cases.</p>
 </section>
 <section id="primary-keys" class="slide level2">
 <h2>Primary keys</h2>
 <ul>
 <li><code>data.table</code> supports primary keys for fast subsetting.</li>
 <li>Set a key using <code>setkey()</code>.</li>
+<li>This allows fast subsetting via binary search <code>O(log n)</code> instead of <code>O(n)</code>.</li>
+</ul>
+</section>
+<section id="notes" class="slide level2">
+<h2>Notes</h2>
+<p>Fully supports features needed for data manipulation:</p>
+<ul>
+<li>table joins.</li>
+<li>reshaping (longer and wider).</li>
+<li>can be used with <code>dplyr</code> and <code>ggplot2</code> – much of what we learned for <code>tibble</code> applies to <code>data.table</code></li>
+</ul>
+<p><code>tidyverse</code> yields more readable code. <code>data.table</code> syntax is a bit more terse and cryptic.</p>
+</section>
+<section id="references" class="slide level2">
+<h2>References</h2>
+<ul>
+<li><code>data.table</code> vignettes: <a href="https://rdatatable.gitlab.io/data.table/index.html" class="uri">https://rdatatable.gitlab.io/data.table/index.html</a></li>
 </ul>
 
 </section>

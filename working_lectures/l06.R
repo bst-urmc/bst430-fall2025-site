@@ -27,18 +27,27 @@ ggplot(ratings, aes(date, rating, col=rating_type)) +
   theme_minimal() + 
   theme(legend.position = "bottom")
 
-tidyr::table2 %>%
+library(tidyr)
+table2
+table2 %>%
   pivot_wider(names_from = type, values_from = count)
 
+library(ggplot2)
 table4a %>%
   pivot_longer(cols = c("1999", "2000"), names_to = "year", values_to = "cases") %>%
   ggplot(aes(year, cases)) + 
   geom_point() + 
   facet_wrap(~country)
 
+library(gapminder)
 dim(gapminder)
 names(gapminder)
 
-gapminder |> nest(data = -continent)
+by_cont <- gapminder |> nest(data = -continent)
+by_cont[1,2]
 
+gapminder |> dplyr::group_by(continent)
+
+
+library(nycflights13)
 

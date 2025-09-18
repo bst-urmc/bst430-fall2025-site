@@ -1,9 +1,9 @@
 ---
 title: "BST430  Lecture 12-B"
 subtitle: "Multivariate linear models"
-author: "Tanzy Love, based on the course by Andrew McDavid"
+author: "Seong-Hwan Jun, based on the course by Andrew McDavid and Tanzy Love"
 institute: "U of Rochester"
-date: "2021-11-07 (updated: `r Sys.Date()` by TL)"
+date: "2021-11-07 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
     css:
